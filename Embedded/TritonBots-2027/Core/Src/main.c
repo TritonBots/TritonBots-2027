@@ -87,20 +87,21 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-
+  int cnt = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    cnt++;
     // Turn the LED ON
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-    HAL_Delay(250); // Wait 500ms
+    HAL_Delay(100); // Wait 500ms
     
     // Turn the LED OFF
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-    HAL_Delay(250); // Wait 500ms
+    HAL_Delay(100); // Wait 500ms
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -158,6 +159,7 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
