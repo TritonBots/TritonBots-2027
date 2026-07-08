@@ -117,13 +117,8 @@ int main(void)
     HAL_ADC_Stop(&hadc1);
     isButtonPressed = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12);
     cnt++;
-    // Turn the LED ON
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-    HAL_Delay(100); // Wait 500ms
-    
-    // Turn the LED OFF
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-    HAL_Delay(100); // Wait 500ms
+    // Turn the LED ON if button is pressed and OFF if not pressed
+    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, !isButtonPressed);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
