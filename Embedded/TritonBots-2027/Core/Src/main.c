@@ -48,10 +48,17 @@
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 
-/* Definitions for defaultTask */
-osThreadId_t defaultTaskHandle;
-const osThreadAttr_t defaultTask_attributes = {
-  .name = "defaultTask",
+/* Definitions for blink01 */
+osThreadId_t blink01Handle;
+const osThreadAttr_t blink01_attributes = {
+  .name = "blink01",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for blink02 */
+osThreadId_t blink02Handle;
+const osThreadAttr_t blink02_attributes = {
+  .name = "blink02",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
@@ -63,7 +70,8 @@ const osThreadAttr_t defaultTask_attributes = {
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
-void StartDefaultTask(void *argument);
+void StartBlink01(void *argument);
+void StartBlink02(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -105,9 +113,6 @@ int main(void)
   MX_GPIO_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
-  int cnt = 0;
-  int isButtonPressed = false;
-  int potVal = 0;
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -130,8 +135,11 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  /* creation of blink01 */
+  blink01Handle = osThreadNew(StartBlink01, NULL, &blink01_attributes);
+
+  /* creation of blink02 */
+  blink02Handle = osThreadNew(StartBlink02, NULL, &blink02_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -150,21 +158,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    // Start the ADC conversion
-    HAL_ADC_Start(&hadc1);
-
-    // Wait for the conversion to complete (timeout of 1ms)
-    if (HAL_ADC_PollForConversion(&hadc1, 1) == HAL_OK) {
-      // Read the converted 12-bit analog value
-      potVal = HAL_ADC_GetValue(&hadc1);
-    }
-
-    // Stop the ADC
-    HAL_ADC_Stop(&hadc1);
-    isButtonPressed = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12);
-    cnt++;
-    // Turn the LED ON if button is pressed and OFF if not pressed
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, !isButtonPressed);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -304,22 +297,47 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE END 4 */
 
-/* USER CODE BEGIN Header_StartDefaultTask */
+/* USER CODE BEGIN Header_StartBlink01 */
 /**
-  * @brief  Function implementing the defaultTask thread.
+  * @brief  Function implementing the blink01 thread.
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void *argument)
+/* USER CODE END Header_StartBlink01 */
+void StartBlink01(void *argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
   for(;;)
   {
+    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+    osDelay(1000);
+  }
+
+  // just in case we accidentally exit the control loop
+  osThreadTerminate(NULL);
+  /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_StartBlink02 */
+/**
+* @brief Function implementing the blink02 thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartBlink02 */
+void StartBlink02(void *argument)
+{
+  /* USER CODE BEGIN StartBlink02 */
+  /* Infinite loop */
+  for(;;)
+  {
     osDelay(1);
   }
-  /* USER CODE END 5 */
+  
+  // just in case we accidentally exit the control loop
+  osThreadTerminate(NULL);
+  /* USER CODE END StartBlink02 */
 }
 
 /**
