@@ -16,6 +16,32 @@ Describe what this team owns within the project.
 
 ---
 
+## GitHub Actions CI: Build TritonBots-2027 STM32 Firmware
+
+This workflow builds the Embedded/TritonBots-2027 STM32 firmware on `ubuntu-latest` using CMake + Ninja and the Arm GNU toolchain (`arm-none-eabi-gcc`). It also adds extra diagnostics to help debug failures related to the CMake toolchain file path.
+
+---
+
+**Pipeline steps**
+- **Checkout** the repo with full history (`actions/checkout@v4`, `fetch-depth: 0`).
+- **Install dependencies**:
+  - `cmake`
+  - `ninja-build`
+  - `gcc-arm-none-eabi`
+  - `binutils-arm-none-eabi`
+- **Check tools** and list the toolchain directory: `Embedded/TritonBots-2027/cmake`.
+- **Debug repository contents** (pwd, git ref/status, workspace listings) and confirm the toolchain file exists:
+  - `Embedded/TritonBots-2027/cmake/gcc-arm-none-eabi.cmake`
+  - (also checks it via `git ls-files`)
+- **Configure CMake** using Ninja and passes the toolchain file using an absolute path:
+  - `-DCMAKE_TOOLCHAIN_FILE="$PWD/Embedded/TritonBots-2027/cmake/gcc-arm-none-eabi.cmake"`
+- **Build firmware** with:
+  - `cmake --build Embedded/TritonBots-2027/build --parallel`
+- **Upload artifacts** as `TritonBots-2027-firmware` (matching `*.elf`, `*.hex`, `*.bin`, `*.map`) from `Embedded/TritonBots-2027/build/`.
+
+---
+
+
 ## Folder Structure
 
 ```text
