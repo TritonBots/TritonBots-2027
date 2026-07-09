@@ -6,12 +6,16 @@ on:
 
 jobs:
   build:
+
     name: Build STM32 Project
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
 
       - name: Install dependencies
         run: |
@@ -31,20 +35,29 @@ jobs:
 
       - name: Debug repository contents
         run: |
-          pwd
-          ls -la
-          ls -la Embedded
-          ls -la Embedded/TritonBots-2027
-          ls -la Embedded/TritonBots-2027/cmake
-          test -f Embedded/TritonBots-2027/cmake/gcc-arm-none-eabi.cmake && echo "Toolchain exists" || echo "Toolchain missing"
+          echo "=== pwd ===" && pwd
+          echo "=== git status ===" && git status --porcelain=v1 -b || true
+          echo "=== git ref ===" && (git rev-parse HEAD && git log -1 --oneline) || true
+          echo "=== ls workspace root ===" && ls -la
+          echo "=== ls Embedded ===" && ls -la Embedded || true
+          echo "=== ls Embedded/TritonBots-2027 ===" && ls -la Embedded/TritonBots-2027 || true
+          echo "=== ls toolchain dir ===" && ls -la Embedded/TritonBots-2027/cmake || true
+          test -f "Embedded/TritonBots-2027/cmake/gcc-arm-none-eabi.cmake" && echo "Toolchain exists" || (echo "Toolchain missing"; exit 1)
+          echo "=== git ls-files (toolchain) ===" && git ls-files Embedded/TritonBots-2027/cmake/gcc-arm-none-eabi.cmake || true
+
 
       - name: Configure CMake
         run: |
+          TOOLCHAIN_FILE="$PWD/Embedded/TritonBots-2027/cmake/gcc-arm-none-eabi.cmake"
+          echo "Using TOOLCHAIN_FILE=$TOOLCHAIN_FILE"
+          test -f "$TOOLCHAIN_FILE" && echo "Toolchain file present" || (echo "Toolchain file missing" && ls -la "$PWD/Embedded/TritonBots-2027/cmake" && exit 1)
+
           cmake \
             -S Embedded/TritonBots-2027 \
             -B Embedded/TritonBots-2027/build \
             -G Ninja \
-            -DCMAKE_TOOLCHAIN_FILE=Embedded/TritonBots-2027/cmake/gcc-arm-none-eabi.cmake
+            -DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN_FILE"
+
 
       - name: Build firmware
         run: |
@@ -53,9 +66,10 @@ jobs:
       - name: Upload firmware artifacts
         uses: actions/upload-artifact@v4
         with:
-         name: TritonBots-2027-firmware
-         path: |
+          name: TritonBots-2027-firmware
+          path: |
             Embedded/TritonBots-2027/build/**/*.elf
             Embedded/TritonBots-2027/build/**/*.hex
             Embedded/TritonBots-2027/build/**/*.bin
             Embedded/TritonBots-2027/build/**/*.map
+
