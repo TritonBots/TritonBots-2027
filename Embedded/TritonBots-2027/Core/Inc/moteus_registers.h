@@ -2,11 +2,19 @@
  * @file moteus_registers.h
  * @brief Moteus register definitions and scaling constants
  *
- * Register addresses and scaling factors for the Moteus motor controller
- * CAN protocol. Based on the official Moteus CAN protocol documentation.
+ * Register addresses and scaling factors for the Moteus motor controller.
+ *
+ * Notes/invariants:
+ * - Query registers (MOTEUS_REG_Q_*) are read-only from the controller.
+ * - Command registers (MOTEUS_REG_*) are written to the controller.
+ * - Scaling constants define the fixed-point mapping used when choosing
+ *   MOTEUS_RES_INT8/INT16/INT32 resolutions.
+ * - Float transmissions use IEEE-754 32-bit floats (little-endian) in the
+ *   protocol layer.
  *
  * @see https://github.com/mjbots/moteus/blob/main/docs/reference.md
  */
+
 
 #ifndef MOTEUS_REGISTERS_H
 #define MOTEUS_REGISTERS_H

@@ -2,8 +2,19 @@
  * @file moteus.c
  * @brief Moteus motor controller library implementation
  *
- * Main API implementation for controlling Moteus brushless motor controllers.
+ * High-level API implementation for controlling Moteus brushless motor controllers.
+ *
+ * Invariants/assumptions:
+ * - moteus_process_rx is expected to be called from an ISR-safe context (typically
+ *   HAL_FDCAN Rx FIFO0 callback) OR a context that prevents concurrent modification
+ *   of motor->response_received.
+ * - Blocking calls (moteus_set_*) poll motor->response_received, which is set by
+ *   moteus_process_rx.
+ * - Raw frame data is always copied into motor->rx_frame_data, even if the
+ *   standard query parser fails. This enables GPIO/analog/diagnostic parsing paths.
  */
+
+
 
 #include "moteus.h"
 #include <math.h>

@@ -15,14 +15,22 @@
 /* ============================================================================
  * FDCAN Initialization
  *
- * Bit timing should be configured in CubeMX. For 1 Mbps with 170 MHz clock:
- *   Prescaler=1, TimeSeg1=135, TimeSeg2=34, SyncJumpWidth=34
+ * Bit timing must be configured in CubeMX.
  *
- * This function only:
- *   - Configures RX filter for Moteus responses
- *   - Starts the FDCAN peripheral
- *   - Enables RX interrupt
+ * In this project we target 1 Mbps arbitration and a 170 MHz FDCAN clock.
+ * The specific example values are:
+ *   - Prescaler = 1
+ *   - TimeSeg1  = 135
+ *   - TimeSeg2  = 34
+ *   - SyncJumpWidth = 34
+ *
+ * Invariants/assumptions:
+ *   - moteus_can_init only configures filters + starts the peripheral.
+ *   - Higher-level moteus_* logic handles protocol parsing and routing.
+ *   - Moteus may send replies that the STM32 hardware classifies as either
+ *     standard or extended IDs; our software parsing tolerates this.
  * ============================================================================ */
+
 
 HAL_StatusTypeDef moteus_can_init(FDCAN_HandleTypeDef* hfdcan)
 {

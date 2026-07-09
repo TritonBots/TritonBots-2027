@@ -3,7 +3,16 @@
  * @brief Data structures and enums for Moteus library
  *
  * Contains all type definitions used throughout the Moteus STM32 library.
+ *
+ * Notes/invariants (API expectations):
+ * - MOTEUS_RES_IGNORE indicates that a register field should be omitted from
+ *   encoded command/query frames.
+ * - Command structs use NaN to represent "don't change"/"ignore" semantics
+ *   for optional numeric fields (see builders in moteus_protocol.c).
+ * - Decoding initializes unset fields to NaN, so callers can distinguish
+ *   "not queried" from real zero values.
  */
+
 
 #ifndef MOTEUS_TYPES_H
 #define MOTEUS_TYPES_H

@@ -1,7 +1,20 @@
 /**
  * @file moteus_protocol.c
  * @brief Moteus CAN protocol encoding/decoding implementation
+ *
+ * This module implements the multiplex-style payload format used by Moteus
+ * motor controllers.
+ *
+ * Invariants/assumptions (important for correctness):
+ * - Payload layout is the byte stream after the 29-bit CAN ID.
+ * - Resolution selection controls both value scaling and the number of bytes
+ *   used on the wire.
+ * - Encoding/decoding uses IEEE-754 single-precision floats, little-endian.
+ * - Reply opcode range is interpreted as register value groups and mapped into
+ *   `moteus_result_t` using register address constants from
+ *   `moteus_registers.h`.
  */
+
 
 #include "moteus_protocol.h"
 #include "moteus.h"  /* For MOTEUS_ENABLE_BRS */

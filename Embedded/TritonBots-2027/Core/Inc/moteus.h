@@ -2,14 +2,23 @@
  * @file moteus.h
  * @brief Moteus motor controller library for STM32
  *
- * High-level API for controlling Moteus brushless motor controllers
- * via CAN-FD on STM32 microcontrollers using HAL.
+ * High-level and protocol-layer API for controlling Moteus brushless motor
+ * controllers via CAN-FD on STM32.
+ *
+ * Notes/invariants:
+ * - Users should call moteus_process_rx() from the CAN RX interrupt handler
+ *   (or otherwise ensure serialized access to per-motor flags).
+ * - Blocking moteus_set_* calls wait for motor->response_received to be set
+ *   by moteus_process_rx.
+ * - Command/query frame payload encoding is handled by moteus_protocol.c;
+ *   this header documents the public API and expectations.
  *
  * @example
  * @code
  * // Initialize CAN and motor (bit timing configured in CubeMX)
  * moteus_can_init(&hfdcan1);
  * moteus_motor_t* motor = moteus_init(&hfdcan1, 1);
+
  *
  * // Set up callback
  * moteus_set_response_callback(motor, on_motor_response, NULL);
