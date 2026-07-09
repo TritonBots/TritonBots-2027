@@ -35,8 +35,9 @@ jobs:
           # Minimal custom install approach:
           # Download the prebuilt ARM GNU toolchain used for Cortex-M builds.
           # If you already maintain a custom installer in your repo, replace this step accordingly.
+          # Note: link targets vary over time; if this breaks, update URL/version.
           version="13.3.rel1"
-          url="https://developer.arm.com/-/media/Files/downloads/gnu-rm/13.3-2024q2/arm-gnu-toolchain-${version}-x86_64-arm-none-eabi.tar.xz"
+          url="https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/13.3-2024q2/arm-gnu-toolchain-${version}-x86_64-arm-none-eabi.tar.xz"
 
           curl -L --fail "$url" -o arm-gnu-toolchain.tar.xz
           tar -xf arm-gnu-toolchain.tar.xz
