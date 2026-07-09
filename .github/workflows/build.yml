@@ -1,0 +1,47 @@
+name: Build TritonBots-2027 STM32 Firmware
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    name: Build STM32 Project
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            ninja-build \
+            gcc-arm-none-eabi \
+            binutils-arm-none-eabi
+
+      - name: Configure CMake
+        run: |
+          cmake \
+            -S Embedded/TritonBots-2027 \
+            -B Embedded/TritonBots-2027/build \
+            -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE=Embedded/TritonBots-2027/cmake/gcc-arm-none-eabi.cmake
+
+      - name: Build firmware
+        run: |
+          cmake --build Embedded/TritonBots-2027/build --parallel
+
+      - name: Upload firmware artifacts
+        uses: actions/upload-artifact@v4
+        with:
+         name: TritonBots-2027-firmware
+         path: |
+            Embedded/TritonBots-2027/build/**/*.elf
+            Embedded/TritonBots-2027/build/**/*.hex
+            Embedded/TritonBots-2027/build/**/*.bin
+            Embedded/TritonBots-2027/build/**/*.map
