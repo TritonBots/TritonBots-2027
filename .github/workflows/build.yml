@@ -2,8 +2,6 @@ name: Build TritonBots-2027 STM32 Firmware
 
 on:
   push:
-    branches:
-      - main
   pull_request:
 
 jobs:
@@ -23,6 +21,22 @@ jobs:
             ninja-build \
             gcc-arm-none-eabi \
             binutils-arm-none-eabi
+      
+      - name: Check tools
+        run: |
+          cmake --version
+          ninja --version
+          arm-none-eabi-gcc --version
+          ls -la Embedded/TritonBots-2027/cmake
+
+      - name: Debug repository contents
+        run: |
+          pwd
+          ls -la
+          ls -la Embedded
+          ls -la Embedded/TritonBots-2027
+          ls -la Embedded/TritonBots-2027/cmake
+          test -f Embedded/TritonBots-2027/cmake/gcc-arm-none-eabi.cmake && echo "Toolchain exists" || echo "Toolchain missing"
 
       - name: Configure CMake
         run: |
