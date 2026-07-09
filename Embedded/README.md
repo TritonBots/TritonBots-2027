@@ -82,6 +82,18 @@ cd <team-folder>
 
 ## Development Workflow
 
+## STM32: Run & Debug in VS Code
+
+
+To run and debug the STM32 firmware using the **STM32 VS Code Extension**, you must open the project folder in VS Code:
+
+1. Open **`Embedded/TritonBots-2027`** in VS Code (File → Open Folder).
+2. Use the STM32 extension’s Run/Debug controls.
+
+> Important: Opening only subfolders (e.g. `Core/`) may prevent the extension from finding the correct build/openocd/launch configuration.
+
+
+
 1. Create a feature branch.
 2. Make your changes.
 3. Test your work.
