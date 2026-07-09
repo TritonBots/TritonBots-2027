@@ -1,0 +1,89 @@
+name: STM32 CMake CI
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            ninja-build \
+            cmake \
+            make \
+            gcc-multilib \
+            python3 \
+            pkg-config
+
+      - name: Install ARM GCC toolchain (custom install script)
+        run: |
+          set -euxo pipefail
+          TOOLCHAIN_PREFIX=arm-none-eabi
+
+          # Minimal custom install approach:
+          # Download the prebuilt ARM GNU toolchain used for Cortex-M builds.
+          # If you already maintain a custom installer in your repo, replace this step accordingly.
+          version="13.3.rel1"
+          url="https://developer.arm.com/-/media/Files/downloads/gnu-rm/13.3-2024q2/arm-gnu-toolchain-${version}-x86_64-arm-none-eabi.tar.xz"
+
+          curl -L --fail "$url" -o arm-gnu-toolchain.tar.xz
+          tar -xf arm-gnu-toolchain.tar.xz
+
+          # The extracted dir is typically: arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi
+          extracted_dir="$(tar -tf arm-gnu-toolchain.tar.xz | head -n 1 | cut -f1 -d/)"
+          sudo mkdir -p /opt/arm-none-eabi
+          sudo mv "${extracted_dir}" /opt/arm-none-eabi/
+
+          sudo ln -sf "/opt/arm-none-eabi/${extracted_dir}/bin/${TOOLCHAIN_PREFIX}-"* /dev/null 2>/dev/null || true
+
+          echo "/opt/arm-none-eabi/${extracted_dir}/bin" >> "$GITHUB_PATH"
+          ${TOOLCHAIN_PREFIX}-gcc --version
+
+      - name: Configure (Debug)
+        working-directory: Embedded/TritonBots-2027
+        run: |
+          cmake --preset Debug
+
+      - name: Build (Debug)
+        working-directory: Embedded/TritonBots-2027
+        run: |
+          cmake --build --preset Debug
+
+      - name: Configure (Release)
+        working-directory: Embedded/TritonBots-2027
+        run: |
+          cmake --preset Release
+
+      - name: Build (Release)
+        working-directory: Embedded/TritonBots-2027
+        run: |
+          cmake --build --preset Release
+
+      - name: Show output artifacts
+        working-directory: Embedded/TritonBots-2027
+        run: |
+          set -euxo pipefail
+          find build -maxdepth 3 -type f \( -name '*.elf' -o -name '*.map' \) | sort
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stm32-elf-and-map
+          path: |
+            Embedded/TritonBots-2027/build/**/**/*.elf
+            Embedded/TritonBots-2027/build/**/**/*.map
+          if-no-files-found: warn
+
