@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/Users/bjsek/Documents/GitHub/TritonBots-2027/Embedded/TritonBots-2027/build/Debug/cmake_install.cmake",
+		"C:/Users/bjsek/Documents/GitHub/TritonBots-2027/Embedded/TritonBots-2027/build/Debug/cmake/stm32cubemx/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
