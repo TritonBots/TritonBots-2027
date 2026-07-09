@@ -865,7 +865,7 @@ __STATIC_FORCEINLINE void __set_FPSCR(uint32_t fpscr)
  */
 __STATIC_FORCEINLINE void __ISB(void)
 {
-  __ASM volatile ("isb 0xF":::"memory");
+  __ASM volatile ("isb":::"memory");
 }
 
 
@@ -876,7 +876,7 @@ __STATIC_FORCEINLINE void __ISB(void)
  */
 __STATIC_FORCEINLINE void __DSB(void)
 {
-  __ASM volatile ("dsb 0xF":::"memory");
+  __ASM volatile ("dsb":::"memory");
 }
 
 
@@ -887,7 +887,7 @@ __STATIC_FORCEINLINE void __DSB(void)
  */
 __STATIC_FORCEINLINE void __DMB(void)
 {
-  __ASM volatile ("dmb 0xF":::"memory");
+  __ASM volatile ("dmb":::"memory");
 }
 
 
