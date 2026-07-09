@@ -96,7 +96,7 @@ int main(void)
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
   int cnt = 0;
-  int isButtonPressed = false;
+  // int isButtonPressed = false;
   int potVal = 0;
   /* USER CODE END 2 */
 
