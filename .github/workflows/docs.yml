@@ -101,7 +101,7 @@ jobs:
             r'''(?x)
             ^\s*
             (?:[A-Za-z_][\w\s\*]*\s+)?   # return type
-            [A-Za-z_]\w*\s*\(\s*([^\)]*)\s*\)\s*(;|\{)\s*$
+            [A-Za-z_]\w*\s*\(\s*([^\)]*)\s*\)\s*;\s*$
             '''
           )
 
@@ -146,7 +146,12 @@ jobs:
           for fp in iter_target_files():
             np = norm(fp)
             text = fp.read_text(encoding='utf-8', errors='ignore')
+
+            # Normalize line endings so the heuristic regex matches reliably
+            # across platforms (CRLF vs LF can otherwise lead to false matches).
+            text = text.replace('\r\n', '\n').replace('\r', '\n')
             lines = text.splitlines()
+
 
             for i, line in enumerate(lines):
               m = func_line_re.match(line)
