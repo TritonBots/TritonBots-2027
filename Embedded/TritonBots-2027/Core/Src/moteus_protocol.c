@@ -105,9 +105,21 @@ float moteus_decode_value(const uint8_t* data, float scale, moteus_resolution_t 
 
 /**
  * @brief Get scale factor for a query register
+ *
+ * Used when decoding reply values. For FLOAT resolution this returns 1.0.
+ *
+ * @param reg Register address constant (MOTEUS_REG_Q_*)
+ * @param res Reply resolution selected for that register group
+ * @return Scale factor to multiply the decoded fixed-point value by
+ *
+ * @note Units:
+ *   - position: revolutions (rev)
+ *   - velocity: revolutions per second (rev/s)
+ *   - torque/current/voltage/temperature/etc. according to register meaning
  */
 static float get_query_scale(uint8_t reg, moteus_resolution_t res)
 {
+
     if (res == MOTEUS_RES_FLOAT) return 1.0f;
 
     switch (reg) {
@@ -211,9 +223,21 @@ static float get_query_scale(uint8_t reg, moteus_resolution_t res)
 
 /**
  * @brief Get scale factor for a command register
+ *
+ * Used when encoding outgoing command values. For FLOAT resolution this returns 1.0.
+ *
+ * @param reg Register address constant (MOTEUS_REG_* command side)
+ * @param res Command resolution selected for that register group
+ * @return Scale factor to divide the physical value by before fixed-point rounding
+ *
+ * @note Units:
+ *   - position: revolutions (rev)
+ *   - velocity: revolutions per second (rev/s)
+ *   - torque: Newton-meters (Nm)
  */
 static float get_command_scale(uint16_t reg, moteus_resolution_t res)
 {
+
     if (res == MOTEUS_RES_FLOAT) return 1.0f;
 
     switch (reg) {
@@ -305,6 +329,7 @@ static float get_command_scale(uint16_t reg, moteus_resolution_t res)
     }
 }
 
+// TODO: improve function comment
 /**
  * @brief Add query request to frame
  */
@@ -390,11 +415,21 @@ static int add_query_request(moteus_frame_builder_t* fb, const moteus_query_reso
 }
 
 /**
- * @brief Helper to finalize frame
+ * @brief Finalize a built multiplex payload into a moteus_can_frame_t
+ *
+ * @param frame Output CAN-FD frame structure to populate
+ * @param motor_id Destination motor CAN ID (1-127)
+ * @param fb Frame builder containing the payload bytes
+ * @param request_reply True to set the reply-request flag in the CAN ID
+ *
+ * @return void
+ *
+ * @warning Assumption: caller has ensured fb->pos does not exceed 64 bytes.
  */
 static void finalize_frame(moteus_can_frame_t* frame, uint8_t motor_id,
                            const moteus_frame_builder_t* fb, bool request_reply)
 {
+
     frame->id = moteus_make_can_id(motor_id, MOTEUS_SOURCE_ID, request_reply);
     memcpy(frame->data, fb->data, fb->pos);
     frame->len = fb->pos;
@@ -410,10 +445,22 @@ static void finalize_frame(moteus_can_frame_t* frame, uint8_t motor_id,
  * Frame Building Functions - Basic Commands
  * ============================================================================ */
 
+/**
+ * @brief Build a STOP command frame
+ *
+ * Stops motor outputs (typically transitions to a controller mode that disables motion).
+ *
+ * @param frame Output frame structure
+ * @param motor_id Destination motor ID (1-127)
+ * @param query Optional query resolution for reading state (may be NULL)
+ * @return Payload byte length written into the frame (0-64)
+ * @return MOTEUS_ERR_INVALID_PARAM on invalid arguments
+ */
 int moteus_build_stop_frame(moteus_can_frame_t* frame,
                             uint8_t motor_id,
                             const moteus_query_resolution_t* query)
 {
+
     moteus_frame_builder_t fb;
     moteus_frame_init(&fb);
 
@@ -428,10 +475,22 @@ int moteus_build_stop_frame(moteus_can_frame_t* frame,
     return fb.pos;
 }
 
+/**
+ * @brief Build a BRAKE command frame
+ *
+ * Applies brake mode which resists motion while allowing backdrive.
+ *
+ * @param frame Output frame structure
+ * @param motor_id Destination motor ID (1-127)
+ * @param query Optional query resolution for reading state (may be NULL)
+ * @return Payload byte length written into the frame (0-64)
+ * @return MOTEUS_ERR_INVALID_PARAM on invalid arguments
+ */
 int moteus_build_brake_frame(moteus_can_frame_t* frame,
                              uint8_t motor_id,
                              const moteus_query_resolution_t* query)
 {
+
     moteus_frame_builder_t fb;
     moteus_frame_init(&fb);
 
@@ -446,10 +505,21 @@ int moteus_build_brake_frame(moteus_can_frame_t* frame,
     return fb.pos;
 }
 
+/**
+ * @brief Build a query-only frame
+ *
+ * Sends a read request to retrieve controller state at the specified resolutions.
+ *
+ * @param frame Output frame structure
+ * @param motor_id Destination motor ID (1-127)
+ * @param query Query resolution configuration (must not be NULL)
+ * @return Payload byte length written into the frame (0-64)
+ */
 int moteus_build_query_frame(moteus_can_frame_t* frame,
                              uint8_t motor_id,
                              const moteus_query_resolution_t* query)
 {
+
     if (query == NULL) {
         return MOTEUS_ERR_INVALID_PARAM;
     }
@@ -467,12 +537,32 @@ int moteus_build_query_frame(moteus_can_frame_t* frame,
  * Frame Building Functions - Motion Commands
  * ============================================================================ */
 
+/**
+ * @brief Build a POSITION command frame
+ *
+ * Commands the controller to move using the configured position-mode fields.
+ *
+ * @param frame Output frame structure
+ * @param motor_id Destination motor ID (1-127)
+ * @param cmd Position command parameters (may contain NaN to indicate ignore)
+ * @param cmd_res Command resolution configuration (NULL => use defaults)
+ * @param query Optional query resolution for reading state (may be NULL)
+ * @return Payload byte length written into the frame (0-64)
+ * @return MOTEUS_ERR_INVALID_PARAM on invalid arguments
+ *
+ * @note Units:
+ *   - cmd->position: revolutions (rev)
+ *   - cmd->velocity: revolutions per second (rev/s)
+ *   - cmd->feedforward_torque: Newton-meters (Nm)
+ *   - cmd gains/scales are dimensionless
+ */
 int moteus_build_position_frame(moteus_can_frame_t* frame,
                                 uint8_t motor_id,
                                 const moteus_position_cmd_t* cmd,
                                 const moteus_position_resolution_t* cmd_res,
                                 const moteus_query_resolution_t* query)
 {
+
     if (cmd == NULL) {
         return MOTEUS_ERR_INVALID_PARAM;
     }
@@ -576,11 +666,24 @@ int moteus_build_position_frame(moteus_can_frame_t* frame,
     return fb.pos;
 }
 
+/**
+ * @brief Build a TORQUE command frame
+ *
+ * Uses position-mode protocol with velocity/feedforward gains set up by the
+ * library such that the controller behaves as a torque command.
+ *
+ * @param frame Output frame structure
+ * @param motor_id Destination motor ID (1-127)
+ * @param torque Target torque (Nm)
+ * @param query Optional query resolution for reading state (may be NULL)
+ * @return Payload byte length written into the frame (0-64)
+ */
 int moteus_build_torque_frame(moteus_can_frame_t* frame,
                               uint8_t motor_id,
                               float torque,
                               const moteus_query_resolution_t* query)
 {
+
     moteus_position_cmd_t cmd = MOTEUS_POSITION_CMD_DEFAULT;
     cmd.position = NAN;
     cmd.velocity = 0.0f;
@@ -592,12 +695,32 @@ int moteus_build_torque_frame(moteus_can_frame_t* frame,
     return moteus_build_position_frame(frame, motor_id, &cmd, NULL, query);
 }
 
+/**
+ * @brief Build a STAY_WITHIN command frame
+ *
+ * Keeps the motor output within a bounded position range with optional
+ * feedforward and gain settings.
+ *
+ * @param frame Output frame structure
+ * @param motor_id Destination motor ID (1-127)
+ * @param cmd Stay-within command parameters (NaN indicates ignore/0 behavior)
+ * @param cmd_res Stay-within command resolution configuration (NULL => defaults)
+ * @param query Optional query resolution for reading state (may be NULL)
+ * @return Payload byte length written into the frame (0-64)
+ * @return MOTEUS_ERR_INVALID_PARAM on invalid arguments
+ *
+ * @note Units:
+ *   - cmd->lower_bound/cmd->upper_bound: revolutions (rev)
+ *   - cmd->feedforward_torque: Newton-meters (Nm)
+ *   - cmd->kp_scale/cmd->kd_scale: dimensionless gains/scales
+ */
 int moteus_build_stay_within_frame(moteus_can_frame_t* frame,
                                    uint8_t motor_id,
                                    const moteus_stay_within_cmd_t* cmd,
                                    const moteus_stay_within_resolution_t* cmd_res,
                                    const moteus_query_resolution_t* query)
 {
+
     if (cmd == NULL) {
         return MOTEUS_ERR_INVALID_PARAM;
     }
@@ -703,12 +826,32 @@ int moteus_build_stay_within_frame(moteus_can_frame_t* frame,
     return fb.pos;
 }
 
+/**
+ * @brief Build a VFOC (voltage field-oriented control) command frame
+ *
+ * Encodes electrical angle (theta) and phase voltage (voltage) fields, with
+ * an optional theta rate term.
+ *
+ * @param frame Output frame structure
+ * @param motor_id Destination motor ID (1-127)
+ * @param cmd VFOC command parameters
+ * @param cmd_res VFOC command resolution configuration (NULL => defaults)
+ * @param query Optional query resolution for reading state (may be NULL)
+ * @return Payload byte length written into the frame (0-64)
+ * @return MOTEUS_ERR_INVALID_PARAM on invalid arguments
+ *
+ * @note Units:
+ *   - cmd->theta: electrical angle in radians/pi (1.0 => pi radians = 180 deg)
+ *   - cmd->voltage: phase voltage in volts (V)
+ *   - cmd->theta_rate: theta rate in rad/pi per second (rad/pi/s)
+ */
 int moteus_build_vfoc_frame(moteus_can_frame_t* frame,
                             uint8_t motor_id,
                             const moteus_vfoc_cmd_t* cmd,
                             const moteus_vfoc_resolution_t* cmd_res,
                             const moteus_query_resolution_t* query)
 {
+
     if (cmd == NULL) {
         return MOTEUS_ERR_INVALID_PARAM;
     }
@@ -790,11 +933,25 @@ int moteus_build_vfoc_frame(moteus_can_frame_t* frame,
  * Frame Building Functions - Calibration/Rezero
  * ============================================================================ */
 
+/**
+ * @brief Build a REZERO (set output nearest) command frame
+ *
+ * Requests the controller to set output to the nearest encoder/home index
+ * to the provided position hint.
+ *
+ * @param frame Output frame structure
+ * @param motor_id Destination motor ID (1-127)
+ * @param position Position hint (revolutions). Use NaN/ignore semantics as
+ *                  supported by the controller (see protocol builders).
+ * @param query Optional query resolution for reading state (may be NULL)
+ * @return Payload byte length written into the frame (0-64)
+ */
 int moteus_build_rezero_frame(moteus_can_frame_t* frame,
                               uint8_t motor_id,
                               float position,
                               const moteus_query_resolution_t* query)
 {
+
     moteus_frame_builder_t fb;
     moteus_frame_init(&fb);
 
@@ -809,11 +966,24 @@ int moteus_build_rezero_frame(moteus_can_frame_t* frame,
     return fb.pos;
 }
 
+/**
+ * @brief Build a SET_OUTPUT_EXACT command frame
+ *
+ * Sets the controller output to the exact specified position without seeking
+ * the nearest home/encoder index.
+ *
+ * @param frame Output frame structure
+ * @param motor_id Destination motor ID (1-127)
+ * @param position Output position in revolutions (rev)
+ * @param query Optional query resolution for reading state (may be NULL)
+ * @return Payload byte length written into the frame (0-64)
+ */
 int moteus_build_set_output_exact_frame(moteus_can_frame_t* frame,
                                         uint8_t motor_id,
                                         float position,
                                         const moteus_query_resolution_t* query)
 {
+
     moteus_frame_builder_t fb;
     moteus_frame_init(&fb);
 
@@ -828,10 +998,21 @@ int moteus_build_set_output_exact_frame(moteus_can_frame_t* frame,
     return fb.pos;
 }
 
+/**
+ * @brief Build a REQUIRE_REINDEX command frame
+ *
+ * Forces the controller to re-index on the next motion command.
+ *
+ * @param frame Output frame structure
+ * @param motor_id Destination motor ID (1-127)
+ * @param query Optional query resolution for reading state (may be NULL)
+ * @return Payload byte length written into the frame (0-64)
+ */
 int moteus_build_require_reindex_frame(moteus_can_frame_t* frame,
                                        uint8_t motor_id,
                                        const moteus_query_resolution_t* query)
 {
+
     moteus_frame_builder_t fb;
     moteus_frame_init(&fb);
 
@@ -846,10 +1027,21 @@ int moteus_build_require_reindex_frame(moteus_can_frame_t* frame,
     return fb.pos;
 }
 
+/**
+ * @brief Build a RECAPTURE command frame
+ *
+ * Requests the controller to re-capture position feedback.
+ *
+ * @param frame Output frame structure
+ * @param motor_id Destination motor ID (1-127)
+ * @param query Optional query resolution for reading state (may be NULL)
+ * @return Payload byte length written into the frame (0-64)
+ */
 int moteus_build_recapture_frame(moteus_can_frame_t* frame,
                                  uint8_t motor_id,
                                  const moteus_query_resolution_t* query)
 {
+
     moteus_frame_builder_t fb;
     moteus_frame_init(&fb);
 
@@ -868,11 +1060,27 @@ int moteus_build_recapture_frame(moteus_can_frame_t* frame,
  * Frame Building Functions - GPIO
  * ============================================================================ */
 
+/**
+ * @brief Build a GPIO write command frame
+ *
+ * Writes AUX1 and AUX2 GPIO command register values.
+ *
+ * @param frame Output frame structure
+ * @param motor_id Destination motor ID (1-127)
+ * @param cmd GPIO command parameters
+ * @param query Optional query resolution for reading state (may be NULL)
+ * @return Payload byte length written into the frame (0-64)
+ * @return MOTEUS_ERR_INVALID_PARAM on invalid arguments
+ *
+ * @note Units/meaning:
+ *   - cmd->aux1/cmd->aux2 are bitfields selecting AUX1/AUX2 pins (bits 0-3)
+ */
 int moteus_build_gpio_write_frame(moteus_can_frame_t* frame,
                                   uint8_t motor_id,
                                   const moteus_gpio_cmd_t* cmd,
                                   const moteus_query_resolution_t* query)
 {
+
     if (cmd == NULL) {
         return MOTEUS_ERR_INVALID_PARAM;
     }
@@ -892,9 +1100,19 @@ int moteus_build_gpio_write_frame(moteus_can_frame_t* frame,
     return fb.pos;
 }
 
+/**
+ * @brief Build a GPIO read command frame
+ *
+ * Requests the controller to return AUX1 and AUX2 GPIO status values.
+ *
+ * @param frame Output frame structure
+ * @param motor_id Destination motor ID (1-127)
+ * @return Payload byte length written into the frame (0-64)
+ */
 int moteus_build_gpio_read_frame(moteus_can_frame_t* frame,
                                  uint8_t motor_id)
 {
+
     moteus_frame_builder_t fb;
     moteus_frame_init(&fb);
 
@@ -907,11 +1125,26 @@ int moteus_build_gpio_read_frame(moteus_can_frame_t* frame,
     return fb.pos;
 }
 
+/**
+ * @brief Build an ANALOG read command frame
+ *
+ * Requests floating-point analog input readings from AUX1 and/or AUX2.
+ *
+ * @param frame Output frame structure
+ * @param motor_id Destination motor ID (1-127)
+ * @param read_aux1 True to request AUX1 analog inputs (AUX1_IN1..IN5)
+ * @param read_aux2 True to request AUX2 analog inputs (AUX2_IN1..IN5)
+ * @return Payload byte length written into the frame (0-64)
+ *
+ * @note Units: returned values are floats in the protocol documentation as
+ *       0.0-1.0 range (see moteus_analog_result_t).
+ */
 int moteus_build_analog_read_frame(moteus_can_frame_t* frame,
                                    uint8_t motor_id,
                                    bool read_aux1,
                                    bool read_aux2)
 {
+
     moteus_frame_builder_t fb;
     moteus_frame_init(&fb);
 
@@ -938,12 +1171,29 @@ int moteus_build_analog_read_frame(moteus_can_frame_t* frame,
  * Frame Building Functions - Diagnostics
  * ============================================================================ */
 
+/**
+ * @brief Build a DIAGNOSTIC write command frame
+ *
+ * Sends an opaque diagnostic payload to the controller for the given channel.
+ * Typical uses include configuration text/binary streams.
+ *
+ * @param frame Output frame structure
+ * @param motor_id Destination motor ID (1-127)
+ * @param channel Diagnostic channel identifier (see moteus_registers.h)
+ * @param data Pointer to diagnostic payload bytes
+ * @param len Payload length in bytes (1-60 expected)
+ * @return Payload byte length written into the frame (0-64)
+ * @return MOTEUS_ERR_INVALID_PARAM on invalid arguments
+ *
+ * @warning Payloads longer than 60 bytes are rejected by this builder.
+ */
 int moteus_build_diagnostic_write_frame(moteus_can_frame_t* frame,
                                         uint8_t motor_id,
                                         uint8_t channel,
                                         const uint8_t* data,
                                         uint8_t len)
 {
+
     if (data == NULL || len == 0 || len > 60) {
         return MOTEUS_ERR_INVALID_PARAM;
     }
@@ -965,10 +1215,21 @@ int moteus_build_diagnostic_write_frame(moteus_can_frame_t* frame,
     return fb.pos;
 }
 
+/**
+ * @brief Build a DIAGNOSTIC read (poll) command frame
+ *
+ * Requests diagnostic response bytes for the given channel.
+ *
+ * @param frame Output frame structure
+ * @param motor_id Destination motor ID (1-127)
+ * @param channel Diagnostic channel identifier (see moteus_registers.h)
+ * @return Payload byte length written into the frame (0-64)
+ */
 int moteus_build_diagnostic_read_frame(moteus_can_frame_t* frame,
                                        uint8_t motor_id,
                                        uint8_t channel)
 {
+
     moteus_frame_builder_t fb;
     moteus_frame_init(&fb);
 
@@ -986,10 +1247,30 @@ int moteus_build_diagnostic_read_frame(moteus_can_frame_t* frame,
  * Frame Parsing Functions
  * ============================================================================ */
 
+/**
+ * @brief Parse a standard Moteus reply payload into a result structure
+ *
+ * Decodes the multiplex payload stream and maps register values into
+ * moteus_result_t fields.
+ *
+ * Invariants/assumptions:
+ * - Caller provides a payload buffer containing only bytes following the CAN ID.
+ * - Reply opcode parsing assumes the opcode high nibble identifies the reply group.
+ *
+ * @param data Pointer to received payload bytes
+ * @param len Payload length in bytes
+ * @param result Output result (must not be NULL)
+ * @return MOTEUS_OK on success
+ * @return MOTEUS_ERR_INVALID_PARAM if arguments are invalid
+ * @return MOTEUS_ERR_INVALID_FRAME if an error opcode is present
+ *
+ * @warning This parser does not attempt to recover from malformed payloads.
+ */
 int moteus_parse_response(const uint8_t* data,
                           size_t len,
                           moteus_result_t* result)
 {
+
     if (data == NULL || result == NULL || len == 0) {
         return MOTEUS_ERR_INVALID_PARAM;
     }
@@ -1114,10 +1395,27 @@ int moteus_parse_response(const uint8_t* data,
     return MOTEUS_OK;
 }
 
+/**
+ * @brief Parse a DIAGNOSTIC response payload into a result structure
+ *
+ * Diagnostic responses are a simple stream format:
+ * - data[0] must be MOTEUS_OP_SERVER_TO_CLIENT (0x41)
+ * - data[1] is the diagnostic channel id
+ * - data[2] is the payload length
+ * - data[3..] are the diagnostic bytes
+ *
+ * @param data Pointer to received payload bytes
+ * @param len Payload length in bytes
+ * @param result Output diagnostic result (must not be NULL)
+ * @return MOTEUS_OK on success
+ * @return MOTEUS_ERR_INVALID_PARAM if arguments are invalid
+ * @return MOTEUS_ERR_INVALID_FRAME if opcode/length are inconsistent
+ */
 int moteus_parse_diagnostic_response(const uint8_t* data,
                                      size_t len,
                                      moteus_diagnostic_result_t* result)
 {
+
     if (data == NULL || result == NULL || len < 3) {
         return MOTEUS_ERR_INVALID_PARAM;
     }
@@ -1139,10 +1437,30 @@ int moteus_parse_diagnostic_response(const uint8_t* data,
     return MOTEUS_OK;
 }
 
+/**
+ * @brief Parse a GPIO read reply payload into AUX1/AUX2 results
+ *
+ * Expects a reply stream containing an INT8 reply opcode group with at least
+ * two register values for AUX1/AUX2 GPIO status.
+ *
+ * Invariants/assumptions:
+ * - data contains only bytes after the CAN ID.
+ * - AUX GPIO status registers are expected at:
+ *   - MOTEUS_REG_Q_AUX1_GPIO_STATUS
+ *   - MOTEUS_REG_Q_AUX2_GPIO_STATUS (consecutive)
+ *
+ * @param data Pointer to received payload bytes
+ * @param len Payload length in bytes
+ * @param result Output GPIO result (must not be NULL)
+ * @return MOTEUS_OK on success
+ * @return MOTEUS_ERR_INVALID_PARAM if arguments are invalid
+ * @return MOTEUS_ERR_INVALID_FRAME if reply does not contain expected opcode/registers
+ */
 int moteus_parse_gpio_response(const uint8_t* data,
                                size_t len,
                                moteus_gpio_result_t* result)
 {
+
     if (data == NULL || result == NULL || len < 4) {
         return MOTEUS_ERR_INVALID_PARAM;
     }
@@ -1172,10 +1490,27 @@ int moteus_parse_gpio_response(const uint8_t* data,
     return MOTEUS_ERR_INVALID_FRAME;
 }
 
+/**
+ * @brief Parse an ANALOG read reply payload into AUX1/AUX2 arrays
+ *
+ * Analog replies are encoded as a FLOAT reply opcode group with a starting
+ * register. The parser maps floats into:
+ * - result->aux1[0..4] for registers MOTEUS_REG_Q_AUX1_ANALOG_IN1..IN5
+ * - result->aux2[0..4] for registers MOTEUS_REG_Q_AUX2_ANALOG_IN1..IN5
+ *
+ * @param data Pointer to received payload bytes
+ * @param len Payload length in bytes
+ * @param result Output analog result (must not be NULL)
+ * @return MOTEUS_OK on success
+ * @return MOTEUS_ERR_INVALID_PARAM if arguments are invalid
+ *
+ * @note Units: returned values are floats in the 0.0-1.0 range.
+ */
 int moteus_parse_analog_response(const uint8_t* data,
                                  size_t len,
                                  moteus_analog_result_t* result)
 {
+
     if (data == NULL || result == NULL || len < 3) {
         return MOTEUS_ERR_INVALID_PARAM;
     }

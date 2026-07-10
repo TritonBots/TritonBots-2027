@@ -88,10 +88,16 @@ HAL_StatusTypeDef moteus_can_init(FDCAN_HandleTypeDef* hfdcan)
  * ============================================================================ */
 
 /**
- * @brief Convert data length to FDCAN DLC code
+ * @brief Convert payload length (bytes) to FDCAN DLC encoding
+ *
+ * @param len Payload length in bytes (0-64)
+ * @return FDCAN DLC code to be stored in the TX header
+ *
+ * @note FDCAN DLC is not 1:1 with byte count for classic/non-linear DLC values.
  */
 static uint32_t get_fdcan_dlc(uint8_t len)
 {
+
     if (len <= 8) return len;
     if (len <= 12) return FDCAN_DLC_BYTES_12;
     if (len <= 16) return FDCAN_DLC_BYTES_16;
@@ -103,10 +109,16 @@ static uint32_t get_fdcan_dlc(uint8_t len)
 }
 
 /**
- * @brief Get actual data length from FDCAN DLC code
+ * @brief Convert FDCAN DLC encoding back to payload length in bytes
+ *
+ * @param dlc FDCAN TX/RX DLC field value
+ * @return Payload length in bytes (8/12/16/20/24/32/48/64 depending on DLC)
+ *
+ * @warning If an unknown DLC value is provided by the hardware, this returns 8.
  */
 static uint8_t get_data_length(uint32_t dlc)
 {
+
     if (dlc <= 8) return dlc;
 
     switch (dlc) {
@@ -121,9 +133,21 @@ static uint8_t get_data_length(uint32_t dlc)
     }
 }
 
+/**
+ * @brief Transmit a moteus CAN frame using STM32 FDCAN HAL
+ *
+ * @param hfdcan HAL FDCAN handle
+ * @param frame Frame to transmit
+ *
+ * @return HAL_OK on success, HAL_ERROR otherwise
+ *
+ * @note This function always treats CAN IDs as 29-bit extended IDs.
+ * @note Data padding: the TX buffer is padded up to the selected DLC.
+ */
 HAL_StatusTypeDef moteus_can_transmit(FDCAN_HandleTypeDef* hfdcan,
                                        const moteus_can_frame_t* frame)
 {
+
     if (hfdcan == NULL || frame == NULL) {
         return HAL_ERROR;
     }
@@ -151,10 +175,23 @@ HAL_StatusTypeDef moteus_can_transmit(FDCAN_HandleTypeDef* hfdcan,
  * Receive Functions
  * ============================================================================ */
 
+/**
+ * @brief Receive a moteus CAN frame with optional timeout
+ *
+ * @param hfdcan HAL FDCAN handle
+ * @param frame Output frame structure (payload, length, flags)
+ * @param timeout_ms Timeout in milliseconds
+ *
+ * @return HAL_OK on success, HAL_TIMEOUT if no message is available within timeout
+ * @return HAL_ERROR on invalid parameters or HAL receive errors
+ *
+ * @note If @p timeout_ms is 0, the function performs a single non-blocking attempt.
+ */
 HAL_StatusTypeDef moteus_can_receive(FDCAN_HandleTypeDef* hfdcan,
                                       moteus_can_frame_t* frame,
                                       uint32_t timeout_ms)
 {
+
     if (hfdcan == NULL || frame == NULL) {
         return HAL_ERROR;
     }
@@ -198,8 +235,20 @@ HAL_StatusTypeDef moteus_can_receive(FDCAN_HandleTypeDef* hfdcan,
  * Helper function to process RX in interrupt context
  * ============================================================================ */
 
+/**
+ * @brief FDCAN RX FIFO0 interrupt handler helper
+ *
+ * @param hfdcan HAL FDCAN handle
+ *
+ * @return void
+ *
+ * @warning Intended to be called from the HAL RX callback context.
+ *          This function drains FIFO0 and forwards each received frame to
+ *          moteus_process_rx().
+ */
 void moteus_fdcan_rx_callback(FDCAN_HandleTypeDef* hfdcan)
 {
+
     FDCAN_RxHeaderTypeDef rx_header;
     uint8_t rx_data[64];
 

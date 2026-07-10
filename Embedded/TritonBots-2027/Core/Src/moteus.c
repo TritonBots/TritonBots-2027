@@ -40,8 +40,24 @@ static uint8_t motors_allocated = 0;
  * Initialization
  * ============================================================================ */
 
+/**
+ * @brief Create and initialize a moteus motor instance
+ *
+ * Allocates an instance from a fixed internal pool and registers it for RX
+ * routing by motor id.
+ *
+ * @param hfdcan HAL FDCAN handle used for TX
+ * @param motor_id Destination/source motor CAN id (1-127)
+ * @return Pointer to motor instance on success, NULL on invalid args or if
+ *         the pool is exhausted/already-in-use constraints fail.
+ *
+ * @note Invariant: returned instances remain valid for the lifetime of the
+ *       process (pool is never freed), only the registry entry is removed on
+ *       deinit.
+ */
 moteus_motor_t* moteus_init(FDCAN_HandleTypeDef* hfdcan, uint8_t motor_id)
 {
+
     if (hfdcan == NULL || motor_id == 0 || motor_id > 127) {
         return NULL;
     }
@@ -95,6 +111,7 @@ moteus_motor_t* moteus_init(FDCAN_HandleTypeDef* hfdcan, uint8_t motor_id)
     return motor;
 }
 
+// TODO: improve function comment
 void moteus_deinit(moteus_motor_t* motor)
 {
     if (motor == NULL) return;
@@ -111,21 +128,21 @@ void moteus_deinit(moteus_motor_t* motor)
 /* ============================================================================
  * Configuration
  * ============================================================================ */
-
+// TODO: improve function comment
 void moteus_set_query_resolution(moteus_motor_t* motor,
                                   const moteus_query_resolution_t* res)
 {
     if (motor == NULL || res == NULL) return;
     motor->query_res = *res;
 }
-
+// TODO: improve function comment
 void moteus_set_command_resolution(moteus_motor_t* motor,
                                     const moteus_position_resolution_t* res)
 {
     if (motor == NULL || res == NULL) return;
     motor->cmd_res = *res;
 }
-
+// TODO: improve function comment
 void moteus_set_response_callback(moteus_motor_t* motor,
                                    moteus_response_cb_t callback,
                                    void* user_data)
@@ -134,7 +151,7 @@ void moteus_set_response_callback(moteus_motor_t* motor,
     motor->response_cb = callback;
     motor->response_user_data = user_data;
 }
-
+// TODO: improve function comment
 void moteus_set_error_callback(moteus_motor_t* motor,
                                 moteus_error_cb_t callback,
                                 void* user_data)
@@ -147,7 +164,7 @@ void moteus_set_error_callback(moteus_motor_t* motor,
 /* ============================================================================
  * Commands
  * ============================================================================ */
-
+// TODO: improve function comment
 /**
  * @brief Wait for response with timeout (internal helper)
  * @return true if response received, false on timeout
@@ -168,7 +185,7 @@ static bool wait_for_response(moteus_motor_t* motor)
 
     return false;
 }
-
+// TODO: improve function comment
 /**
  * @brief Check result for errors and invoke callbacks (internal helper)
  * @return MOTEUS_OK if no error, error code otherwise
@@ -207,7 +224,7 @@ static int check_result_for_errors(moteus_motor_t* motor)
     motor->last_error = MOTEUS_OK;
     return MOTEUS_OK;
 }
-
+// TODO: improve function comment
 /**
  * @brief Handle timeout error (internal helper)
  *
@@ -236,7 +253,7 @@ static bool handle_timeout(moteus_motor_t* motor)
 
     return false;
 }
-
+// TODO: improve function comment
 /**
  * @brief Handle error detected in result (internal helper)
  *
@@ -262,7 +279,7 @@ static bool handle_error(moteus_motor_t* motor)
 /* ----------------------------------------------------------------------------
  * Internal send helpers
  * ---------------------------------------------------------------------------- */
-
+// TODO: improve function comment
 static HAL_StatusTypeDef send_stop(moteus_motor_t* motor)
 {
     moteus_can_frame_t frame;
@@ -273,7 +290,7 @@ static HAL_StatusTypeDef send_stop(moteus_motor_t* motor)
     motor->tx_count++;
     return moteus_can_transmit(motor->hfdcan, &frame);
 }
-
+// TODO: improve function comment
 static HAL_StatusTypeDef send_brake(moteus_motor_t* motor)
 {
     moteus_can_frame_t frame;
@@ -284,7 +301,7 @@ static HAL_StatusTypeDef send_brake(moteus_motor_t* motor)
     motor->tx_count++;
     return moteus_can_transmit(motor->hfdcan, &frame);
 }
-
+// TODO: improve function comment
 static HAL_StatusTypeDef send_query(moteus_motor_t* motor)
 {
     moteus_can_frame_t frame;
@@ -295,7 +312,7 @@ static HAL_StatusTypeDef send_query(moteus_motor_t* motor)
     motor->tx_count++;
     return moteus_can_transmit(motor->hfdcan, &frame);
 }
-
+// TODO: improve function comment
 static HAL_StatusTypeDef send_position(moteus_motor_t* motor,
                                         const moteus_position_cmd_t* cmd)
 {
@@ -308,7 +325,7 @@ static HAL_StatusTypeDef send_position(moteus_motor_t* motor,
     motor->tx_count++;
     return moteus_can_transmit(motor->hfdcan, &frame);
 }
-
+// TODO: improve function comment
 static HAL_StatusTypeDef send_torque(moteus_motor_t* motor, float torque)
 {
     moteus_can_frame_t frame;
@@ -319,7 +336,7 @@ static HAL_StatusTypeDef send_torque(moteus_motor_t* motor, float torque)
     motor->tx_count++;
     return moteus_can_transmit(motor->hfdcan, &frame);
 }
-
+// TODO: improve function comment
 static HAL_StatusTypeDef send_stay_within(moteus_motor_t* motor,
                                            const moteus_stay_within_cmd_t* cmd)
 {
@@ -332,7 +349,7 @@ static HAL_StatusTypeDef send_stay_within(moteus_motor_t* motor,
     motor->tx_count++;
     return moteus_can_transmit(motor->hfdcan, &frame);
 }
-
+// TODO: improve function comment
 static HAL_StatusTypeDef send_vfoc(moteus_motor_t* motor,
                                     const moteus_vfoc_cmd_t* cmd)
 {
@@ -345,7 +362,7 @@ static HAL_StatusTypeDef send_vfoc(moteus_motor_t* motor,
     motor->tx_count++;
     return moteus_can_transmit(motor->hfdcan, &frame);
 }
-
+// TODO: improve function comment
 static HAL_StatusTypeDef send_rezero(moteus_motor_t* motor, float position)
 {
     moteus_can_frame_t frame;
@@ -356,7 +373,7 @@ static HAL_StatusTypeDef send_rezero(moteus_motor_t* motor, float position)
     motor->tx_count++;
     return moteus_can_transmit(motor->hfdcan, &frame);
 }
-
+// TODO: improve function comment
 static HAL_StatusTypeDef send_output_exact(moteus_motor_t* motor, float position)
 {
     moteus_can_frame_t frame;
@@ -367,7 +384,7 @@ static HAL_StatusTypeDef send_output_exact(moteus_motor_t* motor, float position
     motor->tx_count++;
     return moteus_can_transmit(motor->hfdcan, &frame);
 }
-
+// TODO: improve function comment
 static HAL_StatusTypeDef send_require_reindex(moteus_motor_t* motor)
 {
     moteus_can_frame_t frame;
@@ -378,7 +395,7 @@ static HAL_StatusTypeDef send_require_reindex(moteus_motor_t* motor)
     motor->tx_count++;
     return moteus_can_transmit(motor->hfdcan, &frame);
 }
-
+// TODO: improve function comment
 static HAL_StatusTypeDef send_recapture(moteus_motor_t* motor)
 {
     moteus_can_frame_t frame;
@@ -389,7 +406,7 @@ static HAL_StatusTypeDef send_recapture(moteus_motor_t* motor)
     motor->tx_count++;
     return moteus_can_transmit(motor->hfdcan, &frame);
 }
-
+// TODO: improve function comment
 static HAL_StatusTypeDef send_gpio_write(moteus_motor_t* motor,
                                           const moteus_gpio_cmd_t* cmd)
 {
@@ -401,7 +418,7 @@ static HAL_StatusTypeDef send_gpio_write(moteus_motor_t* motor,
     motor->tx_count++;
     return moteus_can_transmit(motor->hfdcan, &frame);
 }
-
+// TODO: improve function comment
 static HAL_StatusTypeDef send_gpio_read(moteus_motor_t* motor)
 {
     moteus_can_frame_t frame;
@@ -412,7 +429,7 @@ static HAL_StatusTypeDef send_gpio_read(moteus_motor_t* motor)
     motor->tx_count++;
     return moteus_can_transmit(motor->hfdcan, &frame);
 }
-
+// TODO: improve function comment
 static HAL_StatusTypeDef send_analog_read(moteus_motor_t* motor)
 {
     moteus_can_frame_t frame;
@@ -423,7 +440,7 @@ static HAL_StatusTypeDef send_analog_read(moteus_motor_t* motor)
     motor->tx_count++;
     return moteus_can_transmit(motor->hfdcan, &frame);
 }
-
+// TODO: improve function comment
 static HAL_StatusTypeDef send_diagnostic_write(moteus_motor_t* motor,
                                                 const moteus_diagnostic_cmd_t* cmd)
 {
@@ -436,7 +453,7 @@ static HAL_StatusTypeDef send_diagnostic_write(moteus_motor_t* motor,
     motor->tx_count++;
     return moteus_can_transmit(motor->hfdcan, &frame);
 }
-
+// TODO: improve function comment
 static HAL_StatusTypeDef send_diagnostic_read(moteus_motor_t* motor, uint8_t channel)
 {
     moteus_can_frame_t frame;
@@ -451,7 +468,7 @@ static HAL_StatusTypeDef send_diagnostic_read(moteus_motor_t* motor, uint8_t cha
 /* ----------------------------------------------------------------------------
  * Blocking commands (Set*) - return result pointer or NULL
  * ---------------------------------------------------------------------------- */
-
+// TODO: improve function comment
 const moteus_result_t* moteus_set_stop(moteus_motor_t* motor)
 {
     if (motor == NULL) return NULL;
@@ -475,7 +492,7 @@ const moteus_result_t* moteus_set_stop(moteus_motor_t* motor)
     check_result_for_errors(motor);
     return &motor->result;
 }
-
+// TODO: improve function comment
 const moteus_result_t* moteus_set_brake(moteus_motor_t* motor)
 {
     if (motor == NULL) return NULL;
@@ -496,7 +513,7 @@ const moteus_result_t* moteus_set_brake(moteus_motor_t* motor)
 
     return &motor->result;
 }
-
+// TODO: improve function comment
 const moteus_result_t* moteus_set_query(moteus_motor_t* motor)
 {
     if (motor == NULL) return NULL;
@@ -515,7 +532,7 @@ const moteus_result_t* moteus_set_query(moteus_motor_t* motor)
     check_result_for_errors(motor);
     return &motor->result;
 }
-
+// TODO: improve function comment
 const moteus_result_t* moteus_set_position(moteus_motor_t* motor,
                                             const moteus_position_cmd_t* cmd)
 {
@@ -537,7 +554,7 @@ const moteus_result_t* moteus_set_position(moteus_motor_t* motor,
 
     return &motor->result;
 }
-
+// TODO: improve function comment
 const moteus_result_t* moteus_set_torque(moteus_motor_t* motor, float torque)
 {
     if (motor == NULL) return NULL;
@@ -558,7 +575,7 @@ const moteus_result_t* moteus_set_torque(moteus_motor_t* motor, float torque)
 
     return &motor->result;
 }
-
+// TODO: improve function comment
 const moteus_result_t* moteus_set_stay_within(moteus_motor_t* motor,
                                                const moteus_stay_within_cmd_t* cmd)
 {
@@ -580,7 +597,7 @@ const moteus_result_t* moteus_set_stay_within(moteus_motor_t* motor,
 
     return &motor->result;
 }
-
+// TODO: improve function comment
 const moteus_result_t* moteus_set_vfoc(moteus_motor_t* motor,
                                         const moteus_vfoc_cmd_t* cmd)
 {
@@ -602,7 +619,7 @@ const moteus_result_t* moteus_set_vfoc(moteus_motor_t* motor,
 
     return &motor->result;
 }
-
+// TODO: improve function comment
 const moteus_result_t* moteus_set_rezero(moteus_motor_t* motor, float position)
 {
     if (motor == NULL) return NULL;
@@ -623,7 +640,7 @@ const moteus_result_t* moteus_set_rezero(moteus_motor_t* motor, float position)
 
     return &motor->result;
 }
-
+// TODO: improve function comment
 const moteus_result_t* moteus_set_output_exact(moteus_motor_t* motor, float position)
 {
     if (motor == NULL) return NULL;
@@ -644,7 +661,7 @@ const moteus_result_t* moteus_set_output_exact(moteus_motor_t* motor, float posi
 
     return &motor->result;
 }
-
+// TODO: improve function comment
 const moteus_result_t* moteus_set_require_reindex(moteus_motor_t* motor)
 {
     if (motor == NULL) return NULL;
@@ -665,7 +682,7 @@ const moteus_result_t* moteus_set_require_reindex(moteus_motor_t* motor)
 
     return &motor->result;
 }
-
+// TODO: improve function comment
 const moteus_result_t* moteus_set_recapture(moteus_motor_t* motor)
 {
     if (motor == NULL) return NULL;
@@ -686,7 +703,7 @@ const moteus_result_t* moteus_set_recapture(moteus_motor_t* motor)
 
     return &motor->result;
 }
-
+// TODO: improve function comment
 const moteus_result_t* moteus_set_gpio(moteus_motor_t* motor,
                                         const moteus_gpio_cmd_t* cmd)
 {
@@ -708,7 +725,7 @@ const moteus_result_t* moteus_set_gpio(moteus_motor_t* motor,
 
     return &motor->result;
 }
-
+// TODO: improve function comment
 const moteus_result_t* moteus_read_gpio(moteus_motor_t* motor,
                                          moteus_gpio_result_t* result)
 {
@@ -734,7 +751,7 @@ const moteus_result_t* moteus_read_gpio(moteus_motor_t* motor,
     }
     return &motor->result;
 }
-
+// TODO: improve function comment
 const moteus_result_t* moteus_read_analog(moteus_motor_t* motor,
                                           moteus_analog_result_t* result)
 {
@@ -760,7 +777,7 @@ const moteus_result_t* moteus_read_analog(moteus_motor_t* motor,
     }
     return &motor->result;
 }
-
+// TODO: improve function comment
 const moteus_result_t* moteus_diagnostic_write(moteus_motor_t* motor,
                                                 const moteus_diagnostic_cmd_t* cmd,
                                                 moteus_diagnostic_result_t* response)
@@ -792,7 +809,7 @@ const moteus_result_t* moteus_diagnostic_write(moteus_motor_t* motor,
     }
     return &motor->result;
 }
-
+// TODO: improve function comment
 const moteus_result_t* moteus_diagnostic_read(moteus_motor_t* motor,
                                                uint8_t channel,
                                                moteus_diagnostic_result_t* response)
@@ -822,7 +839,7 @@ const moteus_result_t* moteus_diagnostic_read(moteus_motor_t* motor,
     }
     return &motor->result;
 }
-
+// TODO: improve function comment
 const moteus_result_t* moteus_diagnostic_command(moteus_motor_t* motor,
                                                   const char* command,
                                                   char* response,
@@ -923,103 +940,103 @@ const moteus_result_t* moteus_diagnostic_command(moteus_motor_t* motor,
 /* ----------------------------------------------------------------------------
  * Non-blocking commands (Begin*)
  * ---------------------------------------------------------------------------- */
-
+// TODO: improve function comment
 HAL_StatusTypeDef moteus_begin_stop(moteus_motor_t* motor)
 {
     if (motor == NULL) return HAL_ERROR;
     return send_stop(motor);
 }
-
+// TODO: improve function comment
 HAL_StatusTypeDef moteus_begin_brake(moteus_motor_t* motor)
 {
     if (motor == NULL) return HAL_ERROR;
     return send_brake(motor);
 }
-
+// TODO: improve function comment
 HAL_StatusTypeDef moteus_begin_query(moteus_motor_t* motor)
 {
     if (motor == NULL) return HAL_ERROR;
     return send_query(motor);
 }
-
+// TODO: improve function comment
 HAL_StatusTypeDef moteus_begin_position(moteus_motor_t* motor,
                                          const moteus_position_cmd_t* cmd)
 {
     if (motor == NULL || cmd == NULL) return HAL_ERROR;
     return send_position(motor, cmd);
 }
-
+// TODO: improve function comment
 HAL_StatusTypeDef moteus_begin_torque(moteus_motor_t* motor, float torque)
 {
     if (motor == NULL) return HAL_ERROR;
     return send_torque(motor, torque);
 }
-
+// TODO: improve function comment
 HAL_StatusTypeDef moteus_begin_stay_within(moteus_motor_t* motor,
                                             const moteus_stay_within_cmd_t* cmd)
 {
     if (motor == NULL || cmd == NULL) return HAL_ERROR;
     return send_stay_within(motor, cmd);
 }
-
+// TODO: improve function comment
 HAL_StatusTypeDef moteus_begin_vfoc(moteus_motor_t* motor,
                                      const moteus_vfoc_cmd_t* cmd)
 {
     if (motor == NULL || cmd == NULL) return HAL_ERROR;
     return send_vfoc(motor, cmd);
 }
-
+// TODO: improve function comment
 HAL_StatusTypeDef moteus_begin_rezero(moteus_motor_t* motor, float position)
 {
     if (motor == NULL) return HAL_ERROR;
     return send_rezero(motor, position);
 }
-
+// TODO: improve function comment
 HAL_StatusTypeDef moteus_begin_output_exact(moteus_motor_t* motor, float position)
 {
     if (motor == NULL) return HAL_ERROR;
     return send_output_exact(motor, position);
 }
-
+// TODO: improve function comment
 HAL_StatusTypeDef moteus_begin_require_reindex(moteus_motor_t* motor)
 {
     if (motor == NULL) return HAL_ERROR;
     return send_require_reindex(motor);
 }
-
+// TODO: improve function comment
 HAL_StatusTypeDef moteus_begin_recapture(moteus_motor_t* motor)
 {
     if (motor == NULL) return HAL_ERROR;
     return send_recapture(motor);
 }
-
+// TODO: improve function comment
 HAL_StatusTypeDef moteus_begin_gpio(moteus_motor_t* motor,
                                      const moteus_gpio_cmd_t* cmd)
 {
     if (motor == NULL || cmd == NULL) return HAL_ERROR;
     return send_gpio_write(motor, cmd);
 }
-
+// TODO: improve function comment
 HAL_StatusTypeDef moteus_begin_gpio_read(moteus_motor_t* motor)
 {
     if (motor == NULL) return HAL_ERROR;
     return send_gpio_read(motor);
 }
-
+// TODO: improve function comment
 HAL_StatusTypeDef moteus_begin_diagnostic_write(moteus_motor_t* motor,
                                                  const moteus_diagnostic_cmd_t* cmd)
 {
     if (motor == NULL || cmd == NULL) return HAL_ERROR;
     return send_diagnostic_write(motor, cmd);
 }
-
+// TODO: improve function comment
 HAL_StatusTypeDef moteus_begin_diagnostic_read(moteus_motor_t* motor,
                                                 uint8_t channel)
 {
     if (motor == NULL) return HAL_ERROR;
     return send_diagnostic_read(motor, channel);
 }
-
+// TODO: improve function comment
 HAL_StatusTypeDef moteus_send_raw(moteus_motor_t* motor,
                                    const moteus_can_frame_t* frame)
 {
@@ -1032,7 +1049,7 @@ HAL_StatusTypeDef moteus_send_raw(moteus_motor_t* motor,
 /* ============================================================================
  * Response Processing
  * ============================================================================ */
-
+// TODO: improve function comment
 void moteus_process_rx(const FDCAN_RxHeaderTypeDef* header,
                         const uint8_t* data,
                         uint32_t data_len)
@@ -1079,7 +1096,7 @@ void moteus_process_rx(const FDCAN_RxHeaderTypeDef* header,
     }
     /* Non-standard responses (diagnostic, etc.) are handled via raw frame data */
 }
-
+// TODO: improve function comment
 bool moteus_poll(moteus_motor_t* motor)
 {
     if (motor == NULL) return false;
@@ -1094,7 +1111,7 @@ bool moteus_poll(moteus_motor_t* motor)
 /* ============================================================================
  * Motor Registry
  * ============================================================================ */
-
+// TODO: improve function comment
 moteus_motor_t* moteus_get_motor_by_id(uint8_t id)
 {
     if (id == 0 || id > 127) {
@@ -1106,7 +1123,7 @@ moteus_motor_t* moteus_get_motor_by_id(uint8_t id)
 /* ============================================================================
  * Utility Functions
  * ============================================================================ */
-
+// TODO: improve function comment
 const char* moteus_mode_str(uint8_t mode)
 {
     switch (mode) {
@@ -1129,7 +1146,7 @@ const char* moteus_mode_str(uint8_t mode)
         default:                              return "Unknown";
     }
 }
-
+// TODO: improve function comment
 const char* moteus_fault_str(uint8_t fault)
 {
     switch (fault) {
@@ -1154,7 +1171,7 @@ const char* moteus_fault_str(uint8_t fault)
 /* ============================================================================
  * Error Handling
  * ============================================================================ */
-
+// TODO: improve function comment
 const char* moteus_error_str(int error)
 {
     switch (error) {
@@ -1174,19 +1191,19 @@ const char* moteus_error_str(int error)
         default:                          return "Unknown error";
     }
 }
-
+// TODO: improve function comment
 int moteus_get_last_error(moteus_motor_t* motor)
 {
     if (motor == NULL) return MOTEUS_ERR_INVALID_PARAM;
     return motor->last_error;
 }
-
+// TODO: improve function comment
 uint8_t moteus_get_last_fault(moteus_motor_t* motor)
 {
     if (motor == NULL) return MOTEUS_FAULT_NONE;
     return motor->last_fault;
 }
-
+// TODO: improve function comment
 void moteus_clear_error(moteus_motor_t* motor)
 {
     if (motor == NULL) return;
@@ -1194,19 +1211,19 @@ void moteus_clear_error(moteus_motor_t* motor)
     motor->last_fault = MOTEUS_FAULT_NONE;
     motor->response_received = false;
 }
-
+// TODO: improve function comment
 void moteus_set_auto_recover(moteus_motor_t* motor, bool enable)
 {
     if (motor == NULL) return;
     motor->auto_recover = enable;
 }
-
+// TODO: improve function comment
 bool moteus_get_auto_recover(moteus_motor_t* motor)
 {
     if (motor == NULL) return false;
     return motor->auto_recover;
 }
-
+// TODO: improve function comment
 const moteus_result_t* moteus_recover(moteus_motor_t* motor)
 {
     if (motor == NULL) return NULL;
@@ -1225,7 +1242,7 @@ const moteus_result_t* moteus_recover(moteus_motor_t* motor)
 
     return result;
 }
-
+// TODO: improve function comment
 int moteus_check_status(moteus_motor_t* motor)
 {
     if (motor == NULL) return MOTEUS_ERR_INVALID_PARAM;
@@ -1257,7 +1274,7 @@ int moteus_check_status(moteus_motor_t* motor)
     motor->last_error = MOTEUS_OK;
     return MOTEUS_OK;
 }
-
+// TODO: improve function comment
 bool moteus_is_error_state(moteus_motor_t* motor)
 {
     if (motor == NULL) return true;
