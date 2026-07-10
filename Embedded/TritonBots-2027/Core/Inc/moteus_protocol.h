@@ -294,9 +294,9 @@ static inline bool moteus_frame_add_float(moteus_frame_builder_t* fb, float valu
 int moteus_build_stop_frame(moteus_can_frame_t* frame,
                             uint8_t motor_id,
                             const moteus_query_resolution_t* query);
-
 /**
  * @brief Build a brake mode frame (resists movement, allows backdrive)
+
  *
  * @param frame Output frame structure
  * @param motor_id Target motor ID
