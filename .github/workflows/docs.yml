@@ -1,0 +1,202 @@
+name: Documentation Checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  docs:
+    name: Lint/Spellcheck + Doc Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Spellcheck (codespell)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install codespell
+        run: |
+          python -m pip install --upgrade pip
+          pip install codespell
+
+      - name: Run codespell
+        # Uses a conservative configuration and skips large/binary-ish docs.
+        run: |
+          codespell \
+            --skip="Embedded/**/*.pdf,Embedded/**/*.svg,**/*.png,**/*.jpg,**/*.jpeg,**/*.gif,**/*.webp" \
+            --ignore-words-list="teh" \
+            -q 2 || exit 0
+
+      - name: Doc coverage + Doxygen/param checks (python)
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+
+          # Enforce doc coverage for Embedded project source/headers only.
+          ROOT = Path('.')
+          TARGET_DIRS = [
+            ROOT / 'Embedded' / 'TritonBots-2027' / 'Core' / 'Inc',
+            ROOT / 'Embedded' / 'TritonBots-2027' / 'Core' / 'Src',
+            # Also include other files under Embedded that are NOT inside Embedded/TritonBots-2027
+          ]
+
+          embedded_root = ROOT / 'Embedded'
+
+          def iter_target_files():
+            # Core/Inc + Core/Src
+            for d in TARGET_DIRS:
+              if not d.exists():
+                continue
+              for p in d.rglob('*'):
+                if p.suffix.lower() in {'.h', '.hpp', '.c', '.cc', '.cpp'}:
+                  yield p
+
+            # Everything else under Embedded/ (excluding Embedded/TritonBots-2027/**)
+            for p in embedded_root.rglob('*'):
+              if p.is_file() and p.suffix.lower() in {'.h', '.hpp', '.c', '.cc', '.cpp'}:
+                if 'Embedded/TritonBots-2027' in str(p).replace('\\','/'):
+                  continue
+                yield p
+
+          # Heuristic parser:
+          # - Find function-like definitions and declarations.
+          # - Require a Doxygen-style comment block immediately preceding the function.
+          # - The comment must contain at least @brief and @param tags for each parameter.
+
+          func_re = re.compile(
+            r'''(?mx)
+            ^\s*(?:(?:static|inline|extern)\s+)*
+            (?:[A-Za-z_]\w*\s+)*?          # return type tokens (heuristic)
+            \( [^;{}]* \)                # parameter list
+            \s*(?:;|\{)                  # declaration or definition
+            ''')
+
+          # More practical match: line starting with optional qualifiers, then '(...' then either '{' or ';'
+          func_line_re = re.compile(
+            r'''(?x)
+            ^\s*
+            (?:[A-Za-z_][\w\s\*]*\s+)?   # return type
+            [A-Za-z_]\w*\s*\(\s*([^\)]*)\s*\)\s*(;|\{)\s*$
+            ''')
+
+          dox_block_re = re.compile(r'/\*\*([\s\S]*?)\*/')
+
+          def extract_params(param_blob: str):
+            blob = param_blob.strip()
+            if blob == '' or blob == 'void':
+              return []
+
+            # Split on commas not inside <> (basic) and strip defaults
+            parts = []
+            depth = 0
+            cur = ''
+            for ch in blob:
+              if ch == '<':
+                depth += 1
+              elif ch == '>':
+                depth = max(0, depth-1)
+              if ch == ',' and depth == 0:
+                parts.append(cur)
+                cur = ''
+              else:
+                cur += ch
+            parts.append(cur)
+
+            params = []
+            for part in parts:
+              part = part.strip()
+              if not part:
+                continue
+              # Remove default assignment
+              part = part.split('=')[0].strip()
+              # Remove trailing array brackets
+              part = re.sub(r'\[\s*\w*\s*\]$', '', part)
+              # Parameter name is last token
+              tokens = re.split(r'\s+', part)
+              if len(tokens) >= 2:
+                name = tokens[-1]
+                # Ignore pointer/reference-only names issues
+                name = name.lstrip('*&')
+                params.append(name)
+            return [p for p in params if p not in {''}]
+
+          issues = []
+
+          for fp in iter_target_files():
+            text = fp.read_text(encoding='utf-8', errors='ignore')
+            lines = text.splitlines()
+
+            for i, line in enumerate(lines):
+              m = func_line_re.match(line)
+              if not m:
+                continue
+              param_blob = m.group(1)
+              terminator = m.group(2)
+
+              params = extract_params(param_blob)
+
+              # Find doxygen block immediately above (allow blank lines)
+              j = i - 1
+              while j >= 0 and lines[j].strip() == '':
+                j -= 1
+
+              # Expect */ line ending dox block.
+              if j < 0:
+                issues.append(f"{fp}:{i+1}: Missing doxygen comment for function")
+                continue
+
+              # Walk backwards to capture full /** ... */
+              if '/**' not in lines[j] and '*/' not in lines[j]:
+                # Maybe closing '*/' on a different line
+                if '*/' not in lines[j]:
+                  issues.append(f"{fp}:{i+1}: Expected /** ... */ directly above function")
+                  continue
+
+              # Collect block ending at j until line with /**
+              end = j
+              start = None
+              while j >= 0:
+                if '/**' in lines[j]:
+                  start = j
+                  break
+                j -= 1
+              if start is None:
+                issues.append(f"{fp}:{i+1}: Expected /** ... */ directly above function (no start found)")
+                continue
+
+              block_text = '\n'.join(lines[start:end+1])
+              if '/**' not in block_text:
+                issues.append(f"{fp}:{i+1}: Expected /** block for function")
+                continue
+
+              # Validate @brief
+              if '@brief' not in block_text:
+                issues.append(f"{fp}:{i+1}: Doxygen block missing @brief")
+
+              # Validate @param for each param
+              missing_params = []
+              for p in params:
+                if not re.search(r'@param\s+' + re.escape(p) + r'\b', block_text):
+                  missing_params.append(p)
+              if missing_params:
+                issues.append(f"{fp}:{i+1}: Doxygen block missing @param for: {', '.join(missing_params)}")
+
+          if issues:
+            print("Doc coverage issues found (WARNING mode):")
+            for it in issues[:200]:
+              print(it)
+            if len(issues) > 200:
+              print(f"... and {len(issues)-200} more")
+          else:
+            print("Doc coverage checks passed (no issues found).")
+
+          # Always return success because workflow should only warn.
+          PY
+
