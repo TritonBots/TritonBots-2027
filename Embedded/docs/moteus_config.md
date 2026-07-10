@@ -4,6 +4,10 @@ This document summarizes the configuration values and open questions for the Mot
 
 > Tip: Parameter names are written in backticks so they’re easy to copy/paste into a config.
 
+## Saving the Configuration to a Motor
+
+All parameters (including the ID) are temporarily stored in volatile memory that will be discarded after a power cycle. To save those parameters to persistent storage, it is necessary to type: `conf write` Into the diagnostic console of tview.
+
 ---
 
 ## Motor ID mapping
@@ -43,4 +47,5 @@ The `id` assignment is arbitrary but **must be consistent** across firmware/conf
 - TODO: ask Electrical team what `servo.max_current_A` should be configured to. Previously, it was set to 8 Amps.
 - TODO: configure `servo.max_velocity` as a safety limit for absurd velocities. Absurd velocities are values 40+ rev/s.
 - TODO: look into `servo.default_timeout_s`. Set this to `nan` to prevent the motor from ever entering a timeout state.
-
+- TODO: look into `motor_position.rotor_to_output_ratio`. This is for a geared output, which we can use for the dribbler motor and its assembly.
+- TODO: Configure `servo.default_velocity_limit` / `servo.default_accel_limit` for setting the velocity and acceleration limits for sending position commands. For some reason, position commands (not velocity commands) do not have a limit by default, so it might dangerously speed up the motor.
