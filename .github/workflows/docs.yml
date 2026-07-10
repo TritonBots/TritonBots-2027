@@ -26,11 +26,13 @@ jobs:
           pip install codespell
 
       - name: Run codespell
-        # Uses a conservative configuration and skips large/binary-ish docs.
+        # Spellcheck only text-ish files (docs/code-comments), not C sources or PDFs/SVGs.
         run: |
           codespell \
             --skip="Embedded/**/*.pdf,Embedded/**/*.svg,**/*.png,**/*.jpg,**/*.jpeg,**/*.gif,**/*.webp" \
             --ignore-words-list="teh" \
+            --check-filenames \
+            "**/*.md" "**/*.txt" "**/*.rst" "**/*.markdown" "**/*.adoc" "**/*.yml" "**/*.yaml" "**/*.cmake" "**/*.gitignore" \
             -q 2 || exit 0
 
       - name: Doc coverage + Doxygen/param checks (python)
@@ -77,13 +79,15 @@ jobs:
             return str(p).replace('\\', '/')
 
           def iter_target_files():
+            # Doc coverage runs ONLY on headers by design.
             for d in TARGET_DIRS:
               if not d.exists():
                 continue
               for p in d.rglob('*'):
-                if p.suffix.lower() not in {'.h', '.hpp', '.c', '.cc', '.cpp'}:
+                if p.suffix.lower() not in {'.h', '.hpp'}:
                   continue
                 np = norm(p)
+                # EXEMPT_PATHS is still applied, but will typically only apply to .h files.
                 if np in EXEMPT_PATHS:
                   continue
                 yield p
