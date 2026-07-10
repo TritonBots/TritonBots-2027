@@ -1,18 +1,16 @@
-# <Team Name>
+# Embedded
 
-> Brief one- or two-sentence description of this team's purpose and responsibilities.
+> Program microcontrollers, set up networking with vision system and AI.
 
 ---
 
 ## Overview
 
-Describe what this team owns within the project.
-
 **Responsibilities**
-- Responsibility 1
-- Responsibility 2
-- Responsibility 3
-- Responsibility 4
+- Program STM32 microcontroller
+- Motor and Kicker Control
+- Receive and Process AI commands
+- Process Sensor Data
 
 ---
 
@@ -62,11 +60,9 @@ Modify this structure as needed for your team.
 
 ### Prerequisites
 
-List any required software, tools, or hardware.
-
-- Tool 1
-- Tool 2
-- Tool 3
+- moteus_gui
+- mjcanfd-usb-1x adapter
+- STM32 for VS Code Extension
 
 ### Setup
 
@@ -104,12 +100,12 @@ To run and debug the STM32 firmware using the **STM32 VS Code Extension**, you m
 
 ## Coding & Design Standards
 
-Document any team-specific conventions.
-
-- Naming conventions
-- Formatting/linting
-- File organization
-- Documentation expectations
+- K&R Style
+- camelCase for most functions and variables
+- SCREAMING_SNAKE_CASE for #define consts
+- PascalCase for classes and structs
+- Doxygen comments
+- Put a README in each top-level folder
 
 ---
 
@@ -145,20 +141,21 @@ Document what this team provides to or requires from other teams.
 
 ### Inputs
 
-- Input 1
-- Input 2
+- AI Commands enter the Radio Base Station
+- Mechanical specifications and dimensions
+- Electrical limits for motors
 
 ### Outputs
 
-- Output 1
-- Output 2
+- Motor and Kicker actuation for Mechanical and Electrical Feedback
+- Robot motion for AI
+- Sensor data for AI and Electrical
 
 ### Dependencies
 
 - AI
 - Electrical
 - Mechanical
-- Embedded
 
 ---
 
@@ -193,7 +190,7 @@ Document what this team provides to or requires from other teams.
 
 | Name | Role |
 |------|------|
-| TBD | Team Lead |
+| Sukhjeet Sekhon | Team Lead |
 | TBD | Developer |
 
 ---
