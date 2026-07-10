@@ -240,9 +240,7 @@ static inline bool moteus_frame_add_int8(moteus_frame_builder_t* fb, int8_t valu
     return moteus_frame_add_byte(fb, (uint8_t)value);
 }
 
-/**
- * @brief Add int16 value to frame (little-endian)
- */
+
 static inline bool moteus_frame_add_int16(moteus_frame_builder_t* fb, int16_t value)
 {
     if (fb->pos + 2 > 64) return false;
