@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "moteus.h"
+#include "moteus_can.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
