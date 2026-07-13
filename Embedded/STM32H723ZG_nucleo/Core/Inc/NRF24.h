@@ -10,8 +10,8 @@
 
 */
 
-#ifndef NRF_24_H
-#define NRF_24_H
+#ifndef NRF24_H
+#define NRF24_H
 
 #include <stdio.h>
 #include "stm32_hal.h"
@@ -375,4 +375,4 @@ void nrf24StopConstCarrier();
 void delayMicroseconds(uint16_t del_time);
 
 
-#endif
+#endif /* NRF24_H */
