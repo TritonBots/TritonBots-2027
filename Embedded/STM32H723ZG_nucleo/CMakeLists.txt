@@ -49,16 +49,20 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/moteus.c
     Core/Src/moteus_can.c
     Core/Src/moteus_protocol.c
+    Core/Src/NRF24.c
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
-    Core/Src/moteus.h
-    Core/Src/moteus_can.h
-    Core/Src/moteus_protocol.h
-    Core/Src/moteus_registers.h
-    Core/Src/moteus_types.h
+    Core/Inc/moteus.h
+    Core/Inc/moteus_can.h
+    Core/Inc/moteus_protocol.h
+    Core/Inc/moteus_registers.h
+    Core/Inc/moteus_types.h
+    Core/Inc/NRF24_conf.h
+    Core/Inc/NRF24_reg_addresses.h
+    Core/Inc/NRF24.h
 )
 
 # Add project symbols (macros)
