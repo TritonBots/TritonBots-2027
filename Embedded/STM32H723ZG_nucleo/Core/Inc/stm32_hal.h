@@ -29,6 +29,7 @@
     #include "stm32h5xx_hal.h"
 #elif defined(STM32H7xx)
     #include "stm32h7xx_hal.h"
+    #include "stm32h7xx_hal_gpio.h"
 #elif defined(STM32L0xx)
     #include "stm32l0xx_hal.h"
 #elif defined(STM32L1xx)
