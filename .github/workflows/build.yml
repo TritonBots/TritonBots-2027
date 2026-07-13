@@ -66,7 +66,7 @@ jobs:
       - name: Upload firmware artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Embedded/STM32H723ZG_nucleo-firmware
+          name: STM32 firmware artifacts
           path: |
             Embedded/STM32H723ZG_nucleo/build/**/*.elf
             Embedded/STM32H723ZG_nucleo/build/**/*.hex
