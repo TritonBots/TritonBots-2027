@@ -16,7 +16,7 @@
 
 ## GitHub Actions CI: Build TritonBots-2027 STM32 Firmware
 
-This workflow builds the Embedded/TritonBots-2027 STM32 firmware on `ubuntu-latest` using CMake + Ninja and the Arm GNU toolchain (`arm-none-eabi-gcc`). It also adds extra diagnostics to help debug failures related to the CMake toolchain file path.
+This workflow builds the Embedded/STM32H723ZG_nucleo STM32 firmware on `ubuntu-latest` using CMake + Ninja and the Arm GNU toolchain (`arm-none-eabi-gcc`). It also adds extra diagnostics to help debug failures related to the CMake toolchain file path.
 
 ---
 
@@ -27,15 +27,15 @@ This workflow builds the Embedded/TritonBots-2027 STM32 firmware on `ubuntu-late
   - `ninja-build`
   - `gcc-arm-none-eabi`
   - `binutils-arm-none-eabi`
-- **Check tools** and list the toolchain directory: `Embedded/TritonBots-2027/cmake`.
+- **Check tools** and list the toolchain directory: `Embedded/STM32H723ZG_nucleo/cmake`.
 - **Debug repository contents** (pwd, git ref/status, workspace listings) and confirm the toolchain file exists:
-  - `Embedded/TritonBots-2027/cmake/gcc-arm-none-eabi.cmake`
+  - `Embedded/STM32H723ZG_nucleo/cmake/gcc-arm-none-eabi.cmake`
   - (also checks it via `git ls-files`)
 - **Configure CMake** using Ninja and passes the toolchain file using an absolute path:
-  - `-DCMAKE_TOOLCHAIN_FILE="$PWD/Embedded/TritonBots-2027/cmake/gcc-arm-none-eabi.cmake"`
+  - `-DCMAKE_TOOLCHAIN_FILE="$PWD/Embedded/STM32H723ZG_nucleo/cmake/gcc-arm-none-eabi.cmake"`
 - **Build firmware** with:
-  - `cmake --build Embedded/TritonBots-2027/build --parallel`
-- **Upload artifacts** as `TritonBots-2027-firmware` (matching `*.elf`, `*.hex`, `*.bin`, `*.map`) from `Embedded/TritonBots-2027/build/`.
+  - `cmake --build Embedded/STM32H723ZG_nucleo/build --parallel`
+- **Upload artifacts** as `TritonBots-2027-firmware` (matching `*.elf`, `*.hex`, `*.bin`, `*.map`) from `Embedded/STM32H723ZG_nucleo/build/`.
 
 ---
 
@@ -83,7 +83,7 @@ cd <team-folder>
 
 To run and debug the STM32 firmware using the **STM32 VS Code Extension**, you must open the project folder in VS Code:
 
-1. Open **`Embedded/TritonBots-2027`** in VS Code (File → Open Folder).
+1. Open **`Embedded/STM32H723ZG_nucleo`** in VS Code (File → Open Folder).
 2. Use the STM32 extension’s Run/Debug controls.
 
 > Important: Opening only subfolders (e.g. `Core/`) may prevent the extension from finding the correct build/openocd/launch configuration.

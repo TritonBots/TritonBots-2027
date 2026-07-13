@@ -31,7 +31,7 @@ jobs:
           cmake --version
           ninja --version
           arm-none-eabi-gcc --version
-          ls -la Embedded/TritonBots-2027/cmake
+          ls -la Embedded/STM32H723ZG_nucleo/cmake
 
       - name: Debug repository contents
         run: |
@@ -40,36 +40,36 @@ jobs:
           echo "=== git ref ===" && (git rev-parse HEAD && git log -1 --oneline) || true
           echo "=== ls workspace root ===" && ls -la
           echo "=== ls Embedded ===" && ls -la Embedded || true
-          echo "=== ls Embedded/TritonBots-2027 ===" && ls -la Embedded/TritonBots-2027 || true
-          echo "=== ls toolchain dir ===" && ls -la Embedded/TritonBots-2027/cmake || true
-          test -f "Embedded/TritonBots-2027/cmake/gcc-arm-none-eabi.cmake" && echo "Toolchain exists" || (echo "Toolchain missing"; exit 1)
-          echo "=== git ls-files (toolchain) ===" && git ls-files Embedded/TritonBots-2027/cmake/gcc-arm-none-eabi.cmake || true
+          echo "=== ls Embedded/STM32H723ZG_nucleo ===" && ls -la Embedded/STM32H723ZG_nucleo || true
+          echo "=== ls toolchain dir ===" && ls -la Embedded/STM32H723ZG_nucleo/cmake || true
+          test -f "Embedded/STM32H723ZG_nucleo/cmake/gcc-arm-none-eabi.cmake" && echo "Toolchain exists" || (echo "Toolchain missing"; exit 1)
+          echo "=== git ls-files (toolchain) ===" && git ls-files Embedded/STM32H723ZG_nucleo/cmake/gcc-arm-none-eabi.cmake || true
 
 
       - name: Configure CMake
         run: |
-          TOOLCHAIN_FILE="$PWD/Embedded/TritonBots-2027/cmake/gcc-arm-none-eabi.cmake"
+          TOOLCHAIN_FILE="$PWD/Embedded/STM32H723ZG_nucleo/cmake/gcc-arm-none-eabi.cmake"
           echo "Using TOOLCHAIN_FILE=$TOOLCHAIN_FILE"
-          test -f "$TOOLCHAIN_FILE" && echo "Toolchain file present" || (echo "Toolchain file missing" && ls -la "$PWD/Embedded/TritonBots-2027/cmake" && exit 1)
+          test -f "$TOOLCHAIN_FILE" && echo "Toolchain file present" || (echo "Toolchain file missing" && ls -la "$PWD/Embedded/STM32H723ZG_nucleo/cmake" && exit 1)
 
           cmake \
-            -S Embedded/TritonBots-2027 \
-            -B Embedded/TritonBots-2027/build \
+            -S Embedded/STM32H723ZG_nucleo \
+            -B Embedded/STM32H723ZG_nucleo/build \
             -G Ninja \
             -DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN_FILE"
 
 
       - name: Build firmware
         run: |
-          cmake --build Embedded/TritonBots-2027/build --parallel
+          cmake --build Embedded/STM32H723ZG_nucleo/build --parallel
 
       - name: Upload firmware artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: TritonBots-2027-firmware
+          name: Embedded/STM32H723ZG_nucleo-firmware
           path: |
-            Embedded/TritonBots-2027/build/**/*.elf
-            Embedded/TritonBots-2027/build/**/*.hex
-            Embedded/TritonBots-2027/build/**/*.bin
-            Embedded/TritonBots-2027/build/**/*.map
+            Embedded/STM32H723ZG_nucleo/build/**/*.elf
+            Embedded/STM32H723ZG_nucleo/build/**/*.hex
+            Embedded/STM32H723ZG_nucleo/build/**/*.bin
+            Embedded/STM32H723ZG_nucleo/build/**/*.map
 

@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/bjsek/Documents/GitHub/TritonBots-2027/Embedded/TritonBots-2027/cmake/stm32cubemx
+# Install script for directory: C:/Users/bjsek/Documents/GitHub/TritonBots-2027/Embedded/STM32H723ZG_nucleo/cmake/stm32cubemx
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
