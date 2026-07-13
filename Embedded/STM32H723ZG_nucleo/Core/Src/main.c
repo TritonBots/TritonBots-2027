@@ -56,6 +56,20 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for motorControl */
+osThreadId_t motorControlHandle;
+const osThreadAttr_t motorControl_attributes = {
+  .name = "motorControl",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for radioComms */
+osThreadId_t radioCommsHandle;
+const osThreadAttr_t radioComms_attributes = {
+  .name = "radioComms",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -67,6 +81,8 @@ static void MX_GPIO_Init(void);
 static void MX_FDCAN1_Init(void);
 static void MX_SPI1_Init(void);
 void StartDefaultTask(void *argument);
+void StartMotorControl(void *argument);
+void StartRadioComms(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -137,6 +153,12 @@ int main(void)
   /* Create the thread(s) */
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+
+  /* creation of motorControl */
+  motorControlHandle = osThreadNew(StartMotorControl, NULL, &motorControl_attributes);
+
+  /* creation of radioComms */
+  radioCommsHandle = osThreadNew(StartRadioComms, NULL, &radioComms_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -382,6 +404,42 @@ void StartDefaultTask(void *argument)
     osDelay(1);
   }
   /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_StartMotorControl */
+/**
+* @brief Function implementing the motorControl thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartMotorControl */
+void StartMotorControl(void *argument)
+{
+  /* USER CODE BEGIN StartMotorControl */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartMotorControl */
+}
+
+/* USER CODE BEGIN Header_StartRadioComms */
+/**
+* @brief Function implementing the radioComms thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartRadioComms */
+void StartRadioComms(void *argument)
+{
+  /* USER CODE BEGIN StartRadioComms */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartRadioComms */
 }
 
  /* MPU Configuration */
