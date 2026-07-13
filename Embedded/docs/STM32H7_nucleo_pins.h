@@ -12,11 +12,9 @@
    Information is from datasheet pages: 40-44.
 */
 
-// CAN pins are on CN9 ZIO connector
-#define CAN1_RX "PD0"    // STM32 pin. pin 25. pin D67
-#define CAN1_TX "PD1"    // STM32 pin. pin 27. pin D66
+#define FDCAN1_RX "PA11"
+#define FDCAN1_TX "PA12"
 
-// SPI pins are on CN7 ZIO connector
-#define SPI_A_SCK "PA5"  // STM32 pin. pin 10. pin D13
-#define SPI_A_MOSI "PB5" // STM32 pin. pin 14. pin D11
-#define SPI_A_MISO "PA6" // STM32 pin. pin 12. pin D12
+#define SPI_A_SCK "PA5"
+#define SPI_A_MOSI "PA7"
+#define SPI_A_MISO "PA6"
