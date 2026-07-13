@@ -254,7 +254,7 @@ void nrf24FlushRX(void){
 
 uint8_t nrf24ReadStatusReg(void){
 	uint8_t data = 0;
-	uint8_t cmd = NOP_CMD;
+	uint8_t cmd = NOP;
 
 	writeCSNLOW();
 	HAL_SPI_TransmitReceive(&hspiX, &cmd, &data, 1, spi_rw_timeout);
@@ -610,7 +610,7 @@ void nrf24SetDefaults(void){
 void nrf24Init(void){
 
 	if(HAL_TIM_Base_Start(&htimX) != HAL_OK){
-		Error_Handler();
+		// Error_Handler(); // TODO: add this when used in main.c
 	}
 
 	nrf24PowerUp();
