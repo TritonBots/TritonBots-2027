@@ -40,6 +40,12 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+/* Ensure HAL types/macros (HAL_StatusTypeDef, HAL_OK, FDCAN_HandleTypeDef, ...)
+ * are available regardless of include order in other translation units. */
+#include "stm32h7xx_hal.h"
+#include "stm32h7xx_hal_fdcan.h"
+
+
 /* STM32 HAL includes - user must include appropriate HAL header before this */
 #ifdef STM32H723xx_HAL_FDCAN_H
     /* Already included */
