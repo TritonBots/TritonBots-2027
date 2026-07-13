@@ -735,7 +735,11 @@ void StartRadioComms(void *argument)
 
       char tmp[40];
       sprintf(tmp, "| %s |\r\n", data_R);
-      HAL_UART_Transmit(&huart1, tmp, 40, 100);
+      HAL_UART_Transmit(&huart1, tmp, strlen(tmp), 200);
+
+      for (uint8_t i=0; i < sizeof(data_R); i++) {
+        data_R[i] = '\0';
+      }
     #endif
     osDelay(1);
   }
