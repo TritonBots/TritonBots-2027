@@ -71,7 +71,7 @@ const osThreadAttr_t radioComms_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* USER CODE BEGIN PV */
-
+static moteus_motor_t* motors[NUM_MOTORS];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -527,7 +527,6 @@ void StartDefaultTask(void *argument)
 void StartMotorControl(void *argument)
 {
   /* USER CODE BEGIN StartMotorControl */
-  static moteus_motor_t* motors[NUM_MOTORS];
 
   if (!motors_init()) {
     return;
