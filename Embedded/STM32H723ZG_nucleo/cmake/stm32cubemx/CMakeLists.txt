@@ -24,7 +24,6 @@ set(MX_Include_Dirs
 )
 
 # STM32CubeMX generated application sources
-# NOTE: CubeMX auto-generated assembly startup is intentionally excluded.
 set(MX_Application_Src
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/main.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/freertos.c
@@ -33,13 +32,8 @@ set(MX_Application_Src
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/stm32h7xx_hal_timebase_tim.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/sysmem.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/syscalls.c
-
-    # Moteus library implementation
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/moteus.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/moteus_can.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/moteus_protocol.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../startup_stm32h723xx.s
 )
-
 
 # STM32 HAL/LL Drivers
 set(STM32_Drivers_Src
@@ -97,8 +91,7 @@ set(MX_LINK_DIRS
 set(MX_LINK_LIBS 
     STM32_Drivers
     ${TOOLCHAIN_LINK_LIBRARIES}
-    FreeRTOS
-	
+    FreeRTOS	
 )
 # Interface library for includes and symbols
 add_library(stm32cubemx INTERFACE)
