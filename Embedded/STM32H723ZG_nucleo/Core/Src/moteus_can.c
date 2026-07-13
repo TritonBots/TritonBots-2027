@@ -11,7 +11,7 @@
 
 #include "moteus.h"
 #include <string.h>
-
+#include "moteus_can.h"
 
 HAL_StatusTypeDef moteus_can_init(FDCAN_HandleTypeDef* hfdcan)
 {
