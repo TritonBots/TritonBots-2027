@@ -1,12 +1,22 @@
-/*
- * 25-JUL-2024
- * STM32 HAL NRF24 LIBRARY
- *
- */
+/**
 
+   @file nrf24.h
+
+   @brief declare functions to operate the NRF24L01 radio module
+
+   @see docs\nRF24L01P_Product_Specification_1_0.pdf
+
+   Pages: 21-27
+
+*/
 
 #ifndef NRF_24_H
 #define NRF_24_H
+
+#include <stdio.h>
+#include "stm32_hal.h"
+#include "nrf24_config.h"
+#include "nrf24_registers.h"
 
 enum data_rate {
 	_1mbps   = 0,
@@ -366,4 +376,3 @@ void delay_us(uint16_t del_time);
 
 
 #endif
-

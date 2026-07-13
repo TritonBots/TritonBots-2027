@@ -1,20 +1,23 @@
-/*
- * 25-JUL-2024
- * STM32 HAL NRF24 LIBRARY
- */
+/**
 
-#include <stdio.h>
-#include "stm32h7xx_hal.h"
-#include "NRF24_conf.h"
-#include "NRF24_reg_addresses.h"
-#include "NRF24.h"
+   @file nrf24.c
+
+   @brief define functions to operate the NRF24L01 radio module
+
+   @see docs\nRF24L01P_Product_Specification_1_0.pdf
+
+   Pages: 21-27
+
+*/
+
+#include "nrf24.h"
 
 extern SPI_HandleTypeDef hspiX;
 extern TIM_HandleTypeDef htimX;
 
 
 void csn_high(void){
-	HAL_GPIO_WritePin(csn_gpio_port, csn_gpio_pin, 1);
+	HAL_GPIO_WritePin(csn_gpio_port, csn_gpio_pin, GPIO_PIN_SET);
 }
 
 void csn_low(void){
@@ -603,4 +606,3 @@ void nrf24_init(void){
 	nrf24_clear_tx_ds();
 	nrf24_clear_max_rt();
 }
-
