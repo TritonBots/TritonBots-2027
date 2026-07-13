@@ -47,7 +47,8 @@
     /* Try to include it - will fail if HAL not configured */
     #if defined(STM32G431xx) || defined(STM32G441xx) || defined(STM32G471xx) || \
         defined(STM32G473xx) || defined(STM32G474xx) || defined(STM32G483xx) || \
-        defined(STM32G484xx) || defined(STM32G491xx) || defined(STM32G4A1xx)
+        defined(STM32G484xx) || defined(STM32G491xx) || defined(STM32G4A1xx) || \
+        defined(STM32H723xx)
         #include "stm32g4xx_hal.h"
     #endif
 #endif
