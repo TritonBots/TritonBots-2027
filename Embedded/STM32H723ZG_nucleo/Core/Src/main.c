@@ -25,8 +25,8 @@
 /* USER CODE BEGIN Includes */
 #include "moteus.h"
 #include "moteus_can.h"
-#include "NRF24.h"
-#include "NRF24_reg_addresses.h"
+#include "nrf24.h"
+#include "nrf24_registers.h"
 #include "string.h"
 /* USER CODE END Includes */
 

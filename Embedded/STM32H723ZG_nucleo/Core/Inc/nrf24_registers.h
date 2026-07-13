@@ -296,7 +296,7 @@
    1: TX FIFO full.
    0: Available locations in TX FIFO.
 */
-#define TX_FULL 0
+#define STATUS_TX_FULL 0
 
 /**********************************OBSERVE_TX**********************************/
 #define OBSERVE_TX 0x08 // Transmit observe register
@@ -516,7 +516,7 @@
    1: TX FIFO full.
    0: Available locations in TX FIFO.
 */
-#define TX_FULL 5
+#define FIFO_STATUS_TX_FULL 5
 
 /**
    TX FIFO empty flag.
