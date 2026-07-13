@@ -651,7 +651,7 @@
    Read command and status registers.
    AAAAA = 5 bit Register Map Address
 */
-#define R_REGISTER 0b00011111
+#define R_REGISTER 0b00000000
 
 /**
    Command word: 001A AAAA
@@ -661,7 +661,7 @@
    AAAAA = 5 bit Register Map Address
    Executable in power down or standby modes only.
 */
-#define W_REGISTER 0b00111111
+#define W_REGISTER 0b00100000
 
 /**
    Command word: 0110 0001
@@ -733,7 +733,7 @@
 
    The bits in the FEATURE register shown in Table 28. on page 63 have to be set.
 */
-#define W_ACK_PAYLOAD 0b10101111
+#define W_ACK_PAYLOAD 0b10101000
 
 /**
    Command word: 1011 0000
