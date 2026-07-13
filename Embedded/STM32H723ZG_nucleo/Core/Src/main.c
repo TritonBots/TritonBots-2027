@@ -25,6 +25,9 @@
 /* USER CODE BEGIN Includes */
 #include "moteus.h"
 #include "moteus_can.h"
+#include "NRF24.h"
+#include "NRF24_reg_addresses.h"
+#include "string.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -35,6 +38,8 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define NUM_MOTORS 5
+#define PLD_SIZE 32 // payload size is 32 bytes
+#define tx // for preprocessor directive conditionals
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -509,6 +514,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
 void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 {
     (void)RxFifo0ITs;
@@ -692,9 +698,45 @@ void StartMotorControl(void *argument)
 void StartRadioComms(void *argument)
 {
   /* USER CODE BEGIN StartRadioComms */
+  #ifdef tx
+    static uint8_t data_T[PLD_SIZE] = {"Hello"};
+    static uint8_t ack_T[PLD_SIZE];
+  #else
+    static uint8_t data_R[PLD_SIZE];
+    static uint8_t ack_R[PLD_SIZE] = {"Received"};
+  #endif
+  csn_high();
+
+  nrf24_init();
+  nrf24_tx_pwr(_0dbm);
+  nrf24_data_rate(_1mbps);
+  nrf24_set_channel(78);
+  nrf24_set_crc(en_crc, _1byte);
+  nrf24_pipe_pld_size(0, PLD_SIZE);
+  static uint8_t addr[5] = {0x10, 0x21, 0x32, 0x43, 0x54};
+  nrf24_open_tx_pipe(addr);
+  nrf24_open_rx_pipe(0,addr);
+
+  #ifdef tx
+    nrf24_stop_listen();
+  #else
+    nrf24_listen();
+  #endif
   /* Infinite loop */
   for(;;)
   {
+    #ifdef tx
+      nrf24_transmit(data_T, sizeof(data_T));
+    #else
+      nrf24_listen();
+      if(nrf24_data_available()) {
+        nrf24_receive(data_R, sizeof(data_R));
+      }
+
+      char tmp[40];
+      sprintf(tmp, "| %s |\r\n", data_R);
+      HAL_UART_Transmit(&huart1, tmp, 40, 100);
+    #endif
     osDelay(1);
   }
   /* USER CODE END StartRadioComms */
