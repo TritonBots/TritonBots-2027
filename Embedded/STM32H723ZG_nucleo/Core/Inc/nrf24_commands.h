@@ -52,10 +52,34 @@ void nrf24_end_spi_command(void);
 /**
    @brief Read command and status registers.
    
+   @param hspiX reference to a SPI peripheral to send/receive data
    @param registerMapAddress 5 bit register address
    @param status 1 byte return status of the specified register
    @param data 2 bytes return data from the specified register
 */
-void nrf24_read_register(const uint8_t registerMapAddress, uint8_t* status, uint16_t *data);
+void nrf24_read_register(
+   SPI_HandleTypeDef *hspiX,
+   const uint8_t registerMapAddress,
+   uint8_t* status,
+   uint16_t *data
+);
+
+/**
+   @brief Write command and status registers
+
+   @param hspiX reference to a SPI peripheral to send/receive data
+   @param registerMapAddress 5 bit register address
+   @param status 1 byte return status of the specified register
+   @param data 2 bytes to write to register [0]: LSByte, [1]: MSByte
+
+   @note Executable in power down or standby modes only.
+
+*/
+void nrf24_write_register(
+   SPI_HandleTypeDef *hspiX,
+   const uint8_t registerMapAddress,
+   uint8_t* status,
+   uint8_t *data
+);
 
 #endif /* NRF24_COMMANDS_H */
