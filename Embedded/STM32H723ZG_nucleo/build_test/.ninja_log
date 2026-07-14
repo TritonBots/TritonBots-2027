@@ -1,0 +1,3 @@
+# ninja log v6
+31	839	8057691730515730	CMakeFiles/STM32H723ZG_nucleo.dir/Core/Src/freertos.c.obj	9b237d5964338b97
+851	1756	8057691739010235	CMakeFiles/STM32H723ZG_nucleo.dir/Core/Src/stm32h7xx_it.c.obj	d8154a53122ec4e7
