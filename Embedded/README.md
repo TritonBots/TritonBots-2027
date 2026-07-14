@@ -41,7 +41,7 @@ This workflow builds the Embedded/STM32H723ZG_nucleo STM32 firmware on `ubuntu-l
 
 ## Folder Structure
 
-```text
+```plaintext
 .
 ├── docs/           # Documentation
 ├── src/            # Source code, CAD, firmware, etc.
@@ -49,7 +49,7 @@ This workflow builds the Embedded/STM32H723ZG_nucleo STM32 firmware on `ubuntu-l
 ├── scripts/        # Utility scripts
 ├── assets/         # Images, diagrams, models
 └── README.md
-```plaintext
+```
 
 Modify this structure as needed for your team.
 
