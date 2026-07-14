@@ -46,10 +46,12 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
-    Core/Src/main.c
+    Core/Src/nrf24.c
+    Core/Src/nrf24_commands.
     Core/Src/moteus.c
     Core/Src/moteus_can.c
     Core/Src/moteus_protocol.c
+    Core/Src/main.c
 )
 
 # Add include paths
