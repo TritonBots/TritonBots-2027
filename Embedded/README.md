@@ -85,7 +85,7 @@ pacman -S mingw-w64-x86_64-ninja
 arm-none-eabi-gcc --version
 cmake --version
 ninja --version
-```plaintext
+```
 
 > ⚠️ Make sure `C:\msys64\mingw64\bin` is on your system **PATH** so PowerShell
 > can find `arm-none-eabi-gcc.exe` and `ninja.exe`.
@@ -100,19 +100,18 @@ sudo apt install cmake ninja-build gcc-arm-none-eabi binutils-arm-none-eabi
 arm-none-eabi-gcc --version
 cmake --version
 ninja --version
-```plaintext
+```
 
 #### 🍎 macOS
 
-```bash
+```
 brew install cmake ninja
 brew install --cask gcc-arm-embedded
-
 # Verify:
 arm-none-eabi-gcc --version
 cmake --version
 ninja --version
-```plaintext
+```
 
 ---
 
@@ -122,34 +121,33 @@ ninja --version
 
 1. **Clone the repository:**
 
-```bash
+```
 git clone <repository-url>
 cd TritonBots-2027
-```plaintext
+```
 
 2. **Navigate to the STM32 project:**
 
-```bash
+```
 cd Embedded/STM32H723ZG_nucleo
-```plaintext
+```
 
 3. **Configure the build with the ARM toolchain:**
 
-```bash
+```
 # Linux / macOS
 cmake -B build -S . \
   -G "Ninja" \
   -DCMAKE_TOOLCHAIN_FILE="cmake/gcc-arm-none-eabi.cmake" \
   -DCMAKE_BUILD_TYPE=Debug
-```plaintext
-
-```powershell
+```
+```
 # Windows (PowerShell) — use backslashes and quotes
 cmake -B build -S . `
   -G "Ninja" `
   -DCMAKE_TOOLCHAIN_FILE="cmake\gcc-arm-none-eabi.cmake" `
   -DCMAKE_BUILD_TYPE=Debug
-```plaintext
+```
 
 > ✅ You should see `arm-none-eabi-gcc` detected as the C compiler. If you
 > see `cc.exe` or your system's native GCC instead, the toolchain file was
@@ -159,7 +157,7 @@ cmake -B build -S . `
 
 ```bash
 cmake --build build --parallel
-```plaintext
+```
 
 5. **Locate the output artifacts** in `build/`:
 
@@ -176,10 +174,10 @@ cmake --build build --parallel
 
 If you've already configured the build before, simply rebuild:
 
-```bash
+```
 cd Embedded/STM32H723ZG_nucleo
 cmake --build build --parallel
-```plaintext
+```
 
 ---
 
@@ -197,7 +195,7 @@ cmake -B build -S . \
   -DCMAKE_TOOLCHAIN_FILE="cmake/gcc-arm-none-eabi.cmake" \
   -DCMAKE_BUILD_TYPE=Debug
 cmake --build build --parallel
-```plaintext
+```
 
 ```powershell
 # Windows (PowerShell)
@@ -208,7 +206,7 @@ cmake -B build -S . `
   -DCMAKE_TOOLCHAIN_FILE="cmake\gcc-arm-none-eabi.cmake" `
   -DCMAKE_BUILD_TYPE=Debug
 cmake --build build --parallel
-```plaintext
+```
 
 > ⚠️ A clean rebuild is **required** any time you switch build types (Debug ↔
 > Release), change the toolchain file, or after pulling changes that modify
@@ -224,7 +222,7 @@ cmake -B build -S . \
   -DCMAKE_TOOLCHAIN_FILE="cmake/gcc-arm-none-eabi.cmake" \
   -DCMAKE_BUILD_TYPE=Release
 cmake --build build --parallel
-```plaintext
+```
 
 ---
 
@@ -298,7 +296,7 @@ Explain how to verify changes.
 
 ```bash
 # Example commands
-```plaintext
+```
 
 Include any hardware validation or simulation steps if applicable.
 
