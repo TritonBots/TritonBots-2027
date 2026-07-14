@@ -83,6 +83,7 @@ const osThreadAttr_t radioComms_attributes = {
 };
 /* USER CODE BEGIN PV */
 static moteus_motor_t* motors[NUM_MOTORS];
+uint8_t TX_Buffer [] = "A" ; // DATA to send
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -145,7 +146,9 @@ int main(void)
   MX_TIM2_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  // TODO: use this as an example for SPI communication and delete later
+  HAL_SPI_Transmit_DMA(&hspi1, TX_Buffer, 1);; // Sending in DMA mode
+  HAL_Delay(100);
   /* USER CODE END 2 */
 
   /* Init scheduler */
