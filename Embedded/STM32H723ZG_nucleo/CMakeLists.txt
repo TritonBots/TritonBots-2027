@@ -50,7 +50,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/moteus.c
     Core/Src/moteus_can.c
     Core/Src/moteus_protocol.c
-    Core/Src/NRF24.c
+    Core/Src/nrf24.c
+    Core/Src/nrf24_commands.c
 )
 
 # Add include paths
