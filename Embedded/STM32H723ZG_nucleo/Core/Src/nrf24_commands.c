@@ -48,7 +48,7 @@ void nrf24_read_register(
    SPI_HandleTypeDef *hspiX,
    const uint8_t registerMapAddress,
    uint8_t* status,
-   uint16_t *data
+   uint16_t* data
 )
 {
 
@@ -92,11 +92,12 @@ void nrf24_write_register(
    SPI_HandleTypeDef *hspiX,
    const uint8_t registerMapAddress,
    uint8_t* status,
-   uint8_t *data
+   uint8_t* data
 )
 {
    const uint8_t commandWord = W_REGISTER | registerMapAddress; // build Command word
    const uint8_t dataSize = 2; // bytes TODO: replace 2 (bytes) with a macro
+   const uint8_t commandWordSize = 1; // TODO: replace with macro
 
    nrf24_start_spi_command();
 
@@ -104,7 +105,7 @@ void nrf24_write_register(
       hspiX,
       &commandWord,
       status,
-      dataSize // TODO: verify that all usages of HAL_SPI uses the correct argument for the Size parameter
+      commandWordSize // TODO: verify that all usages of HAL_SPI uses the correct argument for the Size parameter
    );
 
    HAL_SPI_Transmit_DMA(
@@ -115,4 +116,39 @@ void nrf24_write_register(
 
    nrf24_end_spi_command();
 
+}
+
+/**
+   @brief Read RX-payload: 1 – 32 bytes
+
+   @param // TODO: write parameter descriptions
+   @param payload buffer to hold incoming payload of data. Must be at least 32 bytes large. LSByte first order
+
+   @note A read operation always starts at byte 0. Payload is deleted from FIFO after it is read. Used in RX mode.
+*/
+void nrf24_read_rx_payload(
+   SPI_HandleTypeDef *hspiX,
+   uint8_t* status,
+   uint8_t* payload
+) {
+
+   const uint8_t commandWordSize = 1; // TODO: replace with macro
+   const uint8_t maxPayloadSize = 32; // TODO: replace with macro
+
+   nrf24_start_spi_command();
+
+   HAL_SPI_TransmitReceive_DMA(
+      hspiX,
+      R_RX_PAYLOAD,
+      status,
+      commandWordSize // TODO: verify that all usages of HAL_SPI uses the correct argument for the Size parameter
+   );
+
+   HAL_SPI_Receive_DMA(
+      hspiX,
+      payload,
+      maxPayloadSize
+   );
+
+   nrf24_end_spi_command();
 }
