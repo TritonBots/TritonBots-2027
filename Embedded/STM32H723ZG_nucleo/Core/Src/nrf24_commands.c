@@ -261,3 +261,93 @@ HAL_StatusTypeDef nrf24_flush_rx(
 
    return result;
 }
+
+HAL_StatusTypeDef nrf24_reuse_tx_pl(
+   SPI_HandleTypeDef *hspiX,
+   uint8_t           *status
+)
+{
+   /* REUSE_TX_PL = 0b11100011 per datasheet Table 20 */
+   uint8_t commandWord = REUSE_TX_PL;
+
+   nrf24_start_spi_command();  /* CSN low — begins SPI transaction */
+
+   /*
+   * Single-phase transaction: send command byte, receive STATUS register.
+   * There is NO data phase for REUSE_TX_PL — 0 data bytes per datasheet.
+   */
+   HAL_StatusTypeDef result = HAL_SPI_TransmitReceive(
+      hspiX,
+      &commandWord,
+      status,
+      1,              /* command word is always exactly 1 byte */
+      HAL_MAX_DELAY
+   );
+
+   nrf24_end_spi_command();    /* CSN high — always end transaction, even on error */
+
+   return result;
+}
+
+HAL_StatusTypeDef nrf24_read_rx_pl_wid(
+   SPI_HandleTypeDef *hspiX,
+   uint8_t           *status,
+   uint8_t           *payloadWidth
+)
+{
+   HAL_StatusTypeDef result;
+
+   /* R_RX_PL_WID = 0b01100000 per datasheet Table 20 */
+   uint8_t commandWord = R_RX_PL_WID;
+
+   /* Pre-zero output — ensures *payloadWidth is never left uninitialised
+   * on any error path, including the corruption case */
+   *payloadWidth = 0;
+
+   nrf24_start_spi_command();  /* CSN low — begins SPI transaction */
+
+   /*
+   * Phase 1: Send command byte, simultaneously receive STATUS register.
+   * STATUS is always shifted out on MISO during the command byte.
+   */
+   result = HAL_SPI_TransmitReceive(
+      hspiX,
+      &commandWord,
+      status,
+      1,              /* command word is always exactly 1 byte */
+      HAL_MAX_DELAY
+   );
+
+   /*
+   * Phase 2: Receive the 1-byte payload width value from RX FIFO.
+   * Only proceed if command phase succeeded.
+   */
+   if (result == HAL_OK) {
+      result = HAL_SPI_Receive(
+         hspiX,
+         payloadWidth,
+         1,          /* exactly 1 byte — the payload width value */
+         HAL_MAX_DELAY
+      );
+   }
+
+   nrf24_end_spi_command();    /* CSN high — always end transaction, even on error */
+
+   /*
+   * Datasheet corruption check (Table 20, Section 7.3.4):
+   * "If its width is longer than 32 bytes then the packet contains
+   *  errors and must be discarded. Discard the packet by using the
+   *  Flush_RX command."
+   *
+   * Surface this as HAL_ERROR so the caller cannot silently proceed
+   * to nrf24_read_rx_payload() with a corrupt width value.
+   * Zero out payloadWidth to prevent accidental use of the bad value.
+   */
+   if (result == HAL_OK && *payloadWidth > NRF24_MAX_PAYLOAD_WIDTH) {
+      *payloadWidth = 0;
+      return HAL_ERROR;
+   }
+
+   return result;
+}
+

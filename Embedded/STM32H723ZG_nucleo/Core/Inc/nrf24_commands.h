@@ -14,6 +14,8 @@
 #include "nrf24_registers.h"
 
 #define COMMAND_WORD_SIZE 1 // bytes
+/* Maximum valid DPL payload width per datasheet Section 7.3.4 */
+#define NRF24_MAX_PAYLOAD_WIDTH  32U
 
 /*
 
@@ -218,6 +220,97 @@ HAL_StatusTypeDef nrf24_flush_tx(
 HAL_StatusTypeDef nrf24_flush_rx(
    SPI_HandleTypeDef *hspiX,
    uint8_t           *status
-)
+);
+
+/**
+ * @brief  Command the nRF24L01+ to reuse the last transmitted TX payload.
+ *
+ * Per datasheet Table 20 (REUSE_TX_PL = 0b11100011):
+ *   - Zero data bytes — this is a command-only transaction
+ *   - STATUS register is shifted out on MISO during the command byte
+ *   - Used on PTX devices only
+ *
+ * !! WARNINGS !!
+ *   1. Per datasheet Table 20: "TX payload reuse must NOT be activated
+ *      or deactivated during package transmission." Caller must ensure
+ *      no transmission is actively in progress before calling.
+ *
+ *   2. This command sets the TX_REUSE flag in FIFO_STATUS (bit 6).
+ *      TX_REUSE remains active until W_TX_PAYLOAD or FLUSH_TX is issued.
+ *      Do NOT call nrf24_write_tx_payload() while TX_REUSE is active
+ *      without intending to cancel reuse mode.
+ *
+ *   3. This command is an ALTERNATIVE to Auto Retransmit (ART).
+ *      Per datasheet Section 7.4.2, the MCU must manually initiate
+ *      each retransmission by pulsing CE >= 10us after this command.
+ *
+ * Typical usage pattern:
+ *   nrf24_reuse_tx_pl(hspi, &status);        // activate reuse mode
+ *   for (int i = 0; i < n; i++) {
+ *       // pulse CE >= 10us to trigger each retransmission
+ *       HAL_GPIO_WritePin(CE_PORT, CE_PIN, GPIO_PIN_SET);
+ *       HAL_Delay(1);                         // 1ms >> 10us minimum
+ *       HAL_GPIO_WritePin(CE_PORT, CE_PIN, GPIO_PIN_RESET);
+ *       // wait for TX_DS IRQ before next pulse
+ *   }
+ *   nrf24_flush_tx(hspi, &status);           // deactivates TX_REUSE
+ *
+ * @param  hspiX   SPI handle
+ * @param  status  Output: STATUS register byte received during command phase
+ * @return HAL_OK on success, HAL_ERROR or HAL_TIMEOUT on failure
+ */
+HAL_StatusTypeDef nrf24_reuse_tx_pl(
+   SPI_HandleTypeDef *hspiX,
+   uint8_t           *status
+);
+
+/**
+ * @brief  Read the payload width of the top payload in the RX FIFO (Dynamic Payload Length).
+ *
+ * Per datasheet Table 20 (R_RX_PL_WID = 0b01100000):
+ *   - 1 data byte returned: the width in bytes of the top RX FIFO payload
+ *   - STATUS register is shifted out on MISO during the command byte
+ *   - Used with Dynamic Payload Length (DPL) feature
+ *
+ * !! CRITICAL WARNING (per datasheet Table 20 and Section 7.3.4) !!
+ *   If the returned width is greater than 32 bytes, the packet is CORRUPT.
+ *   In this case:
+ *     1. Do NOT call nrf24_read_rx_payload() — the data is invalid
+ *     2. Call nrf24_flush_rx() immediately to discard the corrupt packet
+ *     3. This function returns HAL_ERROR to make the corrupt state
+ *        impossible to ignore — *payloadWidth is set to 0 in this case
+ *
+ * This function should only be used when Dynamic Payload Length (DPL)
+ * is enabled via the EN_DPL bit in the FEATURE register. For static
+ * payload length, the width is determined by the RX_PW_Px registers
+ * and does not need to be queried at runtime.
+ *
+ * Typical DPL receive pattern:
+ *
+ *   uint8_t status;
+ *   uint8_t width;
+ *   uint8_t payload[NRF24_MAX_PAYLOAD_WIDTH];
+ *
+ *   HAL_StatusTypeDef res = nrf24_read_rx_pl_wid(hspi, &status, &width);
+ *   if (res != HAL_OK) {
+ *       // width > 32: corrupt packet — flush and discard
+ *       nrf24_flush_rx(hspi, &status);
+ *       return;
+ *   }
+ *   nrf24_read_rx_payload(hspi, &status, payload, width);
+ *
+ * @param  hspiX        SPI handle
+ * @param  status       Output: STATUS register byte received during command phase
+ * @param  payloadWidth Output: width in bytes of top RX FIFO payload (valid range 1–32)
+ *                      Set to 0 if the read value is corrupt (> 32 bytes)
+ * @return HAL_OK       on success and valid width (1–32)
+ *         HAL_ERROR    if payloadWidth > 32 (corrupt packet) OR SPI failure
+ *         HAL_TIMEOUT  if SPI times out
+ */
+HAL_StatusTypeDef nrf24_read_rx_pl_wid(
+   SPI_HandleTypeDef *hspiX,
+   uint8_t           *status,
+   uint8_t           *payloadWidth
+);
 
 #endif /* NRF24_COMMANDS_H */
