@@ -16,6 +16,8 @@
 #define COMMAND_WORD_SIZE 1 // bytes
 /* Maximum valid DPL payload width per datasheet Section 7.3.4 */
 #define NRF24_MAX_PAYLOAD_WIDTH  32U
+/* Valid ACK payload pipe range per datasheet Table 20: PPP = 000 to 101 */
+#define NRF24_ACK_PAYLOAD_PIPE_MAX  5U
 
 /*
 
@@ -311,6 +313,172 @@ HAL_StatusTypeDef nrf24_read_rx_pl_wid(
    SPI_HandleTypeDef *hspiX,
    uint8_t           *status,
    uint8_t           *payloadWidth
+);
+
+/**
+ * @brief  Write payload to be sent with the next ACK packet on a specific pipe (PRX only).
+ *
+ * Per datasheet Table 20 (W_ACK_PAYLOAD = 0b10101PPP):
+ *   - Command byte encodes the target pipe number PPP in the lower 3 bits
+ *   - 1 to 32 data bytes follow: LSByte first, MSBit in each byte first
+ *   - STATUS register is shifted out on MISO during the command byte
+ *   - Used in RX mode (PRX) only
+ *
+ * !! PREREQUISITES (caller must configure before use) !!
+ *   1. EN_ACK_PAY bit in FEATURE register (0x1D) must be set HIGH
+ *   2. EN_DPL bit in FEATURE register (0x1D) must be set HIGH
+ *      (ACK payloads always use Dynamic Payload Length)
+ *   3. DPL_P0 bit in DYNPD register (0x1C) must be set on both PTX and PRX
+ *      (ensures ACK packets with payloads are correctly received by PTX)
+ *
+ * !! PIPE NUMBER CONSTRAINT !!
+ *   Per datasheet Table 20, PPP is valid ONLY in the range 000–101 (pipes 0–5).
+ *   Pipes 6 and 7 do not exist — this function returns HAL_ERROR if
+ *   pipeNumber > 5.
+ *
+ * !! FIFO BEHAVIOUR !!
+ *   - Maximum 3 ACK payloads can be pending in TX FIFO (PRX) simultaneously
+ *   - Multiple payloads for the same pipe are handled FIFO (first in, first out)
+ *   - If TX FIFO (PRX) is blocked (all payloads addressed to a lost PTX link),
+ *     call nrf24_flush_tx() to unblock it
+ *
+ * !! ARD (Auto Retransmit Delay) WARNING !!
+ *   ACK payloads affect the minimum required ARD. Per datasheet Section 7.4.2:
+ *     - 2Mbps, 5-byte address: max 15-byte ACK payload at ARD=250us
+ *     - 1Mbps, 5-byte address: max  5-byte ACK payload at ARD=250us
+ *     - 250kbps:               ARD must be >= 500us regardless of payload size
+ *
+ * @param  hspiX       SPI handle
+ * @param  status      Output: STATUS register byte received during command phase
+ * @param  pipeNumber  Target pipe number (0–5 only; 6–7 are invalid per datasheet)
+ * @param  payload     Input: caller-allocated buffer of bytes to send with ACK
+ * @param  payloadSize Number of bytes to write (1–32)
+ * @return HAL_OK      on success
+ *         HAL_ERROR   if pipeNumber > 5 (invalid) OR SPI error
+ *         HAL_TIMEOUT if SPI times out
+ */
+HAL_StatusTypeDef nrf24_write_ack_payload(
+   SPI_HandleTypeDef *hspiX,
+   uint8_t           *status,
+   const uint8_t      pipeNumber,
+   const uint8_t     *payload,
+   const uint8_t      payloadSize
+);
+
+/**
+ * @brief  Write TX payload with Auto Acknowledgement disabled for this packet.
+ *
+ * Per datasheet Table 20 (W_TX_PAYLOAD_NOACK = 0b10110000):
+ *   - 1 to 32 data bytes: LSByte first, MSBit in each byte first
+ *   - STATUS register is shifted out on MISO during the command byte
+ *   - Used in TX mode (PTX) only
+ *   - Sets the NO_ACK flag in the packet control field for this
+ *     specific packet only — does not affect other packets in TX FIFO
+ *
+ * !! PREREQUISITE !!
+ *   EN_DYN_ACK bit (bit 0) in FEATURE register (0x1D) MUST be set HIGH
+ *   before this command will be accepted. Per datasheet Section 7.3.3.3:
+ *   "The function must first be enabled in the FEATURE register by
+ *   setting the EN_DYN_ACK bit."
+ *
+ * !! BEHAVIORAL DIFFERENCE vs nrf24_write_tx_payload() !!
+ *   nrf24_write_tx_payload()  — PTX enters RX mode after TX to wait
+ *                               for ACK; retransmits on failure;
+ *                               MAX_RT IRQ possible.
+ *   nrf24_write_tx_no_ack()   — PTX goes DIRECTLY to standby-I mode
+ *                               after transmitting. Per datasheet
+ *                               Section 7.3.3.3: "The PRX does not
+ *                               transmit an ACK packet when it receives
+ *                               the packet." No retransmit. No MAX_RT.
+ *
+ * This is a per-packet setting — it does not permanently disable
+ * Auto Acknowledgement. Other payloads in the TX FIFO written with
+ * nrf24_write_tx_payload() are unaffected.
+ *
+ * Suitable for:
+ *   - Fire-and-forget sensor broadcasts
+ *   - One-to-many topologies where ACK is impossible
+ *   - Time-critical transmissions where retransmit latency is
+ *     unacceptable
+ *
+ * Caller responsibilities:
+ *   1. Set EN_DYN_ACK in FEATURE register before first use
+ *   2. After writing payload, pulse CE >= 10us to begin transmission
+ *   3. Monitor TX_DS IRQ — asserted immediately after TX completes
+ *      (no ACK wait, so latency is deterministic)
+ *   4. Check TX FIFO not full (FIFO_STATUS.TX_FULL) before writing
+ *
+ * @param  hspiX       SPI handle
+ * @param  status      Output: STATUS register byte received during command phase
+ * @param  payload     Input: caller-allocated buffer of bytes to transmit
+ * @param  payloadSize Number of bytes to write to TX FIFO (1–32)
+ * @return HAL_OK      on success
+ *         HAL_ERROR   on SPI error
+ *         HAL_TIMEOUT if SPI times out
+ */
+HAL_StatusTypeDef nrf24_write_tx_no_ack(
+   SPI_HandleTypeDef *hspiX,
+   uint8_t           *status,
+   const uint8_t     *payload,
+   const uint8_t      payloadSize
+);
+
+/**
+ * @brief  Send a NOP command to the nRF24L01+, returning the STATUS register.
+ *
+ * Per datasheet Table 20 (NOP = 0b11111111):
+ *   - Zero data bytes — command-only transaction
+ *   - STATUS register is shifted out on MISO during the command byte
+ *   - No operation is performed on the chip — zero side effects
+ *
+ * Primary use: read the STATUS register at any time, in any operating
+ * mode, without disturbing FIFO state, radio mode, or any register.
+ * Per datasheet Table 20: "Might be used to read the STATUS register."
+ *
+ * STATUS register bit layout (datasheet Section 9.1, address 0x07):
+ *
+ *   Bit 7   : Reserved (always 0)
+ *   Bit 6   : RX_DR    — RX data ready IRQ (write 1 to clear)
+ *   Bit 5   : TX_DS    — TX data sent IRQ  (write 1 to clear)
+ *   Bit 4   : MAX_RT   — Max retransmits IRQ (write 1 to clear;
+ *                        MUST clear before further TX is possible)
+ *   Bits 3:1: RX_P_NO  — Pipe number of payload in RX FIFO
+ *                        (000–101 = pipe 0–5, 110 = unused, 111 = RX FIFO empty)
+ *   Bit 0   : TX_FULL  — TX FIFO full flag (1 = full, 0 = available slots)
+ *
+ * Typical usage patterns:
+ *
+ *   // 1. Poll IRQ flags without side effects
+ *   uint8_t status;
+ *   nrf24_nop(hspi, &status);
+ *   if (status & (1 << 6)) { // RX_DR set — data ready in RX FIFO }
+ *   if (status & (1 << 5)) { // TX_DS set — last TX acknowledged     }
+ *   if (status & (1 << 4)) { // MAX_RT   — max retransmits reached   }
+ *
+ *   // 2. Check TX FIFO full before writing payload
+ *   nrf24_nop(hspi, &status);
+ *   if (!(status & (1 << 0))) {
+ *       nrf24_write_tx_payload(hspi, &status, payload, size);
+ *   }
+ *
+ *   // 3. Identify which pipe received data
+ *   nrf24_nop(hspi, &status);
+ *   uint8_t pipe = (status >> 1) & 0x07;  // extract RX_P_NO bits 3:1
+ *   if (pipe <= 5) { // valid pipe number — data available }
+ *
+ * Note: To CLEAR IRQ flags, use nrf24_write_register() to write 1 to
+ * the corresponding bit in the STATUS register (address 0x07).
+ * NOP only READS — it never clears anything.
+ *
+ * @param  hspiX   SPI handle
+ * @param  status  Output: current STATUS register value
+ * @return HAL_OK      on success
+ *         HAL_ERROR   on SPI error
+ *         HAL_TIMEOUT if SPI times out
+ */
+HAL_StatusTypeDef nrf24_nop(
+   SPI_HandleTypeDef *hspiX,
+   uint8_t           *status
 );
 
 #endif /* NRF24_COMMANDS_H */

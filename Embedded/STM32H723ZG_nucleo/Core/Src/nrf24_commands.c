@@ -351,3 +351,136 @@ HAL_StatusTypeDef nrf24_read_rx_pl_wid(
    return result;
 }
 
+
+HAL_StatusTypeDef nrf24_write_ack_payload(
+   SPI_HandleTypeDef *hspiX,
+   uint8_t           *status,
+   const uint8_t      pipeNumber,
+   const uint8_t     *payload,
+   const uint8_t      payloadSize
+)
+{
+   HAL_StatusTypeDef result;
+
+   /*
+   * Pipe validation: datasheet Table 20 states PPP valid only 000–101 (0–5).
+   * Pipes 6 and 7 are not addressable — reject immediately before touching
+   * the SPI bus so CSN is never incorrectly asserted.
+   */
+   if (pipeNumber > NRF24_ACK_PAYLOAD_PIPE_MAX) {
+      return HAL_ERROR;
+   }
+
+   /*
+   * Command byte: W_ACK_PAYLOAD = 0b10101PPP
+   * Pipe number is OR'd into the lower 3 bits.
+   * Mask with 0x07 defensively even though validation above already
+   * guarantees pipeNumber <= 5 and fits in 3 bits.
+   */
+   uint8_t commandWord = W_ACK_PAYLOAD | (pipeNumber & 0x07);
+
+   nrf24_start_spi_command();  /* CSN low — begins SPI transaction */
+
+   /*
+   * Phase 1: Send command byte, simultaneously receive STATUS register.
+   * STATUS is always shifted out on MISO during the command byte.
+   */
+   result = HAL_SPI_TransmitReceive(
+      hspiX,
+      &commandWord,
+      status,
+      1,              /* command word is always exactly 1 byte */
+      HAL_MAX_DELAY
+   );
+
+   /*
+   * Phase 2: Write ACK payload bytes.
+   * LSByte first per datasheet Section 8.3.1.
+   * Only transmit if command phase succeeded.
+   */
+   if (result == HAL_OK) {
+      result = HAL_SPI_Transmit(
+         hspiX,
+         (uint8_t *)payload,     /* cast away const: HAL param is non-const but won't modify */
+         payloadSize,
+         HAL_MAX_DELAY
+      );
+   }
+
+   nrf24_end_spi_command();    /* CSN high — always end transaction, even on error */
+
+   return result;
+}
+
+HAL_StatusTypeDef nrf24_write_tx_no_ack(
+   SPI_HandleTypeDef *hspiX,
+   uint8_t           *status,
+   const uint8_t     *payload,
+   const uint8_t      payloadSize
+)
+{
+   HAL_StatusTypeDef result;
+
+   /* W_TX_PAYLOAD_NOACK = 0b10110000 per datasheet Table 20 */
+   uint8_t commandWord = W_TX_PAYLOAD_NOACK;
+
+   nrf24_start_spi_command();  /* CSN low — begins SPI transaction */
+
+   /*
+   * Phase 1: Send command byte, simultaneously receive STATUS register.
+   * STATUS is always shifted out on MISO during the command byte.
+   */
+   result = HAL_SPI_TransmitReceive(
+      hspiX,
+      &commandWord,
+      status,
+      1,              /* command word is always exactly 1 byte */
+      HAL_MAX_DELAY
+   );
+
+   /*
+   * Phase 2: Write payload bytes into TX FIFO.
+   * LSByte first per datasheet Section 8.3.1.
+   * Only transmit if command phase succeeded.
+   */
+   if (result == HAL_OK) {
+      result = HAL_SPI_Transmit(
+         hspiX,
+         (uint8_t *)payload,     /* cast away const: HAL param is non-const but won't modify */
+         payloadSize,
+         HAL_MAX_DELAY
+      );
+   }
+
+   nrf24_end_spi_command();    /* CSN high — always end transaction, even on error */
+
+   return result;
+}
+
+HAL_StatusTypeDef nrf24_nop(
+   SPI_HandleTypeDef *hspiX,
+   uint8_t           *status
+)
+{
+   /* NOP = 0b11111111 per datasheet Table 20 */
+   uint8_t commandWord = NOP;
+
+   nrf24_start_spi_command();  /* CSN low — begins SPI transaction */
+
+   /*
+   * Single-phase transaction: send NOP command byte, receive STATUS register.
+   * There is NO data phase — 0 data bytes per datasheet.
+   * No state is modified on the chip.
+   */
+   HAL_StatusTypeDef result = HAL_SPI_TransmitReceive(
+      hspiX,
+      &commandWord,
+      status,
+      1,              /* command word is always exactly 1 byte */
+      HAL_MAX_DELAY
+   );
+
+   nrf24_end_spi_command();    /* CSN high — ends SPI transaction */
+
+   return result;
+}
