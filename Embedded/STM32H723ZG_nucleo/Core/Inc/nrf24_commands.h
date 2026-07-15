@@ -82,4 +82,18 @@ void nrf24_write_register(
    uint8_t *data
 );
 
+/**
+   @brief Read RX-payload: 1 – 32 bytes
+
+   @param // TODO: write parameter descriptions
+   @param payload buffer to hold incoming payload of data. Must be at least 32 bytes large. LSByte first order
+
+   @note A read operation always starts at byte 0. Payload is deleted from FIFO after it is read. Used in RX mode.
+*/
+void nrf24_read_rx_payload(
+   SPI_HandleTypeDef *hspiX,
+   uint8_t* status,
+   uint8_t* payload
+);
+
 #endif /* NRF24_COMMANDS_H */
