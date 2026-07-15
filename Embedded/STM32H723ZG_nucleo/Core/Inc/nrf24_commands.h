@@ -13,6 +13,8 @@
 
 #include "nrf24_registers.h"
 
+#define COMMAND_WORD_SIZE 1 // bytes
+
 /*
 
    Every new command must be started by a high to low transition on CSN
@@ -122,6 +124,35 @@ HAL_StatusTypeDef nrf24_read_rx_payload(
    SPI_HandleTypeDef *hspiX,
    uint8_t           *status,
    uint8_t           *payload,
+   const uint8_t      payloadSize
+);
+
+/**
+ * @brief  Write TX payload to the nRF24L01+ TX FIFO via SPI.
+ *
+ * Per datasheet Section 8.3.1, Table 20 (W_TX_PAYLOAD = 0b10100000):
+ *   - Writes 1–32 bytes into the TX FIFO, starting at byte 0
+ *   - Data is LSByte first, MSBit in each byte first
+ *   - STATUS register is shifted out on MISO during the command byte
+ *   - Used in TX mode only
+ *
+ * The TX FIFO has three 32-byte levels. Check FIFO_STATUS.TX_FULL
+ * before calling to avoid overflowing the FIFO.
+ *
+ * After writing, pulse CE high for >= 10us to begin transmission.
+ * If MAX_RT IRQ is asserted, the payload is NOT removed from TX FIFO —
+ * caller must handle retransmission or call FLUSH_TX explicitly.
+ *
+ * @param  hspiX       SPI handle
+ * @param  status      Output: STATUS register byte received during command phase
+ * @param  payload     Input: caller-allocated buffer of bytes to write
+ * @param  payloadSize Number of bytes to write to TX FIFO (1–32)
+ * @return HAL_OK on success, HAL_ERROR or HAL_TIMEOUT on failure
+ */
+HAL_StatusTypeDef nrf24_write_tx_payload(
+   SPI_HandleTypeDef *hspiX,
+   uint8_t           *status,
+   const uint8_t     *payload,
    const uint8_t      payloadSize
 );
 

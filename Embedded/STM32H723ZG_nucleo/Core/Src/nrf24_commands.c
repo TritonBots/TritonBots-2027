@@ -162,3 +162,48 @@ HAL_StatusTypeDef nrf24_read_rx_payload(
 
    return result;
 }
+
+HAL_StatusTypeDef nrf24_write_tx_payload(
+   SPI_HandleTypeDef *hspiX,
+   uint8_t           *status,
+   const uint8_t     *payload,
+   const uint8_t      payloadSize
+)
+{
+   HAL_StatusTypeDef result;
+
+   /* W_TX_PAYLOAD = 0b10100000 per datasheet Table 20 */
+   uint8_t commandWord = W_TX_PAYLOAD;
+
+   nrf24_start_spi_command();  /* CSN low — begins SPI transaction */
+
+   /*
+   * Phase 1: Send command byte, simultaneously receive STATUS register.
+   * STATUS is always shifted out on MISO during the command byte.
+   */
+   result = HAL_SPI_TransmitReceive(
+      hspiX,
+      &commandWord,
+      status,
+      1,              /* command word is always exactly 1 byte */
+      HAL_MAX_DELAY
+   );
+
+   /*
+   * Phase 2: Write payload bytes into TX FIFO.
+   * LSByte first per datasheet Section 8.3.1.
+   * Only transmit if command phase succeeded.
+   */
+   if (result == HAL_OK) {
+      result = HAL_SPI_Transmit(
+         hspiX,
+         (uint8_t *)payload,     /* cast away const: HAL param is non-const but won't modify */
+         payloadSize,
+         HAL_MAX_DELAY
+      );
+   }
+
+   nrf24_end_spi_command();    /* CSN high — always end transaction, even on error */
+
+   return result;
+}
