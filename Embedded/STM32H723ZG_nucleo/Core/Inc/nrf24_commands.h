@@ -50,50 +50,79 @@ void nrf24_start_spi_command(void);
 void nrf24_end_spi_command(void);
 
 /**
-   @brief Read command and status registers.
-   
-   @param hspiX reference to a SPI peripheral to send/receive data
-   @param registerMapAddress 5 bit register address
-   @param status 1 byte return status of the specified register
-   @param data 2 bytes return data from the specified register
+ * @brief  Read 1–5 bytes from an nRF24L01+ register via SPI.
+ *
+ * Per datasheet Section 8.3.1:
+ *   - Command word (R_REGISTER | address) is sent on MOSI
+ *   - STATUS register is simultaneously received on MISO
+ *   - Data bytes follow: LSByte first, MSBit in each byte first
+ *
+ * @param  hspiX              SPI handle
+ * @param  registerMapAddress 5-bit register address (AAAAA in 000AAAAA)
+ * @param  status             Output: STATUS register byte received during command
+ * @param  data               Output: buffer for register data (caller-allocated, min dataSize bytes)
+ * @param  dataSize           Number of bytes to read (1 for most registers, up to 5 for address regs)
 */
 void nrf24_read_register(
    SPI_HandleTypeDef *hspiX,
    const uint8_t registerMapAddress,
-   uint8_t* status,
-   uint16_t *data
+   uint8_t *status,
+   uint8_t *data,
+   const uint8_t dataSize
+)
+
+/**
+ * @brief  Write 1–5 bytes to an nRF24L01+ register via SPI.
+ *
+ * Per datasheet Section 8.3.1:
+ *   - Command word (W_REGISTER | address) sent on MOSI: encoding 001AAAAA
+ *   - STATUS register simultaneously received on MISO during command byte
+ *   - Data bytes follow: LSByte first, MSBit in each byte first
+ *   - Executable in power down or standby modes only (per register map table)
+ *
+ * @param  hspiX              SPI handle
+ * @param  registerMapAddress 5-bit register address (AAAAA in 001AAAAA)
+ * @param  status             Output: STATUS register byte received during command phase
+ * @param  data               Input:  buffer of bytes to write (caller-allocated, min dataSize bytes)
+ * @param  dataSize           Number of bytes to write (1 for most registers, up to 5 for address regs)
+ * @return HAL_OK on success, HAL_ERROR or HAL_TIMEOUT on failure
+ */
+HAL_StatusTypeDef nrf24_write_register(
+   SPI_HandleTypeDef *hspiX,
+   const uint8_t     registerMapAddress,
+   uint8_t          *status,
+   const uint8_t    *data,
+   const uint8_t     dataSize
 );
 
 /**
-   @brief Write command and status registers
-
-   @param hspiX reference to a SPI peripheral to send/receive data
-   @param registerMapAddress 5 bit register address
-   @param status 1 byte return status of the specified register
-   @param data 2 bytes to write to register [0]: LSByte, [1]: MSByte
-
-   @note Executable in power down or standby modes only.
-
-*/
-void nrf24_write_register(
+ * @brief  Read RX payload from the nRF24L01+ RX FIFO via SPI.
+ *
+ * Per datasheet Section 8.3.1 (R_RX_PAYLOAD command = 0b01100001):
+ *   - Reads 1–32 bytes from RX FIFO, starting at byte 0
+ *   - Payload is deleted from FIFO after it is read
+ *   - STATUS register is shifted out on MISO during the command byte
+ *   - Used in RX mode
+ *
+ * For Dynamic Payload Length (DPL): caller must first issue R_RX_PL_WID
+ * to determine payloadSize before calling this function. Per datasheet,
+ * if R_RX_PL_WID returns > 32, the packet is corrupt — flush RX FIFO
+ * with FLUSH_RX and do NOT call this function.
+ *
+ * For Static Payload Length: payloadSize must match the configured
+ * RX_PW_Px register value for the receiving pipe.
+ *
+ * @param  hspiX       SPI handle
+ * @param  status      Output: STATUS register byte received during command phase
+ * @param  payload     Output: caller-allocated buffer, minimum payloadSize bytes
+ * @param  payloadSize Number of bytes to read from RX FIFO (1–32)
+ * @return HAL_OK on success, HAL_ERROR or HAL_TIMEOUT on failure
+ */
+HAL_StatusTypeDef nrf24_read_rx_payload(
    SPI_HandleTypeDef *hspiX,
-   const uint8_t registerMapAddress,
-   uint8_t* status,
-   uint8_t *data
-);
-
-/**
-   @brief Read RX-payload: 1 – 32 bytes
-
-   @param // TODO: write parameter descriptions
-   @param payload buffer to hold incoming payload of data. Must be at least 32 bytes large. LSByte first order
-
-   @note A read operation always starts at byte 0. Payload is deleted from FIFO after it is read. Used in RX mode.
-*/
-void nrf24_read_rx_payload(
-   SPI_HandleTypeDef *hspiX,
-   uint8_t* status,
-   uint8_t* payload
+   uint8_t           *status,
+   uint8_t           *payload,
+   const uint8_t      payloadSize
 );
 
 #endif /* NRF24_COMMANDS_H */
