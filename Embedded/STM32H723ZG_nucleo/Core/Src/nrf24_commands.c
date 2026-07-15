@@ -207,3 +207,57 @@ HAL_StatusTypeDef nrf24_write_tx_payload(
 
    return result;
 }
+
+HAL_StatusTypeDef nrf24_flush_tx(
+   SPI_HandleTypeDef *hspiX,
+   uint8_t           *status
+)
+{
+   /* FLUSH_TX = 0b11100001 per datasheet Table 20 */
+   uint8_t commandWord = FLUSH_TX;
+
+   nrf24_start_spi_command();  /* CSN low — begins SPI transaction */
+
+   /*
+   * Single-phase transaction: send command byte, receive STATUS register.
+   * There is NO data phase for FLUSH_TX — 0 data bytes per datasheet.
+   */
+   HAL_StatusTypeDef result = HAL_SPI_TransmitReceive(
+      hspiX,
+      &commandWord,
+      status,
+      1,              /* command word is always exactly 1 byte */
+      HAL_MAX_DELAY
+   );
+
+   nrf24_end_spi_command();    /* CSN high — always end transaction, even on error */
+
+   return result;
+}
+
+HAL_StatusTypeDef nrf24_flush_rx(
+   SPI_HandleTypeDef *hspiX,
+   uint8_t           *status
+)
+{
+   /* FLUSH_RX = 0b11100010 per datasheet Table 20 */
+   uint8_t commandWord = FLUSH_RX;
+
+   nrf24_start_spi_command();  /* CSN low — begins SPI transaction */
+
+   /*
+   * Single-phase transaction: send command byte, receive STATUS register.
+   * There is NO data phase for FLUSH_RX — 0 data bytes per datasheet.
+   */
+   HAL_StatusTypeDef result = HAL_SPI_TransmitReceive(
+      hspiX,
+      &commandWord,
+      status,
+      1,              /* command word is always exactly 1 byte */
+      HAL_MAX_DELAY
+   );
+
+   nrf24_end_spi_command();    /* CSN high — always end transaction, even on error */
+
+   return result;
+}

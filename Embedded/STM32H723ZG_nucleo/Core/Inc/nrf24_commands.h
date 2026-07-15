@@ -156,4 +156,68 @@ HAL_StatusTypeDef nrf24_write_tx_payload(
    const uint8_t      payloadSize
 );
 
+/**
+ * @brief  Flush the nRF24L01+ TX FIFO via SPI.
+ *
+ * Per datasheet Table 20 (FLUSH_TX = 0b11100001):
+ *   - Zero data bytes — this is a command-only transaction
+ *   - STATUS register is shifted out on MISO during the command byte
+ *   - Used in TX mode on PTX devices
+ *   - Also valid on PRX devices to unblock a full TX FIFO
+ *     (when all pending ACK payloads are addressed to a lost PTX link)
+ *
+ * Primary use cases:
+ *   1. MAX_RT IRQ asserted — payload is NOT auto-removed from TX FIFO,
+ *      caller must flush before loading a new payload
+ *   2. PRX TX FIFO blocked — all pending ACK payloads addressed to
+ *      an unreachable PTX
+ *
+ * Note: Per datasheet Table 20, FLUSH_RX "should not be executed during
+ * transmission of acknowledge" — the same caution applies to FLUSH_TX:
+ * do not call while a transmission is actively in progress.
+ *
+ * @param  hspiX   SPI handle
+ * @param  status  Output: STATUS register byte received during command phase
+ * @return HAL_OK on success, HAL_ERROR or HAL_TIMEOUT on failure
+ */
+HAL_StatusTypeDef nrf24_flush_tx(
+   SPI_HandleTypeDef *hspiX,
+   uint8_t           *status
+);
+
+/**
+ * @brief  Flush the nRF24L01+ RX FIFO via SPI.
+ *
+ * Per datasheet Table 20 (FLUSH_RX = 0b11100010):
+ *   - Zero data bytes — this is a command-only transaction
+ *   - STATUS register is shifted out on MISO during the command byte
+ *   - Used in RX mode
+ *
+ * !! WARNING !!
+ * Per datasheet Table 20, FLUSH_RX "should not be executed during
+ * transmission of acknowledge — the acknowledge package will not be
+ * completed." Caller must ensure no ACK transmission is in progress
+ * before calling this function.
+ *
+ * Primary use cases:
+ *   1. Corrupt packet received — R_RX_PL_WID returned > 32 bytes,
+ *      indicating a malformed packet that must be discarded:
+ *
+ *        if (payloadWidth > 32) {
+ *            nrf24_flush_rx(hspi, &status);
+ *        }
+ *
+ *   2. RX FIFO is full (FIFO_STATUS.RX_FULL = 1) and incoming packets
+ *      are being discarded — flush to make room
+ *   3. Startup/reset — ensure RX FIFO is clean before entering RX mode
+ *
+ * @param  hspiX   SPI handle
+ * @param  status  Output: STATUS register byte received during command phase
+ * @return HAL_OK on success, HAL_ERROR or HAL_TIMEOUT on failure
+ */
+HAL_StatusTypeDef nrf24_flush_rx(
+   SPI_HandleTypeDef *hspiX,
+   uint8_t           *status
+)
+
 #endif /* NRF24_COMMANDS_H */
