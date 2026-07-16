@@ -75,7 +75,7 @@ void nrf24_read_register(
    uint8_t *status,
    uint8_t *data,
    const uint8_t dataSize
-)
+);
 
 /**
  * @brief  Write 1–5 bytes to an nRF24L01+ register via SPI.
