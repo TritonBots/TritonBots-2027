@@ -731,32 +731,32 @@ void StartRadioComms(void *argument)
     static uint8_t data_R[PLD_SIZE];
     static uint8_t ack_R[PLD_SIZE] = {"Received"};
   #endif
-  writeCSNHIGH();
+  nrf24_write_csn_high();
 
-  nrf24Init();
-  nrf24SetTXPower(_0dbm);
-  nrf24SetDataRate(_1mbps);
-  nrf24SetChannel(78);
-  nrf24SetCRC(en_crc, _1byte);
-  nrf24SetPipePayloadSize(0, PLD_SIZE);
+  nrf24_init();
+  nrf24_set_tx_power(_0dbm);
+  nrf24_set_data_rate(_1mbps);
+  nrf24_set_channel(78);
+  nrf24_set_crc(en_crc, _1byte);
+  nrf24_set_pipe_payload_size(0, PLD_SIZE);
   static uint8_t addr[5] = {0x10, 0x21, 0x32, 0x43, 0x54};
-  nrf24OpenTXPipe(addr);
-  nrf24OpenRXPipe(0,addr);
+  nrf24_open_tx_pipe(addr);
+  nrf24_open_rx_pipe(0,addr);
 
   #ifdef tx
-    nrf24SwitchToTX();
+    nrf24_switch_to_tx();
   #else
-    nrf24SwitchToRX();
+    nrf24_switch_to_rx();
   #endif
   /* Infinite loop */
   for(;;)
   {
     #ifdef tx
-      nrf24TransmitData(data_T, sizeof(data_T));
+      nrf24_transmit_data(data_T, sizeof(data_T));
     #else
-      nrf24SwitchToRX();
-      if(nrf24DataAvailable()) {
-        nrf24ReceiveData(data_R, sizeof(data_R));
+      nrf24_switch_to_rx();
+      if(nrf24_data_available()) {
+        nrf24_receive_data(data_R, sizeof(data_R));
       }
 
       char tmp[40];
