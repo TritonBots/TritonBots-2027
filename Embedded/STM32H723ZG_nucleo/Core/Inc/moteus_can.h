@@ -53,7 +53,7 @@ HAL_StatusTypeDef moteus_can_init(FDCAN_HandleTypeDef* hfdcan);
  *
  * @note FDCAN DLC is not 1:1 with byte count for classic/non-linear DLC values.
  */
-static uint32_t get_fdcan_dlc(uint8_t len);
+uint32_t get_fdcan_dlc(uint8_t len);
 
 /**
  * @brief Convert FDCAN DLC encoding back to payload length in bytes
@@ -63,7 +63,7 @@ static uint32_t get_fdcan_dlc(uint8_t len);
  *
  * @warning If an unknown DLC value is provided by the hardware, this returns 8.
  */
-static uint8_t get_data_length(uint32_t dlc);
+uint8_t get_data_length(uint32_t dlc);
 
 /**
  * @brief Transmit a moteus CAN frame using STM32 FDCAN HAL

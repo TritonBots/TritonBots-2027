@@ -64,7 +64,7 @@ HAL_StatusTypeDef moteus_can_init(FDCAN_HandleTypeDef* hfdcan)
     return status;
 }
 
-static uint32_t get_fdcan_dlc(uint8_t len)
+uint32_t get_fdcan_dlc(uint8_t len)
 {
 
     if (len <= 8) return len;
@@ -77,7 +77,7 @@ static uint32_t get_fdcan_dlc(uint8_t len)
     return FDCAN_DLC_BYTES_64;
 }
 
-static uint8_t get_data_length(uint32_t dlc)
+uint8_t get_data_length(uint32_t dlc)
 {
 
     if (dlc <= 8) return dlc;
