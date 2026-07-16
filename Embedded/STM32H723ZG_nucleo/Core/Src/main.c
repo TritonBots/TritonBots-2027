@@ -25,7 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include "moteus.h"
 #include "moteus_can.h"
-#include "nrf24.h"
+#include "nrf24_commands.h"
 #include "nrf24_registers.h"
 #include "string.h"
 /* USER CODE END Includes */
@@ -724,49 +724,11 @@ void StartMotorControl(void *argument)
 void StartRadioComms(void *argument)
 {
   /* USER CODE BEGIN StartRadioComms */
-  #ifdef tx
-    static uint8_t data_T[PLD_SIZE] = {"Hello"};
-    static uint8_t ack_T[PLD_SIZE];
-  #else
-    static uint8_t data_R[PLD_SIZE];
-    static uint8_t ack_R[PLD_SIZE] = {"Received"};
-  #endif
-  nrf24_write_csn_high();
 
-  nrf24_init();
-  nrf24_set_tx_power(_0dbm);
-  nrf24_set_data_rate(_1mbps);
-  nrf24_set_channel(78);
-  nrf24_set_crc(en_crc, _1byte);
-  nrf24_set_pipe_payload_size(0, PLD_SIZE);
-  static uint8_t addr[5] = {0x10, 0x21, 0x32, 0x43, 0x54};
-  nrf24_open_tx_pipe(addr);
-  nrf24_open_rx_pipe(0,addr);
-
-  #ifdef tx
-    nrf24_switch_to_tx();
-  #else
-    nrf24_switch_to_rx();
-  #endif
   /* Infinite loop */
   for(;;)
   {
-    #ifdef tx
-      nrf24_transmit_data(data_T, sizeof(data_T));
-    #else
-      nrf24_switch_to_rx();
-      if(nrf24_data_available()) {
-        nrf24_receive_data(data_R, sizeof(data_R));
-      }
-
-      char tmp[40];
-      sprintf(tmp, "| %s |\r\n", data_R);
-      HAL_UART_Transmit(&huart1, tmp, strlen(tmp), 200);
-
-      for (uint8_t i=0; i < sizeof(data_R); i++) {
-        data_R[i] = '\0';
-      }
-    #endif
+    
     osDelay(1);
   }
   /* USER CODE END StartRadioComms */
