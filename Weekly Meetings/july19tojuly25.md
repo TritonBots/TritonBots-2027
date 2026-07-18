@@ -98,10 +98,14 @@ Discuss team and engineering management changes to the team for our success and 
 - Sukhjeet Sekhon
   - Give directions for how to get GitHub setup for all team members
   - Create the block diagram for the Microcontroller and networking stack
+  - Document the Arduino Uno R4 Wifi implementation
   - Create specification control document for the STM32 and radio
   - Resarch networking and radio communication
 - Pedro Pinela
-  - 
+  - Survey for interest by Monday
+  - Meet with Diego and Rafa for Lead
+  - Document dribbler and drivetrain
+  - Get familiar with GitHub
 - Evan Chou
   - Finish up Booster Champions Competition with current AI Team members
   - Delegate documentation tasks to available AI Team members
