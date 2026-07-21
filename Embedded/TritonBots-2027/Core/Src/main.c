@@ -100,16 +100,44 @@ int main(void)
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+
+  static const int max_ccr = 100;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    for (int duty = 0; duty <= 2050; duty += 10)
+    /*
+      You might need the Comment Formula Extension to view the math better
+
+      These are the formulas that show the PWM is running at 60Hz and the max CCR value should be 100 for 100% Duty Cycle
+
+      120Hz for a pwm frequency reduces LED flickering
+
+      $$f_{pwm}=\frac{f_{timer}}{\left(PSC+1\right)\left(ARR+1\right)}$$
+    
+    
+      $$Duty (\%) =\frac{CCR}{ARR+1}\times100$$
+    
+
+      $$f_{timer}=60MHz$$
+
+      $$PSC=4999$$
+      $$ARR=99$$
+      $$CCR=100$$
+
+      $$f_{pwm}=\frac{60MHz}{(4999+1)(99+1)}=120Hz$$
+
+
+      $$Duty(\%)=\frac{100}{99+1}\times100=100\%$$
+    
+    */
+    
+    for (int duty = 0; duty <= max_ccr*2; duty += 1)
     {
-      if (duty >= 1025) {
-        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 2050-duty);  // TIM1->CCR1 = duty;
+      if (duty >= max_ccr) {
+        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, max_ccr*2-duty);  // TIM1->CCR1 = duty;
       } else {
         __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, duty);  // TIM1->CCR1 = duty;
       }
@@ -138,7 +166,9 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI_DIV2;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL15;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -148,17 +178,17 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
     Error_Handler();
   }
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
-  PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV2;
+  PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV6;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
@@ -233,9 +263,9 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 129;
+  htim1.Init.Prescaler = 4999;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 1025;
+  htim1.Init.Period = 99;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
