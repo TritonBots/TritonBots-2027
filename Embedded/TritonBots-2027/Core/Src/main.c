@@ -31,6 +31,31 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+/*
+  assuming ARR = 99 and f_timer = 60 MHz
+  C3: 130.81
+  D3: 146.83
+  E3: 164.81
+  F3: 174.61
+  G3: 196.00
+  A3: 220.00
+  B3: 246.94
+  C4: 261.63
+  D4: 293.67
+  E4: 329.63
+  F4: 349.23
+  G4: 392.00
+  A4: 440.00
+  B4: 493.88
+  C5: 523.25
+*/
+#define C3 4586
+#define E3 3640
+#define G3 3060
+#define C4 2292
+#define E4 1819
+#define G4 1530
+#define C5 1146
 
 /* USER CODE END PD */
 
@@ -100,8 +125,11 @@ int main(void)
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+  TIM1->CCR1 = 50;
 
-  static const int max_ccr = 100;
+  int notes[7] = {
+    C3, E3, G3, C4, E4, G4, C5 
+  };
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -153,7 +181,7 @@ int main(void)
       C5: 523.25
     */
     
-    for (int duty = 0; duty <= max_ccr*2; duty += 1)
+    /* for (int duty = 0; duty <= max_ccr*2; duty += 1)
     {
       if (duty >= max_ccr) {
         __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, max_ccr*2-duty);  // TIM1->CCR1 = duty;
@@ -161,7 +189,13 @@ int main(void)
         __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, duty);  // TIM1->CCR1 = duty;
       }
       HAL_Delay(10);  // Wait 500ms before changing duty cycle
-    }
+    } */
+
+    // for (int note=0;note<7;note++) {
+    //   TIM1->PSC = notes[note];
+    //   HAL_Delay(1000);
+    // }
+    TIM1->PSC = C5;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
