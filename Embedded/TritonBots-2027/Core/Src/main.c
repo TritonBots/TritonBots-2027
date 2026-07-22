@@ -49,12 +49,21 @@
   B4: 493.88
   C5: 523.25
 */
+// PSC values for TIM1 at ARR = 99 and f_timer = 60 MHz
 #define C3 4586
+#define D3 4085
 #define E3 3640
+#define F3 3435
 #define G3 3060
+#define A3 2726
+#define B3 2429
 #define C4 2292
+#define D4 2042
 #define E4 1819
+#define F4 1717
 #define G4 1530
+#define A4 1363
+#define B4 1214
 #define C5 1146
 
 /* USER CODE END PD */
