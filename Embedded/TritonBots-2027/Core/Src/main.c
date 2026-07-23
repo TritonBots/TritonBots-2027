@@ -82,6 +82,8 @@ typedef struct {
 #define B4 1214
 #define C5 1146
 
+#define SONG_SIZE 2
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -100,9 +102,8 @@ ADC_HandleTypeDef hadc1;
 TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
-static const uint32_t song_size = 2;
 
-note_t song[song_size] = {
+note_t song[SONG_SIZE] = {
   {C4, QUARTER_NOTE},
   {G4, QUARTER_NOTE}
 };
@@ -115,7 +116,7 @@ static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
-static void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t* song[song_size]) ;
+static void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t song[song_size]) ;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -163,7 +164,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    play_song(TIM1, song_size, song);
+    play_song(TIM1, SONG_SIZE, song);
     /* TIM1->PSC = C4;
     HAL_Delay(1000);
     TIM1->PSC = G4;
@@ -382,10 +383,10 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-static void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t* song[song_size]) {
+static void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t song[song_size]) {
   for (uint16_t note = 0; note < song_size; note++) {
-    TIMX->PSC = song[note]->psc;
-    HAL_Delay(song[note]->duration);
+    TIMX->PSC = song[note].psc;
+    HAL_Delay(song[note].duration);
   }
 }
 /* USER CODE END 4 */
