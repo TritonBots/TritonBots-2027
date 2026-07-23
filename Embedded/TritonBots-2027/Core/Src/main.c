@@ -51,114 +51,103 @@ ADC_HandleTypeDef hadc1;
 TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
-#define SONG_SIZE 88
+
+#define SONG_SIZE 66
 
 note_t song[SONG_SIZE] = {
-    // Octave 0
-    {A0,        EIGHTH_NOTE},
-    {A0_SHARP,  EIGHTH_NOTE},
-    {B0,        EIGHTH_NOTE},
+    /* Measure 1 */
+    {E4,        QUARTER_NOTE},
+    {E4,        QUARTER_NOTE},
+    {F4,        QUARTER_NOTE},
+    {G4,        QUARTER_NOTE},
 
-    // Octave 1
-    {C1,        EIGHTH_NOTE},
-    {C1_SHARP,  EIGHTH_NOTE},
-    {D1,        EIGHTH_NOTE},
-    {D1_SHARP,  EIGHTH_NOTE},
-    {E1,        EIGHTH_NOTE},
-    {F1,        EIGHTH_NOTE},
-    {F1_SHARP,  EIGHTH_NOTE},
-    {G1,        EIGHTH_NOTE},
-    {G1_SHARP,  EIGHTH_NOTE},
-    {A1,        EIGHTH_NOTE},
-    {A1_SHARP,  EIGHTH_NOTE},
-    {B1,        EIGHTH_NOTE},
+    /* Measure 2 */
+    {G4,        QUARTER_NOTE},
+    {F4,        QUARTER_NOTE},
+    {E4,        QUARTER_NOTE},
+    {D4,        QUARTER_NOTE},
 
-    // Octave 2
-    {C2,        EIGHTH_NOTE},
-    {C2_SHARP,  EIGHTH_NOTE},
-    {D2,        EIGHTH_NOTE},
-    {D2_SHARP,  EIGHTH_NOTE},
-    {E2,        EIGHTH_NOTE},
-    {F2,        EIGHTH_NOTE},
-    {F2_SHARP,  EIGHTH_NOTE},
-    {G2,        EIGHTH_NOTE},
-    {G2_SHARP,  EIGHTH_NOTE},
-    {A2,        EIGHTH_NOTE},
-    {A2_SHARP,  EIGHTH_NOTE},
-    {B2,        EIGHTH_NOTE},
+    /* Measure 3 */
+    {C4,        QUARTER_NOTE},
+    {C4,        QUARTER_NOTE},
+    {D4,        QUARTER_NOTE},
+    {E4,        QUARTER_NOTE},
 
-    // Octave 3
-    {C3,        EIGHTH_NOTE},
-    {C3_SHARP,  EIGHTH_NOTE},
-    {D3,        EIGHTH_NOTE},
-    {D3_SHARP,  EIGHTH_NOTE},
-    {E3,        EIGHTH_NOTE},
-    {F3,        EIGHTH_NOTE},
-    {F3_SHARP,  EIGHTH_NOTE},
-    {G3,        EIGHTH_NOTE},
-    {G3_SHARP,  EIGHTH_NOTE},
-    {A3,        EIGHTH_NOTE},
-    {A3_SHARP,  EIGHTH_NOTE},
-    {B3,        EIGHTH_NOTE},
-
-    // Octave 4 (Middle C)
-    {C4,        EIGHTH_NOTE},
-    {C4_SHARP,  EIGHTH_NOTE},
+    /* Measure 4 */
+    {E4,        QUARTER_NOTE + EIGHTH_NOTE},
     {D4,        EIGHTH_NOTE},
-    {D4_SHARP,  EIGHTH_NOTE},
+    {D4,        HALF_NOTE},
+
+    /* Measure 5 */
+    {E4,        QUARTER_NOTE},
+    {E4,        QUARTER_NOTE},
+    {F4,        QUARTER_NOTE},
+    {G4,        QUARTER_NOTE},
+
+    /* Measure 6 */
+    {G4,        QUARTER_NOTE},
+    {F4,        QUARTER_NOTE},
+    {E4,        QUARTER_NOTE},
+    {D4,        QUARTER_NOTE},
+
+    /* Measure 7 */
+    {C4,        QUARTER_NOTE},
+    {C4,        QUARTER_NOTE},
+    {D4,        QUARTER_NOTE},
+    {E4,        QUARTER_NOTE},
+
+    /* Measure 8 */
+    {D4,        QUARTER_NOTE + EIGHTH_NOTE},
+    {C4,        EIGHTH_NOTE},
+    {C4,        HALF_NOTE},
+
+    /* Measure 9 */
+    {D4,        QUARTER_NOTE},
+    {D4,        QUARTER_NOTE},
+    {E4,        QUARTER_NOTE},
+    {C4,        QUARTER_NOTE},
+
+    /* Measure 10 */
+    {D4,        QUARTER_NOTE},
     {E4,        EIGHTH_NOTE},
     {F4,        EIGHTH_NOTE},
-    {F4_SHARP,  EIGHTH_NOTE},
-    {G4,        EIGHTH_NOTE},
-    {G4_SHARP,  EIGHTH_NOTE},
-    {A4,        EIGHTH_NOTE},
-    {A4_SHARP,  EIGHTH_NOTE},
-    {B4,        EIGHTH_NOTE},
+    {E4,        QUARTER_NOTE},
+    {C4,        QUARTER_NOTE},
 
-    // Octave 5
-    {C5,        EIGHTH_NOTE},
-    {C5_SHARP,  EIGHTH_NOTE},
-    {D5,        EIGHTH_NOTE},
-    {D5_SHARP,  EIGHTH_NOTE},
-    {E5,        EIGHTH_NOTE},
-    {F5,        EIGHTH_NOTE},
-    {F5_SHARP,  EIGHTH_NOTE},
-    {G5,        EIGHTH_NOTE},
-    {G5_SHARP,  EIGHTH_NOTE},
-    {A5,        EIGHTH_NOTE},
-    {A5_SHARP,  EIGHTH_NOTE},
-    {B5,        EIGHTH_NOTE},
+    /* Measure 11 */
+    {D4,        QUARTER_NOTE},
+    {E4,        EIGHTH_NOTE},
+    {F4,        EIGHTH_NOTE},
+    {E4,        QUARTER_NOTE},
+    {D4,        QUARTER_NOTE},
 
-    // Octave 6
-    {C6,        EIGHTH_NOTE},
-    {C6_SHARP,  EIGHTH_NOTE},
-    {D6,        EIGHTH_NOTE},
-    {D6_SHARP,  EIGHTH_NOTE},
-    {E6,        EIGHTH_NOTE},
-    {F6,        EIGHTH_NOTE},
-    {F6_SHARP,  EIGHTH_NOTE},
-    {G6,        EIGHTH_NOTE},
-    {G6_SHARP,  EIGHTH_NOTE},
-    {A6,        EIGHTH_NOTE},
-    {A6_SHARP,  EIGHTH_NOTE},
-    {B6,        EIGHTH_NOTE},
+    /* Measure 12 */
+    {C4,        QUARTER_NOTE},
+    {D4,        QUARTER_NOTE},
+    {G3,        HALF_NOTE},
 
-    // Octave 7
-    {C7,        EIGHTH_NOTE},
-    {C7_SHARP,  EIGHTH_NOTE},
-    {D7,        EIGHTH_NOTE},
-    {D7_SHARP,  EIGHTH_NOTE},
-    {E7,        EIGHTH_NOTE},
-    {F7,        EIGHTH_NOTE},
-    {F7_SHARP,  EIGHTH_NOTE},
-    {G7,        EIGHTH_NOTE},
-    {G7_SHARP,  EIGHTH_NOTE},
-    {A7,        EIGHTH_NOTE},
-    {A7_SHARP,  EIGHTH_NOTE},
-    {B7,        EIGHTH_NOTE},
+    /* Measure 13 (repeat of 1) */
+    {E4,        QUARTER_NOTE},
+    {E4,        QUARTER_NOTE},
+    {F4,        QUARTER_NOTE},
+    {G4,        QUARTER_NOTE},
 
-    // Top of the piano
-    {C8,        EIGHTH_NOTE},
+    /* Measure 14 */
+    {G4,        QUARTER_NOTE},
+    {F4,        QUARTER_NOTE},
+    {E4,        QUARTER_NOTE},
+    {D4,        QUARTER_NOTE},
+
+    /* Measure 15 */
+    {C4,        QUARTER_NOTE},
+    {C4,        QUARTER_NOTE},
+    {D4,        QUARTER_NOTE},
+    {E4,        QUARTER_NOTE},
+
+    /* Measure 16 — final cadence */
+    {D4,        QUARTER_NOTE + EIGHTH_NOTE},
+    {C4,        EIGHTH_NOTE},
+    {C4,        HALF_NOTE},
 };
 
 /* USER CODE END PV */
