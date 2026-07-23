@@ -181,70 +181,85 @@ TIM_HandleTypeDef htim1;
 #define SONG_SIZE 64
 
 note_t song[SONG_SIZE] = {
-  {A0, EIGHTH_NOTE},
-  {B0, EIGHTH_NOTE},
-  {C1, QUARTER_NOTE},
-  {D1, EIGHTH_NOTE},
-  {E1, EIGHTH_NOTE},
-  {F1, EIGHTH_NOTE},
-  {G1, EIGHTH_NOTE},
-  {A1, EIGHTH_NOTE},
-  {B1, EIGHTH_NOTE},
-  {C2, QUARTER_NOTE},
-  {REST, QUARTER_NOTE},
-  {C2, EIGHTH_NOTE},
-  {D2, EIGHTH_NOTE},
-  {E2, EIGHTH_NOTE},
-  {F2, EIGHTH_NOTE},
-  {G2, EIGHTH_NOTE},
-  {A2, EIGHTH_NOTE},
-  {B2, EIGHTH_NOTE},
-  {C3, QUARTER_NOTE},
-  {REST, QUARTER_NOTE},
-  {C3, EIGHTH_NOTE},
-  {D3, EIGHTH_NOTE},
-  {E3, EIGHTH_NOTE},
-  {F3, EIGHTH_NOTE},
-  {G3, EIGHTH_NOTE},
-  {A3, EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-  {C4, QUARTER_NOTE},
-  {REST, QUARTER_NOTE},
-  {C4, EIGHTH_NOTE},
-  {D4, EIGHTH_NOTE},
-  {E4, EIGHTH_NOTE},
-  {F4, EIGHTH_NOTE},
-  {G4, EIGHTH_NOTE},
-  {A4, EIGHTH_NOTE},
-  {B4, EIGHTH_NOTE},
-  {C5, QUARTER_NOTE},
-  {REST, QUARTER_NOTE},
-  {C5, EIGHTH_NOTE},
-  {D5, EIGHTH_NOTE},
-  {E5, EIGHTH_NOTE},
-  {F5, EIGHTH_NOTE},
-  {G5, EIGHTH_NOTE},
-  {A5, EIGHTH_NOTE},
-  {B5, EIGHTH_NOTE},
-  {C6, QUARTER_NOTE},
-  {REST, QUARTER_NOTE},
-  {C6, EIGHTH_NOTE},
-  {D6, EIGHTH_NOTE},
-  {E6, EIGHTH_NOTE},
-  {F6, EIGHTH_NOTE},
-  {G6, EIGHTH_NOTE},
-  {A6, EIGHTH_NOTE},
-  {B6, EIGHTH_NOTE},
-  {C7, QUARTER_NOTE},
-  {REST, QUARTER_NOTE},
-  {C7, EIGHTH_NOTE},
-  {D7, EIGHTH_NOTE},
-  {E7, EIGHTH_NOTE},
-  {F7, EIGHTH_NOTE},
-  {G7, EIGHTH_NOTE},
-  {A7, EIGHTH_NOTE},
-  {B7, EIGHTH_NOTE},
-  {C8, QUARTER_NOTE}
+    // Phrase 1: "Twinkle, twinkle, little star..."
+    {C4, QUARTER_NOTE},
+    {C4, QUARTER_NOTE},
+    {G4, QUARTER_NOTE},
+    {G4, QUARTER_NOTE},
+    {A4, QUARTER_NOTE},
+    {A4, QUARTER_NOTE},
+    {G4, QUARTER_NOTE},
+    {REST, QUARTER_NOTE},
+
+    // Phrase 2: "How I wonder what you are..."
+    {F4, QUARTER_NOTE},
+    {F4, QUARTER_NOTE},
+    {E4, QUARTER_NOTE},
+    {E4, QUARTER_NOTE},
+    {D4, QUARTER_NOTE},
+    {D4, QUARTER_NOTE},
+    {C4, QUARTER_NOTE},
+    {REST, QUARTER_NOTE},
+
+    // Phrase 3: "Up above the world so high..."
+    {G4, QUARTER_NOTE},
+    {G4, QUARTER_NOTE},
+    {F4, QUARTER_NOTE},
+    {F4, QUARTER_NOTE},
+    {E4, QUARTER_NOTE},
+    {E4, QUARTER_NOTE},
+    {D4, QUARTER_NOTE},
+    {REST, QUARTER_NOTE},
+
+    // Phrase 4: "Like a diamond in the sky..."
+    {G4, QUARTER_NOTE},
+    {G4, QUARTER_NOTE},
+    {F4, QUARTER_NOTE},
+    {F4, QUARTER_NOTE},
+    {E4, QUARTER_NOTE},
+    {E4, QUARTER_NOTE},
+    {D4, QUARTER_NOTE},
+    {REST, QUARTER_NOTE},
+
+    // Phrase 5: "Twinkle, twinkle, little star..." (repeat)
+    {C4, QUARTER_NOTE},
+    {C4, QUARTER_NOTE},
+    {G4, QUARTER_NOTE},
+    {G4, QUARTER_NOTE},
+    {A4, QUARTER_NOTE},
+    {A4, QUARTER_NOTE},
+    {G4, QUARTER_NOTE},
+    {REST, QUARTER_NOTE},
+
+    // Phrase 6: "How I wonder what you are..." (repeat)
+    {F4, QUARTER_NOTE},
+    {F4, QUARTER_NOTE},
+    {E4, QUARTER_NOTE},
+    {E4, QUARTER_NOTE},
+    {D4, QUARTER_NOTE},
+    {D4, QUARTER_NOTE},
+    {C4, QUARTER_NOTE},
+    {REST, QUARTER_NOTE},
+
+    // Phrase 7: Ascending C major arpeggio variation
+    {C4, QUARTER_NOTE},
+    {E4, QUARTER_NOTE},
+    {G4, QUARTER_NOTE},
+    {C5, QUARTER_NOTE},
+    {E5, QUARTER_NOTE},
+    {G5, QUARTER_NOTE},
+    {C5, QUARTER_NOTE},
+    {REST, QUARTER_NOTE},
+
+    // Phrase 8: Descending resolution to root
+    {G4, QUARTER_NOTE},
+    {E4, QUARTER_NOTE},
+    {C4, QUARTER_NOTE},
+    {G3, QUARTER_NOTE},
+    {E3, QUARTER_NOTE},
+    {C3, QUARTER_NOTE},
+    {C4, QUARTER_NOTE},
+    {REST, QUARTER_NOTE},
 };
 
 /* USER CODE END PV */
@@ -531,6 +546,10 @@ static void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t *song) {
       TIMX->PSC = song[note].psc;
     }
     HAL_Delay(song[note].duration);
+
+    // articulate the end of the note so repeated notes have separation
+    TIMX->CCR1 = 0;
+    HAL_Delay(5);
   }
   TIMX->CCR1 = 0; // stop playing
 }
