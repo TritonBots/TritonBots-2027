@@ -32,6 +32,13 @@
 */
 #define FREQ_TO_PSC(freq, timer_freq, arr) COMPILE_TIME_ROUND(((timer_freq) / ((freq) * ((arr) + 1))) - 1)
 
+typedef struct {
+
+  uint32_t psc;
+  uint32_t duration;
+
+} note_t;
+
 // PSC values for generating PWM signals
 
 #define REST 0 // not a real PSC value. Check for 0 in the play_song function to set Duty Cycle to 0%

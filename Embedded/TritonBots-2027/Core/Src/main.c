@@ -21,18 +21,13 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "musical_notes.h"
 #include "musical_duration.h"
+#include "musical_player.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-typedef struct {
 
-  uint32_t psc;
-  uint32_t duration;
-
-} note_t;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -174,7 +169,6 @@ static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
-static void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t *song) ;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -440,23 +434,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-static void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t *song) {
-  TIMX->CCR1 = 50; // start playing
-  for (uint16_t note = 0; note < song_size; note++) {
-    if (0 == song[note].psc) {
-      TIMX->CCR1 = 0; // stop playing
-    } else {
-      TIMX->CCR1 = 50; // keep playing
-      TIMX->PSC = song[note].psc;
-    }
-    HAL_Delay(song[note].duration);
 
-    // articulate the end of the note so repeated notes have separation
-    TIMX->CCR1 = 0;
-    HAL_Delay(5);
-  }
-  TIMX->CCR1 = 0; // stop playing
-}
 /* USER CODE END 4 */
 
 /**
