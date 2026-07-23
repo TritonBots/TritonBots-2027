@@ -49,24 +49,79 @@ typedef struct {
 #define SIXTEENTH_NOTE 0.25f * BPS_MS
 
 /*
-  assuming ARR = 99 and f_timer = 60 MHz
-  C3: 130.81
-  D3: 146.83
-  E3: 164.81
-  F3: 174.61
-  G3: 196.00
-  A3: 220.00
-  B3: 246.94
-  C4: 261.63
-  D4: 293.67
-  E4: 329.63
-  F4: 349.23
-  G4: 392.00
-  A4: 440.00
-  B4: 493.88
-  C5: 523.25
+  Piano Pitch frequencies
+  A0 27.5
+  B0 30.868
+  C1 32.703
+  D1 36.708
+  E1 41.203
+  F1 43.654
+  G1 48.999
+  A1 55.000
+  B1 61.735
+  C2 65.406
+  D2 73.416
+  E2 82.407
+  F2 87.307
+  G2 97.999
+  A2 110.00
+  B2 123.47
+  C3 130.81
+  D3 146.83
+  E3 164.81
+  F3 174.61
+  G3 196.00
+  A3 220.00
+  B3 246.94
+  C4 261.63
+  D4 293.67
+  E4 329.63
+  F4 349.23
+  G4 392.00
+  A4 440.00
+  B4 493.88
+  C5 523.25
+  D5 587.33
+  E5 659.26
+  F5 698.46
+  G5 783.99
+  A5 880.00
+  B5 987.77
+  C6 1046.5
+  D6 1174.7
+  E6 1318.5
+  F6 1396.9
+  G6 1568.0
+  A6 1760.0
+  B6 1975.5
+  C7 2093.0
+  D7 2349.3
+  E7 2637.0
+  F7 2793.0
+  G7 3136.0
+  A7 3520.0
+  B7 3951.1
+  C8 4186.0
 */
+
 // PSC values for TIM1 at ARR = 99 and f_timer = 60 MHz
+#define REST 0 // not a real PSC value. Check for 0 to set Duty Cycle to 0%
+#define A0 21817
+#define B0 19437
+#define C1 18346
+#define D1 16344
+#define E1 14561
+#define F1 13743
+#define G1 12244
+#define A1 10908
+#define B1 9718
+#define C2 9172
+#define D2 8172
+#define E2 7280
+#define F2 6871
+#define G2 6122
+#define A2 5454
+#define B2 4858
 #define C3 4586
 #define D3 4085
 #define E3 3640
@@ -82,6 +137,27 @@ typedef struct {
 #define A4 1363
 #define B4 1214
 #define C5 1146
+#define D5 1021
+#define E5 909
+#define F5 858
+#define G5 764
+#define A5 681
+#define B5 606
+#define C6 572
+#define D6 510
+#define E6 454
+#define F6 429
+#define G6 382
+#define A6 340
+#define B6 303
+#define C7 286
+#define D7 254
+#define E7 227
+#define F7 214
+#define G7 190
+#define A7 169
+#define B7 151
+#define C8 142
 
 
 /* USER CODE END PD */
@@ -102,16 +178,73 @@ ADC_HandleTypeDef hadc1;
 TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
-#define SONG_SIZE 7
+#define SONG_SIZE 64
 
 note_t song[SONG_SIZE] = {
+  {A0, EIGHTH_NOTE},
+  {B0, EIGHTH_NOTE},
+  {C1, QUARTER_NOTE},
+  {D1, EIGHTH_NOTE},
+  {E1, EIGHTH_NOTE},
+  {F1, EIGHTH_NOTE},
+  {G1, EIGHTH_NOTE},
+  {A1, EIGHTH_NOTE},
+  {B1, EIGHTH_NOTE},
+  {C2, QUARTER_NOTE},
+  {REST, QUARTER_NOTE},
+  {C2, EIGHTH_NOTE},
+  {D2, EIGHTH_NOTE},
+  {E2, EIGHTH_NOTE},
+  {F2, EIGHTH_NOTE},
+  {G2, EIGHTH_NOTE},
+  {A2, EIGHTH_NOTE},
+  {B2, EIGHTH_NOTE},
+  {C3, QUARTER_NOTE},
+  {REST, QUARTER_NOTE},
+  {C3, EIGHTH_NOTE},
+  {D3, EIGHTH_NOTE},
+  {E3, EIGHTH_NOTE},
+  {F3, EIGHTH_NOTE},
+  {G3, EIGHTH_NOTE},
+  {A3, EIGHTH_NOTE},
+  {B3, EIGHTH_NOTE},
+  {C4, QUARTER_NOTE},
+  {REST, QUARTER_NOTE},
+  {C4, EIGHTH_NOTE},
   {D4, EIGHTH_NOTE},
   {E4, EIGHTH_NOTE},
   {F4, EIGHTH_NOTE},
   {G4, EIGHTH_NOTE},
-  {E4, QUARTER_NOTE},
-  {C4, EIGHTH_NOTE},
-  {D4, EIGHTH_NOTE+WHOLE_NOTE}
+  {A4, EIGHTH_NOTE},
+  {B4, EIGHTH_NOTE},
+  {C5, QUARTER_NOTE},
+  {REST, QUARTER_NOTE},
+  {C5, EIGHTH_NOTE},
+  {D5, EIGHTH_NOTE},
+  {E5, EIGHTH_NOTE},
+  {F5, EIGHTH_NOTE},
+  {G5, EIGHTH_NOTE},
+  {A5, EIGHTH_NOTE},
+  {B5, EIGHTH_NOTE},
+  {C6, QUARTER_NOTE},
+  {REST, QUARTER_NOTE},
+  {C6, EIGHTH_NOTE},
+  {D6, EIGHTH_NOTE},
+  {E6, EIGHTH_NOTE},
+  {F6, EIGHTH_NOTE},
+  {G6, EIGHTH_NOTE},
+  {A6, EIGHTH_NOTE},
+  {B6, EIGHTH_NOTE},
+  {C7, QUARTER_NOTE},
+  {REST, QUARTER_NOTE},
+  {C7, EIGHTH_NOTE},
+  {D7, EIGHTH_NOTE},
+  {E7, EIGHTH_NOTE},
+  {F7, EIGHTH_NOTE},
+  {G7, EIGHTH_NOTE},
+  {A7, EIGHTH_NOTE},
+  {B7, EIGHTH_NOTE},
+  {C8, QUARTER_NOTE}
 };
 
 /* USER CODE END PV */
@@ -163,7 +296,6 @@ int main(void)
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-  TIM1->CCR1 = 50;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -171,6 +303,7 @@ int main(void)
   while (1)
   {
     play_song(TIM1, SONG_SIZE, song);
+    HAL_Delay(1000);
     /* TIM1->PSC = C4;
     HAL_Delay(1000);
     TIM1->PSC = G4;
@@ -389,10 +522,17 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 static void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t *song) {
+  TIMX->CCR1 = 50; // start playing
   for (uint16_t note = 0; note < song_size; note++) {
-    TIMX->PSC = song[note].psc;
+    if (0 == song[note].psc) {
+      TIMX->CCR1 = 0; // stop playing
+    } else {
+      TIMX->CCR1 = 50; // keep playing
+      TIMX->PSC = song[note].psc;
+    }
     HAL_Delay(song[note].duration);
   }
+  TIMX->CCR1 = 0; // stop playing
 }
 /* USER CODE END 4 */
 
