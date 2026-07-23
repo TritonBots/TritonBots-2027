@@ -26,11 +26,27 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+typedef struct {
 
+  uint32_t psc;
+  uint32_t duration;
+
+} note_t;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+#define BPM 120.0f
+
+#define BPS BPM / 60.0f
+#define BPS_MS 1000.0f / BPS
+#define WHOLE_NOTE 4.0f * BPS_MS
+#define HALF_NOTE 2.0f * BPS_MS
+#define QUARTER_NOTE 1.0f * BPS_MS
+#define EIGHTH_NOTE 0.5f * BPS_MS
+#define SIXTEENTH_NOTE 0.25f * BPS_MS
+
 /*
   assuming ARR = 99 and f_timer = 60 MHz
   C3: 130.81
@@ -84,6 +100,12 @@ ADC_HandleTypeDef hadc1;
 TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
+static const uint32_t song_size = 2;
+
+note_t song[song_size] = {
+  {C4, QUARTER_NOTE},
+  {G4, QUARTER_NOTE}
+};
 
 /* USER CODE END PV */
 
@@ -93,7 +115,7 @@ static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
-
+static void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t* song[song_size]) ;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -135,76 +157,18 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   TIM1->CCR1 = 50;
-
-  int notes[7] = {
-    C3, E3, G3, C4, E4, G4, C5 
-  };
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /*
-      You might need the Comment Formula Extension to view the math better
-
-      These are the formulas that show the PWM is running at 60Hz and the max CCR value should be 100 for 100% Duty Cycle
-
-      120Hz for a pwm frequency reduces LED flickering
-
-      $$f_{pwm}=\frac{f_{timer}}{\left(PSC+1\right)\left(ARR+1\right)}$$
-    
-    
-      $$Duty (\%) =\frac{CCR}{ARR+1}\times100$$
-    
-
-      $$f_{timer}=60MHz$$
-
-      $$PSC=4999$$
-      $$ARR=99$$
-      $$CCR=100$$
-
-      $$f_{pwm}=\frac{60MHz}{(4999+1)(99+1)}=120Hz$$
-
-
-      $$Duty(\%)=\frac{100}{99+1}\times100=100\%$$
-    
-
-      I want to use pwm signals to play musical pitches with a passive buzzer.
-
-      Note: Frequency (Hz)
-      C3: 130.81
-      D3: 146.83
-      E3: 164.81
-      F3: 174.61
-      G3: 196.00
-      A3: 220.00
-      B3: 246.94
-      C4: 261.63
-      D4: 293.67
-      E4: 329.63
-      F4: 349.23
-      G4: 392.00
-      A4: 440.00
-      B4: 493.88
-      C5: 523.25
-    */
-    
-    /* for (int duty = 0; duty <= max_ccr*2; duty += 1)
-    {
-      if (duty >= max_ccr) {
-        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, max_ccr*2-duty);  // TIM1->CCR1 = duty;
-      } else {
-        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, duty);  // TIM1->CCR1 = duty;
-      }
-      HAL_Delay(10);  // Wait 500ms before changing duty cycle
-    } */
-
-    // for (int note=0;note<7;note++) {
-    //   TIM1->PSC = notes[note];
-    //   HAL_Delay(1000);
-    // }
-    TIM1->PSC = C5;
+    play_song(TIM1, song_size, song);
+    /* TIM1->PSC = C4;
+    HAL_Delay(1000);
+    TIM1->PSC = G4;
+    HAL_Delay(1000); */
+    HAL_Delay(5000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -418,7 +382,12 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+static void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t* song[song_size]) {
+  for (uint16_t note = 0; note < song_size; note++) {
+    TIMX->PSC = song[note]->psc;
+    HAL_Delay(song[note]->duration);
+  }
+}
 /* USER CODE END 4 */
 
 /**
