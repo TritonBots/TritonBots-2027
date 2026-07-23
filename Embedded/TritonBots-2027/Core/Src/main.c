@@ -39,8 +39,9 @@ typedef struct {
 
 #define BPM 120.0f
 
-#define BPS BPM / 60.0f
-#define BPS_MS 1000.0f / BPS
+#define BPS (BPM / 60.0f)
+#define BPS_MS (1000.0f / BPS)
+
 #define WHOLE_NOTE 4.0f * BPS_MS
 #define HALF_NOTE 2.0f * BPS_MS
 #define QUARTER_NOTE 1.0f * BPS_MS
@@ -82,7 +83,6 @@ typedef struct {
 #define B4 1214
 #define C5 1146
 
-#define SONG_SIZE 2
 
 /* USER CODE END PD */
 
@@ -102,10 +102,16 @@ ADC_HandleTypeDef hadc1;
 TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
+#define SONG_SIZE 7
 
 note_t song[SONG_SIZE] = {
-  {C4, QUARTER_NOTE},
-  {G4, QUARTER_NOTE}
+  {D4, EIGHTH_NOTE},
+  {E4, EIGHTH_NOTE},
+  {F4, EIGHTH_NOTE},
+  {G4, EIGHTH_NOTE},
+  {E4, QUARTER_NOTE},
+  {C4, EIGHTH_NOTE},
+  {D4, EIGHTH_NOTE+WHOLE_NOTE}
 };
 
 /* USER CODE END PV */
@@ -116,7 +122,7 @@ static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
-static void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t song[song_size]) ;
+static void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t *song) ;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -169,7 +175,6 @@ int main(void)
     HAL_Delay(1000);
     TIM1->PSC = G4;
     HAL_Delay(1000); */
-    HAL_Delay(5000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -383,7 +388,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-static void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t song[song_size]) {
+static void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t *song) {
   for (uint16_t note = 0; note < song_size; note++) {
     TIMX->PSC = song[note].psc;
     HAL_Delay(song[note].duration);
