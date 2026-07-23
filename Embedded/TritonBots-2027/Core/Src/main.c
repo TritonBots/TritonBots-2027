@@ -107,55 +107,127 @@ typedef struct {
 // PSC values for TIM1 at ARR = 99 and f_timer = 60 MHz
 #define REST 0 // not a real PSC value. Check for 0 to set Duty Cycle to 0%
 #define A0 21817
+#define A0_SHARP 20593
+#define B0_FLAT A0_SHARP
 #define B0 19437
 #define C1 18346
+#define C1_SHARP 17316
+#define D1_FLAT C1_SHARP
 #define D1 16344
+#define D1_SHARP 15427
+#define E1_FLAT D1_SHARP
 #define E1 14561
 #define F1 13743
+#define F1_SHARP 12972
+#define G1_FLAT F1_SHARP
 #define G1 12244
+#define G1_SHARP 11557
+#define A1_FLAT G1_SHARP
 #define A1 10908
+#define A1_SHARP 10296
+#define B1_FLAT A1_SHARP
 #define B1 9718
 #define C2 9172
+#define C2_SHARP 8658
+#define D2_FLAT C2_SHARP
 #define D2 8172
+#define D2_SHARP 7713
+#define E2_FLAT D2_SHARP
 #define E2 7280
 #define F2 6871
+#define F2_SHARP 6486
+#define G2_FLAT F2_SHARP
 #define G2 6122
+#define G2_SHARP 5778
+#define A2_FLAT G2_SHARP
 #define A2 5454
+#define A2_SHARP 5147
+#define B2_FLAT A2_SHARP
 #define B2 4858
 #define C3 4586
+#define C3_SHARP 4328
+#define D3_FLAT C3_SHARP
 #define D3 4085
+#define D3_SHARP 3856
+#define E3_FLAT D3_SHARP
 #define E3 3640
 #define F3 3435
+#define F3_SHARP 3242
+#define G3_FLAT F3_SHARP
 #define G3 3060
+#define G3_SHARP 2888
+#define A3_FLAT G3_SHARP
 #define A3 2726
+#define A3_SHARP 2573
+#define B3_FLAT A3_SHARP
 #define B3 2429
 #define C4 2292
+#define C4_SHARP 2164
+#define D4_FLAT C4_SHARP
 #define D4 2042
+#define D4_SHARP 1927
+#define E4_FLAT D4_SHARP
 #define E4 1819
 #define F4 1717
+#define F4_SHARP 1625
+#define G4_FLAT F4_SHARP
 #define G4 1530
+#define G4_SHARP 1444
+#define A4_FLAT G4_SHARP
 #define A4 1363
+#define A4_SHARP 1286
+#define B4_FLAT A4_SHARP
 #define B4 1214
 #define C5 1146
+#define C5_SHARP 1081
+#define D5_FLAT C5_SHARP
 #define D5 1021
+#define D5_SHARP 963
+#define E5_FLAT D5_SHARP
 #define E5 909
 #define F5 858
+#define F5_SHARP 810
+#define G5_FLAT F5_SHARP
 #define G5 764
+#define G5_SHARP 721
+#define A5_FLAT G5_SHARP
 #define A5 681
+#define A5_SHARP 643
+#define B5_FLAT A5_SHARP
 #define B5 606
 #define C6 572
+#define C6_SHARP 540
+#define D6_FLAT C6_SHARP
 #define D6 510
+#define D6_SHARP 481
+#define E6_FLAT D6_SHARP
 #define E6 454
 #define F6 429
+#define F6_SHARP 404
+#define G6_FLAT F6_SHARP
 #define G6 382
+#define G6_SHARP 360
+#define A6_FLAT G6_SHARP
 #define A6 340
+#define A6_SHARP 321
+#define B6_FLAT A6_SHARP
 #define B6 303
 #define C7 286
+#define C7_SHARP 270
+#define D7_FLAT C7_SHARP
 #define D7 254
+#define D7_SHARP 240
+#define E7_FLAT D7_SHARP
 #define E7 227
 #define F7 214
+#define F7_SHARP 202
+#define G7_FLAT F7_SHARP
 #define G7 190
+#define G7_SHARP 180
+#define A7_FLAT G7_SHARP
 #define A7 169
+#define A7_SHARP 160
+#define B7_FLAT A7_SHARP
 #define B7 151
 #define C8 142
 
@@ -178,88 +250,114 @@ ADC_HandleTypeDef hadc1;
 TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
-#define SONG_SIZE 64
+#define SONG_SIZE 88
 
 note_t song[SONG_SIZE] = {
-    // Phrase 1: "Twinkle, twinkle, little star..."
-    {C4, QUARTER_NOTE},
-    {C4, QUARTER_NOTE},
-    {G4, QUARTER_NOTE},
-    {G4, QUARTER_NOTE},
-    {A4, QUARTER_NOTE},
-    {A4, QUARTER_NOTE},
-    {G4, QUARTER_NOTE},
-    {REST, QUARTER_NOTE},
+    // Octave 0
+    {A0,        EIGHTH_NOTE},
+    {A0_SHARP,  EIGHTH_NOTE},
+    {B0,        EIGHTH_NOTE},
 
-    // Phrase 2: "How I wonder what you are..."
-    {F4, QUARTER_NOTE},
-    {F4, QUARTER_NOTE},
-    {E4, QUARTER_NOTE},
-    {E4, QUARTER_NOTE},
-    {D4, QUARTER_NOTE},
-    {D4, QUARTER_NOTE},
-    {C4, QUARTER_NOTE},
-    {REST, QUARTER_NOTE},
+    // Octave 1
+    {C1,        EIGHTH_NOTE},
+    {C1_SHARP,  EIGHTH_NOTE},
+    {D1,        EIGHTH_NOTE},
+    {D1_SHARP,  EIGHTH_NOTE},
+    {E1,        EIGHTH_NOTE},
+    {F1,        EIGHTH_NOTE},
+    {F1_SHARP,  EIGHTH_NOTE},
+    {G1,        EIGHTH_NOTE},
+    {G1_SHARP,  EIGHTH_NOTE},
+    {A1,        EIGHTH_NOTE},
+    {A1_SHARP,  EIGHTH_NOTE},
+    {B1,        EIGHTH_NOTE},
 
-    // Phrase 3: "Up above the world so high..."
-    {G4, QUARTER_NOTE},
-    {G4, QUARTER_NOTE},
-    {F4, QUARTER_NOTE},
-    {F4, QUARTER_NOTE},
-    {E4, QUARTER_NOTE},
-    {E4, QUARTER_NOTE},
-    {D4, QUARTER_NOTE},
-    {REST, QUARTER_NOTE},
+    // Octave 2
+    {C2,        EIGHTH_NOTE},
+    {C2_SHARP,  EIGHTH_NOTE},
+    {D2,        EIGHTH_NOTE},
+    {D2_SHARP,  EIGHTH_NOTE},
+    {E2,        EIGHTH_NOTE},
+    {F2,        EIGHTH_NOTE},
+    {F2_SHARP,  EIGHTH_NOTE},
+    {G2,        EIGHTH_NOTE},
+    {G2_SHARP,  EIGHTH_NOTE},
+    {A2,        EIGHTH_NOTE},
+    {A2_SHARP,  EIGHTH_NOTE},
+    {B2,        EIGHTH_NOTE},
 
-    // Phrase 4: "Like a diamond in the sky..."
-    {G4, QUARTER_NOTE},
-    {G4, QUARTER_NOTE},
-    {F4, QUARTER_NOTE},
-    {F4, QUARTER_NOTE},
-    {E4, QUARTER_NOTE},
-    {E4, QUARTER_NOTE},
-    {D4, QUARTER_NOTE},
-    {REST, QUARTER_NOTE},
+    // Octave 3
+    {C3,        EIGHTH_NOTE},
+    {C3_SHARP,  EIGHTH_NOTE},
+    {D3,        EIGHTH_NOTE},
+    {D3_SHARP,  EIGHTH_NOTE},
+    {E3,        EIGHTH_NOTE},
+    {F3,        EIGHTH_NOTE},
+    {F3_SHARP,  EIGHTH_NOTE},
+    {G3,        EIGHTH_NOTE},
+    {G3_SHARP,  EIGHTH_NOTE},
+    {A3,        EIGHTH_NOTE},
+    {A3_SHARP,  EIGHTH_NOTE},
+    {B3,        EIGHTH_NOTE},
 
-    // Phrase 5: "Twinkle, twinkle, little star..." (repeat)
-    {C4, QUARTER_NOTE},
-    {C4, QUARTER_NOTE},
-    {G4, QUARTER_NOTE},
-    {G4, QUARTER_NOTE},
-    {A4, QUARTER_NOTE},
-    {A4, QUARTER_NOTE},
-    {G4, QUARTER_NOTE},
-    {REST, QUARTER_NOTE},
+    // Octave 4 (Middle C)
+    {C4,        EIGHTH_NOTE},
+    {C4_SHARP,  EIGHTH_NOTE},
+    {D4,        EIGHTH_NOTE},
+    {D4_SHARP,  EIGHTH_NOTE},
+    {E4,        EIGHTH_NOTE},
+    {F4,        EIGHTH_NOTE},
+    {F4_SHARP,  EIGHTH_NOTE},
+    {G4,        EIGHTH_NOTE},
+    {G4_SHARP,  EIGHTH_NOTE},
+    {A4,        EIGHTH_NOTE},
+    {A4_SHARP,  EIGHTH_NOTE},
+    {B4,        EIGHTH_NOTE},
 
-    // Phrase 6: "How I wonder what you are..." (repeat)
-    {F4, QUARTER_NOTE},
-    {F4, QUARTER_NOTE},
-    {E4, QUARTER_NOTE},
-    {E4, QUARTER_NOTE},
-    {D4, QUARTER_NOTE},
-    {D4, QUARTER_NOTE},
-    {C4, QUARTER_NOTE},
-    {REST, QUARTER_NOTE},
+    // Octave 5
+    {C5,        EIGHTH_NOTE},
+    {C5_SHARP,  EIGHTH_NOTE},
+    {D5,        EIGHTH_NOTE},
+    {D5_SHARP,  EIGHTH_NOTE},
+    {E5,        EIGHTH_NOTE},
+    {F5,        EIGHTH_NOTE},
+    {F5_SHARP,  EIGHTH_NOTE},
+    {G5,        EIGHTH_NOTE},
+    {G5_SHARP,  EIGHTH_NOTE},
+    {A5,        EIGHTH_NOTE},
+    {A5_SHARP,  EIGHTH_NOTE},
+    {B5,        EIGHTH_NOTE},
 
-    // Phrase 7: Ascending C major arpeggio variation
-    {C4, QUARTER_NOTE},
-    {E4, QUARTER_NOTE},
-    {G4, QUARTER_NOTE},
-    {C5, QUARTER_NOTE},
-    {E5, QUARTER_NOTE},
-    {G5, QUARTER_NOTE},
-    {C5, QUARTER_NOTE},
-    {REST, QUARTER_NOTE},
+    // Octave 6
+    {C6,        EIGHTH_NOTE},
+    {C6_SHARP,  EIGHTH_NOTE},
+    {D6,        EIGHTH_NOTE},
+    {D6_SHARP,  EIGHTH_NOTE},
+    {E6,        EIGHTH_NOTE},
+    {F6,        EIGHTH_NOTE},
+    {F6_SHARP,  EIGHTH_NOTE},
+    {G6,        EIGHTH_NOTE},
+    {G6_SHARP,  EIGHTH_NOTE},
+    {A6,        EIGHTH_NOTE},
+    {A6_SHARP,  EIGHTH_NOTE},
+    {B6,        EIGHTH_NOTE},
 
-    // Phrase 8: Descending resolution to root
-    {G4, QUARTER_NOTE},
-    {E4, QUARTER_NOTE},
-    {C4, QUARTER_NOTE},
-    {G3, QUARTER_NOTE},
-    {E3, QUARTER_NOTE},
-    {C3, QUARTER_NOTE},
-    {C4, QUARTER_NOTE},
-    {REST, QUARTER_NOTE},
+    // Octave 7
+    {C7,        EIGHTH_NOTE},
+    {C7_SHARP,  EIGHTH_NOTE},
+    {D7,        EIGHTH_NOTE},
+    {D7_SHARP,  EIGHTH_NOTE},
+    {E7,        EIGHTH_NOTE},
+    {F7,        EIGHTH_NOTE},
+    {F7_SHARP,  EIGHTH_NOTE},
+    {G7,        EIGHTH_NOTE},
+    {G7_SHARP,  EIGHTH_NOTE},
+    {A7,        EIGHTH_NOTE},
+    {A7_SHARP,  EIGHTH_NOTE},
+    {B7,        EIGHTH_NOTE},
+
+    // Top of the piano
+    {C8,        EIGHTH_NOTE},
 };
 
 /* USER CODE END PV */
