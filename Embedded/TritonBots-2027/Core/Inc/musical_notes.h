@@ -32,6 +32,12 @@
 */
 #define FREQ_TO_PSC(freq, timer_freq, arr) COMPILE_TIME_ROUND(((timer_freq) / ((freq) * ((arr) + 1))) - 1)
 
+/**
+   @brief a data structure for a note
+
+   @param psc the prescaler bit in the PWM parameters
+   @param duration the musical length of a note in milliseconds
+*/
 typedef struct {
 
   uint32_t psc;
@@ -39,7 +45,7 @@ typedef struct {
 
 } note_t;
 
-// PSC values for generating PWM signals
+// These notes are the PSC values for generating PWM signals at each musical pitch
 
 #define REST 0 // not a real PSC value. Check for 0 in the play_song function to set Duty Cycle to 0%
 #define A0 FREQ_TO_PSC(A0_FREQ, TIM_FREQ, TIM_ARR)
