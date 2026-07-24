@@ -37,136 +37,21 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#ifndef false
-#define false 0
-#endif
-#ifndef true
-#define true 1
-#endif
+
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-ADC_HandleTypeDef hadc1;
-
 TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
 
-#define SONG_SIZE 93
+#define SONG_SIZE 4
 
 note_t song[SONG_SIZE] = {
-
-    /* Intro riff */
-    {E5,            EIGHTH_NOTE},
-    {E5,            QUARTER_NOTE},
-    {E5,            QUARTER_NOTE},
-    {C5,            EIGHTH_NOTE},
-    {E5,            QUARTER_NOTE},
-    {G5,            HALF_NOTE},
-    {G4,            HALF_NOTE},
-
-    /* Main theme — A section */
-    {C5,            QUARTER_NOTE},
-    {G4,            EIGHTH_NOTE},
-    {REST,          EIGHTH_NOTE},
-    {E4,            QUARTER_NOTE},
-    {A4,            QUARTER_NOTE},
-    {B4,            QUARTER_NOTE},
-    {A4_SHARP,      EIGHTH_NOTE},
-    {A4,            QUARTER_NOTE},
-
-    {G4,            QUARTER_NOTE + EIGHTH_NOTE},   /* dotted quarter */
-    {E5,            QUARTER_NOTE + EIGHTH_NOTE},
-    {G5,            QUARTER_NOTE},
-    {A5,            HALF_NOTE},
-    {F5,            EIGHTH_NOTE},
-    {G5,            EIGHTH_NOTE},
-
-    {REST,          EIGHTH_NOTE},
-    {E5,            QUARTER_NOTE},
-    {C5,            EIGHTH_NOTE},
-    {D5,            QUARTER_NOTE},
-    {B4,            QUARTER_NOTE},
-    {REST,          EIGHTH_NOTE},
-
-    /* A section repeat */
-    {C5,            QUARTER_NOTE},
-    {G4,            EIGHTH_NOTE},
-    {REST,          EIGHTH_NOTE},
-    {E4,            QUARTER_NOTE},
-    {A4,            QUARTER_NOTE},
-    {B4,            QUARTER_NOTE},
-    {A4_SHARP,      EIGHTH_NOTE},
-    {A4,            QUARTER_NOTE},
-
-    {G4,            QUARTER_NOTE + EIGHTH_NOTE},
-    {E5,            QUARTER_NOTE + EIGHTH_NOTE},
-    {G5,            QUARTER_NOTE},
-    {A5,            HALF_NOTE},
-    {F5,            EIGHTH_NOTE},
-    {G5,            EIGHTH_NOTE},
-
-    {REST,          EIGHTH_NOTE},
-    {E5,            QUARTER_NOTE},
-    {C5,            EIGHTH_NOTE},
-    {D5,            QUARTER_NOTE},
-    {B4,            QUARTER_NOTE},
-    {REST,          EIGHTH_NOTE},
-
-    /* B section — underground/chromatic run feel */
-    {REST,          QUARTER_NOTE},
-    {G5,            EIGHTH_NOTE},
-    {F5_SHARP,      EIGHTH_NOTE},
-    {F5,            EIGHTH_NOTE},
-    {D5_SHARP,      QUARTER_NOTE},
-    {E5,            EIGHTH_NOTE},
-
-    {REST,          EIGHTH_NOTE},
-    {G4_SHARP,      EIGHTH_NOTE},
-    {A4,            EIGHTH_NOTE},
-    {C5,            EIGHTH_NOTE},
-    {REST,          EIGHTH_NOTE},
-    {A4,            EIGHTH_NOTE},
-    {C5,            EIGHTH_NOTE},
-    {D5,            EIGHTH_NOTE},
-
-    {REST,          QUARTER_NOTE},
-    {G5,            EIGHTH_NOTE},
-    {F5_SHARP,      EIGHTH_NOTE},
-    {F5,            EIGHTH_NOTE},
-    {D5_SHARP,      QUARTER_NOTE},
-    {E5,            EIGHTH_NOTE},
-
-    {REST,          EIGHTH_NOTE},
-    {C6,            EIGHTH_NOTE},
-    {REST,          EIGHTH_NOTE},
-    {C6,            EIGHTH_NOTE},
-    {C6,            QUARTER_NOTE},
-    {REST,          QUARTER_NOTE},
-
-    /* C section — fanfare */
-    {REST,          QUARTER_NOTE},
-    {G5,            EIGHTH_NOTE},
-    {F5_SHARP,      EIGHTH_NOTE},
-    {F5,            EIGHTH_NOTE},
-    {D5_SHARP,      QUARTER_NOTE},
-    {E5,            EIGHTH_NOTE},
-
-    {REST,          EIGHTH_NOTE},
-    {G4_SHARP,      EIGHTH_NOTE},
-    {A4,            EIGHTH_NOTE},
-    {C5,            EIGHTH_NOTE},
-    {REST,          EIGHTH_NOTE},
-    {A4,            EIGHTH_NOTE},
-    {C5,            EIGHTH_NOTE},
-    {D5,            EIGHTH_NOTE},
-
-    /* Ending cadence */
-    {D5,            QUARTER_NOTE},
-    {REST,          EIGHTH_NOTE},
-    {D5,            EIGHTH_NOTE},
-    {C5,            HALF_NOTE},
-    {REST,          QUARTER_NOTE},
+  {C4, QUARTER_NOTE},
+  {E4, QUARTER_NOTE},
+  {G4, QUARTER_NOTE},
+  {B4, QUARTER_NOTE}
 };
 
 /* USER CODE END PV */
@@ -174,7 +59,6 @@ note_t song[SONG_SIZE] = {
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_ADC1_Init(void);
 static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
 /* USER CODE END PFP */
@@ -213,7 +97,6 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_ADC1_Init();
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
@@ -244,7 +127,6 @@ void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
@@ -273,59 +155,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
-  PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV6;
-  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
-  {
-    Error_Handler();
-  }
-}
-
-/**
-  * @brief ADC1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_ADC1_Init(void)
-{
-
-  /* USER CODE BEGIN ADC1_Init 0 */
-
-  /* USER CODE END ADC1_Init 0 */
-
-  ADC_ChannelConfTypeDef sConfig = {0};
-
-  /* USER CODE BEGIN ADC1_Init 1 */
-
-  /* USER CODE END ADC1_Init 1 */
-
-  /** Common config
-  */
-  hadc1.Instance = ADC1;
-  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
-  hadc1.Init.ContinuousConvMode = DISABLE;
-  hadc1.Init.DiscontinuousConvMode = DISABLE;
-  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 1;
-  if (HAL_ADC_Init(&hadc1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure Regular Channel
-  */
-  sConfig.Channel = ADC_CHANNEL_0;
-  sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN ADC1_Init 2 */
-
-  /* USER CODE END ADC1_Init 2 */
-
 }
 
 /**
@@ -410,31 +239,12 @@ static void MX_TIM1_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
   /* USER CODE BEGIN MX_GPIO_Init_1 */
 
   /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin : PC13 */
-  GPIO_InitStruct.Pin = GPIO_PIN_13;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PB12 */
-  GPIO_InitStruct.Pin = GPIO_PIN_12;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
@@ -444,28 +254,6 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
-
-/**
-  * @brief  Period elapsed callback in non blocking mode
-  * @note   This function is called  when TIM3 interrupt took place, inside
-  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
-  * a global variable "uwTick" used as application time base.
-  * @param  htim : TIM handle
-  * @retval None
-  */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-  /* USER CODE BEGIN Callback 0 */
-
-  /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM3)
-  {
-    HAL_IncTick();
-  }
-  /* USER CODE BEGIN Callback 1 */
-
-  /* USER CODE END Callback 1 */
-}
 
 /**
   * @brief  This function is executed in case of error occurrence.
