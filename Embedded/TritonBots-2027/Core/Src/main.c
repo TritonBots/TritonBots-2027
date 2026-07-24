@@ -52,102 +52,121 @@ TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
 
-#define SONG_SIZE 66
+#define SONG_SIZE 93
 
 note_t song[SONG_SIZE] = {
-    /* Measure 1 */
-    {E4,        QUARTER_NOTE},
-    {E4,        QUARTER_NOTE},
-    {F4,        QUARTER_NOTE},
-    {G4,        QUARTER_NOTE},
 
-    /* Measure 2 */
-    {G4,        QUARTER_NOTE},
-    {F4,        QUARTER_NOTE},
-    {E4,        QUARTER_NOTE},
-    {D4,        QUARTER_NOTE},
+    /* Intro riff */
+    {E5,            EIGHTH_NOTE},
+    {E5,            QUARTER_NOTE},
+    {E5,            QUARTER_NOTE},
+    {C5,            EIGHTH_NOTE},
+    {E5,            QUARTER_NOTE},
+    {G5,            HALF_NOTE},
+    {G4,            HALF_NOTE},
 
-    /* Measure 3 */
-    {C4,        QUARTER_NOTE},
-    {C4,        QUARTER_NOTE},
-    {D4,        QUARTER_NOTE},
-    {E4,        QUARTER_NOTE},
+    /* Main theme — A section */
+    {C5,            QUARTER_NOTE},
+    {G4,            EIGHTH_NOTE},
+    {REST,          EIGHTH_NOTE},
+    {E4,            QUARTER_NOTE},
+    {A4,            QUARTER_NOTE},
+    {B4,            QUARTER_NOTE},
+    {A4_SHARP,      EIGHTH_NOTE},
+    {A4,            QUARTER_NOTE},
 
-    /* Measure 4 */
-    {E4,        QUARTER_NOTE + EIGHTH_NOTE},
-    {D4,        EIGHTH_NOTE},
-    {D4,        HALF_NOTE},
+    {G4,            QUARTER_NOTE + EIGHTH_NOTE},   /* dotted quarter */
+    {E5,            QUARTER_NOTE + EIGHTH_NOTE},
+    {G5,            QUARTER_NOTE},
+    {A5,            HALF_NOTE},
+    {F5,            EIGHTH_NOTE},
+    {G5,            EIGHTH_NOTE},
 
-    /* Measure 5 */
-    {E4,        QUARTER_NOTE},
-    {E4,        QUARTER_NOTE},
-    {F4,        QUARTER_NOTE},
-    {G4,        QUARTER_NOTE},
+    {REST,          EIGHTH_NOTE},
+    {E5,            QUARTER_NOTE},
+    {C5,            EIGHTH_NOTE},
+    {D5,            QUARTER_NOTE},
+    {B4,            QUARTER_NOTE},
+    {REST,          EIGHTH_NOTE},
 
-    /* Measure 6 */
-    {G4,        QUARTER_NOTE},
-    {F4,        QUARTER_NOTE},
-    {E4,        QUARTER_NOTE},
-    {D4,        QUARTER_NOTE},
+    /* A section repeat */
+    {C5,            QUARTER_NOTE},
+    {G4,            EIGHTH_NOTE},
+    {REST,          EIGHTH_NOTE},
+    {E4,            QUARTER_NOTE},
+    {A4,            QUARTER_NOTE},
+    {B4,            QUARTER_NOTE},
+    {A4_SHARP,      EIGHTH_NOTE},
+    {A4,            QUARTER_NOTE},
 
-    /* Measure 7 */
-    {C4,        QUARTER_NOTE},
-    {C4,        QUARTER_NOTE},
-    {D4,        QUARTER_NOTE},
-    {E4,        QUARTER_NOTE},
+    {G4,            QUARTER_NOTE + EIGHTH_NOTE},
+    {E5,            QUARTER_NOTE + EIGHTH_NOTE},
+    {G5,            QUARTER_NOTE},
+    {A5,            HALF_NOTE},
+    {F5,            EIGHTH_NOTE},
+    {G5,            EIGHTH_NOTE},
 
-    /* Measure 8 */
-    {D4,        QUARTER_NOTE + EIGHTH_NOTE},
-    {C4,        EIGHTH_NOTE},
-    {C4,        HALF_NOTE},
+    {REST,          EIGHTH_NOTE},
+    {E5,            QUARTER_NOTE},
+    {C5,            EIGHTH_NOTE},
+    {D5,            QUARTER_NOTE},
+    {B4,            QUARTER_NOTE},
+    {REST,          EIGHTH_NOTE},
 
-    /* Measure 9 */
-    {D4,        QUARTER_NOTE},
-    {D4,        QUARTER_NOTE},
-    {E4,        QUARTER_NOTE},
-    {C4,        QUARTER_NOTE},
+    /* B section — underground/chromatic run feel */
+    {REST,          QUARTER_NOTE},
+    {G5,            EIGHTH_NOTE},
+    {F5_SHARP,      EIGHTH_NOTE},
+    {F5,            EIGHTH_NOTE},
+    {D5_SHARP,      QUARTER_NOTE},
+    {E5,            EIGHTH_NOTE},
 
-    /* Measure 10 */
-    {D4,        QUARTER_NOTE},
-    {E4,        EIGHTH_NOTE},
-    {F4,        EIGHTH_NOTE},
-    {E4,        QUARTER_NOTE},
-    {C4,        QUARTER_NOTE},
+    {REST,          EIGHTH_NOTE},
+    {G4_SHARP,      EIGHTH_NOTE},
+    {A4,            EIGHTH_NOTE},
+    {C5,            EIGHTH_NOTE},
+    {REST,          EIGHTH_NOTE},
+    {A4,            EIGHTH_NOTE},
+    {C5,            EIGHTH_NOTE},
+    {D5,            EIGHTH_NOTE},
 
-    /* Measure 11 */
-    {D4,        QUARTER_NOTE},
-    {E4,        EIGHTH_NOTE},
-    {F4,        EIGHTH_NOTE},
-    {E4,        QUARTER_NOTE},
-    {D4,        QUARTER_NOTE},
+    {REST,          QUARTER_NOTE},
+    {G5,            EIGHTH_NOTE},
+    {F5_SHARP,      EIGHTH_NOTE},
+    {F5,            EIGHTH_NOTE},
+    {D5_SHARP,      QUARTER_NOTE},
+    {E5,            EIGHTH_NOTE},
 
-    /* Measure 12 */
-    {C4,        QUARTER_NOTE},
-    {D4,        QUARTER_NOTE},
-    {G3,        HALF_NOTE},
+    {REST,          EIGHTH_NOTE},
+    {C6,            EIGHTH_NOTE},
+    {REST,          EIGHTH_NOTE},
+    {C6,            EIGHTH_NOTE},
+    {C6,            QUARTER_NOTE},
+    {REST,          QUARTER_NOTE},
 
-    /* Measure 13 (repeat of 1) */
-    {E4,        QUARTER_NOTE},
-    {E4,        QUARTER_NOTE},
-    {F4,        QUARTER_NOTE},
-    {G4,        QUARTER_NOTE},
+    /* C section — fanfare */
+    {REST,          QUARTER_NOTE},
+    {G5,            EIGHTH_NOTE},
+    {F5_SHARP,      EIGHTH_NOTE},
+    {F5,            EIGHTH_NOTE},
+    {D5_SHARP,      QUARTER_NOTE},
+    {E5,            EIGHTH_NOTE},
 
-    /* Measure 14 */
-    {G4,        QUARTER_NOTE},
-    {F4,        QUARTER_NOTE},
-    {E4,        QUARTER_NOTE},
-    {D4,        QUARTER_NOTE},
+    {REST,          EIGHTH_NOTE},
+    {G4_SHARP,      EIGHTH_NOTE},
+    {A4,            EIGHTH_NOTE},
+    {C5,            EIGHTH_NOTE},
+    {REST,          EIGHTH_NOTE},
+    {A4,            EIGHTH_NOTE},
+    {C5,            EIGHTH_NOTE},
+    {D5,            EIGHTH_NOTE},
 
-    /* Measure 15 */
-    {C4,        QUARTER_NOTE},
-    {C4,        QUARTER_NOTE},
-    {D4,        QUARTER_NOTE},
-    {E4,        QUARTER_NOTE},
-
-    /* Measure 16 — final cadence */
-    {D4,        QUARTER_NOTE + EIGHTH_NOTE},
-    {C4,        EIGHTH_NOTE},
-    {C4,        HALF_NOTE},
+    /* Ending cadence */
+    {D5,            QUARTER_NOTE},
+    {REST,          EIGHTH_NOTE},
+    {D5,            EIGHTH_NOTE},
+    {C5,            HALF_NOTE},
+    {REST,          QUARTER_NOTE},
 };
 
 /* USER CODE END PV */
