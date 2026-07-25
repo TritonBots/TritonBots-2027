@@ -81,6 +81,29 @@ Summarize what you found for each area of investigation:
   - This video talks more about the individual bits and hurdles of communication protocols.
   - It's an informative video, but I was not able to find any particularly useful information.
 
+- **Ethernet with STM32: (Source: [STM32 Ethernet Explained — MAC, PHY, RMII, and Driver Implementation (with Mongoose)](https://youtu.be/6kHYvFjeuaQ))**
+
+  - The Ethernet controller on an STM32 have two parts: MAC and PHY controllers
+  
+  |MAC|PHY|
+  |---|---|
+  |Build & Parse Ethernet Frames|Emitting Data on the wire|
+  |Reading/Writing frames to RAM|Link speed/duplex negotiation|
+  |Frame checksumming|Reporting status to MAC|
+
+  - STM32 has the MAC component built into the MCU and the PHY controller as a separate component
+  - The STM32H723ZG uses an external LAN8742 PHY
+
+  |Feature|MII (Media Independent Interface)|RMII (Reduced MII)|RGMII (Reduced Gigabit MII)|
+  |---|---|---|---|
+  |Max Speed|100 Mbps|100 Mbps| 1 Gbps|
+  |Clock Source|Separate TX & RX clocks(25 MHz for 100 M)|Single 50 MHz reference clock|Single 125 MHz clock (DDR)|
+  |Pin Count|18|9|14|
+  |Complexity|High|Low|Medium|
+
+  - The STM32H723ZG has all Ethernet Interfaces
+
+  - Left off at 4:44
 ---
 
 ## 6. Analysis & Interpretation
