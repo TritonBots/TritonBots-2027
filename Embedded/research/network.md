@@ -28,7 +28,8 @@ List the sources consulted. Prioritize credibility:
 - **Secondary Sources:** 
 
   - [Computer Networking in 100 Seconds](https://youtu.be/keeqnciDVOo)
-   - [Networking basics](https://scalac.io/blog/networking-basics/)
+  - [Networking basics](https://scalac.io/blog/networking-basics/)
+  - [How Ethernet Sends Data - Computerphile](https://youtu.be/SJE2lFR5utM)
   - [STM32 Ethernet Explained — MAC, PHY, RMII, and Driver Implementation (with Mongoose)](https://youtu.be/6kHYvFjeuaQ)
   - []()
   - []()
@@ -75,9 +76,10 @@ Summarize what you found for each area of investigation:
    - User Datagram Protocol (UDP) is a communication protocol like TCP but it doesn't care about sending data in the correct order. It also has no handshake for establishing a connection. It simply sends packets very fast with little overhead (60% lighter packets compared to TCP). It is unreliable and loses packets but it's fast.
    - The rest of this article goes into great detail of Computer Networking in an area that is important but not very relevant to what we need to accomplish e.g. file transfering and email protocols.
 
+- **How Ethernet sends Data: (Source: [How Ethernet Sends Data - Computerphile](https://youtu.be/SJE2lFR5utM))**
 
-
-- **Finding 3:** [Summary of discovery and its significance]
+  - This video talks more about the individual bits and hurdles of communication protocols.
+  - It's an informative video, but I was not able to find any particularly useful information.
 
 ---
 
