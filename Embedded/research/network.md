@@ -25,7 +25,13 @@ Provide a brief overview of the topic. Answer:
 List the sources consulted. Prioritize credibility:
 
 - **Primary Sources:** Official documents, data, firsthand accounts
-- **Secondary Sources:** Reports, articles, summaries
+- **Secondary Sources:** 
+
+  - [Computer Networking in 100 Seconds](https://youtu.be/keeqnciDVOo)
+  - [STM32 Ethernet Explained — MAC, PHY, RMII, and Driver Implementation (with Mongoose)](https://youtu.be/6kHYvFjeuaQ)
+  - []()
+  - []()
+  - []()
 - **Internal Sources:** Institutional policies, internal documentation
 
 > !! Verify all sources for accuracy and recency before citing. !!
@@ -35,7 +41,18 @@ List the sources consulted. Prioritize credibility:
 ## 5. Key Findings
 Summarize what you found for each area of investigation:
 
-- **Finding 1:** [Summary of discovery and its significance]
+- **What is Computer Networking: (Source: [Computer Networking in 100 Seconds](https://youtu.be/keeqnciDVOo))**
+  - Computer Networking is how computers exchange information
+  - It is abstracted into 7 systems based on the Open Systems Interconnection (OSI) Model
+  - Bottom layer (1st) is the Physical Hardware layer, like cables
+  - The top layer (7th) is the Application layer, like speakers or displays
+  - HTTP is a top-layer protocol
+  - 6th layer is the Presentation layer that translates streams of bits into a standard format for the application
+  - 5th layer is the Session layer that handles the connection between two computers, like user authentication
+  - 4th layer is the Transport layer which is built on the Transmission Control Protocol (TCP). It takes streams of data from one computer to the other by segmenting it into pieces so it arrives in the correct order through the network.
+  - A packet is a unit of data and information about who sent the data.
+  - The 3rd layer is the Network is where the transport layer receives its data in the form of packets. Here has the Internet Protocol (IP). Every computer in the network has a unique IP address like an ID. When a computer sends information over the network, it sends it in the form of an IP packet which has the IP address in the header. This process happens on a router or gateway which connects to the Data Link Layer (2nd).
+  - The 2nd layer is the Data Link Layer. It connects one physical node to another node in a network through the Ethernet or WiFi protocols. 
 - **Finding 2:** [Summary of discovery and its significance]
 - **Finding 3:** [Summary of discovery and its significance]
 
