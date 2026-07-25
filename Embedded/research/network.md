@@ -31,8 +31,10 @@ List the sources consulted. Prioritize credibility:
   - [Networking basics](https://scalac.io/blog/networking-basics/)
   - [How Ethernet Sends Data - Computerphile](https://youtu.be/SJE2lFR5utM)
   - [STM32 Ethernet Explained — MAC, PHY, RMII, and Driver Implementation (with Mongoose)](https://youtu.be/6kHYvFjeuaQ)
-  - []()
-  - []()
+  - [Optimized Wireless Control and Telemetry
+Network for Mobile Soccer Robots](https://arxiv.org/pdf/2106.14617)
+  - [Working with STM32 and NRF24L01 Wireless RF Part1: Configuration](https://blog.embeddedexpert.io/?p=870)
+    - Shows a simple code example to use the NRF24L01 radio module
 - **Internal Sources:** Institutional policies, internal documentation
 
 > !! Verify all sources for accuracy and recency before citing. !!
@@ -103,7 +105,17 @@ Summarize what you found for each area of investigation:
 
   - The STM32H723ZG has all Ethernet Interfaces
 
-  - The rest of the video goes over how to run the example code using their "Mongoose" library for ethernet to control an onboard LED with a website.
+ - The rest of the video goes over how to run the example code using their "Mongoose" library for ethernet to control an onboard LED with a website.
+
+
+- **Wireless Control and Telemetry in RoboCup with Radio: (Source: [Optimized Wireless Control and Telemetry
+Network for Mobile Soccer Robots](https://arxiv.org/pdf/2106.14617))**
+
+  - The base station and each robot has 2 radio modules. One for transmitting/receiving control and the other for receiving/transmitting telemetry.
+
+  - The document gives information on communication timing and their packet format but not much else about the STM32 implementation or other details.
+
+
 ---
 
 ## 6. Analysis & Interpretation
