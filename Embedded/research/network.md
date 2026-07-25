@@ -103,7 +103,7 @@ Summarize what you found for each area of investigation:
 
   - The STM32H723ZG has all Ethernet Interfaces
 
-  - Left off at 4:44
+  - The rest of the video goes over how to run the example code using their "Mongoose" library for ethernet to control an onboard LED with a website.
 ---
 
 ## 6. Analysis & Interpretation
