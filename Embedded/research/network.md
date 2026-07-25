@@ -28,8 +28,8 @@ List the sources consulted. Prioritize credibility:
 - **Secondary Sources:** 
 
   - [Computer Networking in 100 Seconds](https://youtu.be/keeqnciDVOo)
+   - [Networking basics](https://scalac.io/blog/networking-basics/)
   - [STM32 Ethernet Explained — MAC, PHY, RMII, and Driver Implementation (with Mongoose)](https://youtu.be/6kHYvFjeuaQ)
-  - []()
   - []()
   - []()
 - **Internal Sources:** Institutional policies, internal documentation
@@ -53,7 +53,30 @@ Summarize what you found for each area of investigation:
   - A packet is a unit of data and information about who sent the data.
   - The 3rd layer is the Network is where the transport layer receives its data in the form of packets. Here has the Internet Protocol (IP). Every computer in the network has a unique IP address like an ID. When a computer sends information over the network, it sends it in the form of an IP packet which has the IP address in the header. This process happens on a router or gateway which connects to the Data Link Layer (2nd).
   - The 2nd layer is the Data Link Layer. It connects one physical node to another node in a network through the Ethernet or WiFi protocols. 
-- **Finding 2:** [Summary of discovery and its significance]
+
+
+- **The Basics of Networking: (Source: [Networking basics](https://scalac.io/blog/networking-basics/))**
+
+  - Local Area Network (LAN) is a network of computers connected in a physical network of cables
+  - Wireless Local Area Network (WLAN) is the same as LAN but connected by wireless signals
+  - Wide Area Network (WAN) is a large network that spans a physically large area like the internet itself
+  - Internet Protocol (IP) is used to communicate between networks by routing for the fastest way to send a packet.
+  - IP is a logical address, so if a device is connected to multiple networks, it will have a unique IP address for each network.
+  - Media Access Control (MAC) is a physical address of a computer that is permanent for the computer's network card. It is assigned by the manufacturer. MAC addresses are for communication within a network, like connecting to a printer at home.
+
+   |IP|MAC|
+   |---|---|
+   |Logical Address|Physical Address|
+   |Identifies connection with a device in the network|Identifies device in the network|
+   |Assigned by the network administrator or ISP (internet service provider)|Assigned by the manufacturer|
+   |Used in WAN communication|Used in LAN/WLAN communication|
+   
+   - Transmission Control Protocol (TCP) is a highly-reliable and connection-oriented protocol. It does a 3-way handshake before sending data. It sends a connection request (SYN), receives a "I'm ready to reply" (SYN/ACK), and it sends a "Ok, send it" (ACK). TCP will retransmit packets if any were dropped. TCP will send the packets out of order but will fix the order before sending it to the application. TCP is heavy but it has a reliable connection and never loses data packets.
+   - User Datagram Protocol (UDP) is a communication protocol like TCP but it doesn't care about sending data in the correct order. It also has no handshake for establishing a connection. It simply sends packets very fast with little overhead (60% lighter packets compared to TCP). It is unreliable and loses packets but it's fast.
+   - The rest of this article goes into great detail of Computer Networking in an area that is important but not very relevant to what we need to accomplish e.g. file transfering and email protocols.
+
+
+
 - **Finding 3:** [Summary of discovery and its significance]
 
 ---
