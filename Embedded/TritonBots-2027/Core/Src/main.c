@@ -45,13 +45,39 @@ TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
 
-#define SONG_SIZE 4
+#define SONG_SIZE 25
 
-note_t song[SONG_SIZE] = {
-  {C4, QUARTER_NOTE},
-  {E4, QUARTER_NOTE},
-  {G4, QUARTER_NOTE},
-  {B4, QUARTER_NOTE}
+note_t ravel_pavane[SONG_SIZE] = {
+  {G4, HALF_NOTE+EIGHTH_NOTE}, // measure 1
+  {A4, EIGHTH_NOTE},
+  {F4_SHARP, EIGHTH_NOTE},
+  {E4, EIGHTH_NOTE},
+
+  {D4, QUARTER_NOTE}, // measure 2
+  {E4, EIGHTH_NOTE},
+  {F4_SHARP, EIGHTH_NOTE + EIGHTH_NOTE},
+  {E4, EIGHTH_NOTE + QUARTER_NOTE},
+
+  {B4, HALF_NOTE + EIGHTH_NOTE}, // measure 3
+  {C5, EIGHTH_NOTE},
+  {A4, EIGHTH_NOTE},
+  {G4, EIGHTH_NOTE},
+
+  {F4_SHARP, QUARTER_NOTE}, // measure 4
+  {G4, EIGHTH_NOTE},
+  {A4, EIGHTH_NOTE + EIGHTH_NOTE},
+  {B4, EIGHTH_NOTE},
+  {G4, EIGHTH_NOTE},
+  {F4_SHARP, EIGHTH_NOTE},
+
+  {E4, QUARTER_NOTE}, // measure 5
+  {F4_SHARP, EIGHTH_NOTE},
+  {G4, EIGHTH_NOTE + EIGHTH_NOTE},
+  {A4, EIGHTH_NOTE},
+  {F4_SHARP, EIGHTH_NOTE},
+  {E4, EIGHTH_NOTE},
+
+  {F4_SHARP, HALF_NOTE} // measure 6
 };
 
 /* USER CODE END PV */
@@ -106,7 +132,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    play_song(TIM1, SONG_SIZE, song);
+    play_song(TIM1, SONG_SIZE, ravel_pavane);
     HAL_Delay(1000);
     /* TIM1->PSC = C4;
     HAL_Delay(1000);
