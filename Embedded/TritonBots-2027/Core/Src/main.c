@@ -101,7 +101,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   int count = 0;
   char str[12];
-  HAL_GPIO_WritePin(GPIOC,GPIO_PIN_13,RESET);
+  HAL_GPIO_WritePin(GPIOC,GPIO_PIN_13,SET);
   /* USER CODE END 2 */
 
   /* Infinite loop */
