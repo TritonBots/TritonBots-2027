@@ -23,7 +23,9 @@
 /* USER CODE BEGIN Includes */
 #include "ssd1306.h"
 #include "ssd1306_tests.h"
+#include "ssd1306_fonts.h"
 #include <stdbool.h>
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -97,20 +99,25 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
+  int count = 0;
+  char str[12];
+  HAL_GPIO_WritePin(GPIOC,GPIO_PIN_13,RESET);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13,RESET);
   while (1)
   {
-    ssd1306_TestAll();
+    snprintf(str, sizeof(str), "%d", count++);
+    ssd1306_Fill(Black);
+    ssd1306_SetCursor(0, 0);
+    ssd1306_WriteString(str, Font_16x26, White);
+    ssd1306_UpdateScreen();
 
-    // Blink an LED
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-    HAL_Delay(150);
+    HAL_Delay(100);
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-    HAL_Delay(150);
+    HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
