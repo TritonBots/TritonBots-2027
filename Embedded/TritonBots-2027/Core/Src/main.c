@@ -37,8 +37,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define DHT11_PORT GPIOA
-#define DHT11_PIN GPIO_PIN_1
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -66,12 +64,6 @@ static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
-void delay_us(uint16_t us);
-void DHT11_Start(void);
-uint8_t DHT11_Check_Response(void);
-uint8_t DHT11_Read (void);
-void Set_Pin_Input(GPIO_TypeDef * PORTx, uint16_t GPIOx);
-void Set_Pin_Output(GPIO_TypeDef * PORTx, uint16_t GPIOx);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -115,21 +107,12 @@ int main(void)
   char Humidity_str[10];
   char Temperature_str[10];
 
-  uint8_t Presence = 0;
-  uint8_t RH = 0;
-  uint8_t Rh_byte1 = 0;
-  uint8_t Rh_byte2 = 0;
-  uint8_t TEMP = 0;
-  uint8_t Temp_byte1 = 0;
-  uint8_t Temp_byte2 = 0;
-  uint8_t SUM = 0;
   float Temperature = 123.123;
   float Humidity = 321.321;
 
   HAL_TIM_Base_Start(&htim1);
   HAL_Delay(2000);          // ← Power-on delay BEFORE init
   ssd1306_Init(); 
-  // GPIO for DHT11 is pin A1
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, RESET);
   /* USER CODE END 2 */
 
@@ -140,20 +123,6 @@ int main(void)
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
     HAL_Delay(1000);
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-
-    // DHT11_Start();
-    // Presence = DHT11_Check_Response();
-    // Rh_byte1 = DHT11_Read();
-    // Rh_byte2 = DHT11_Read();
-    // Temp_byte1 = DHT11_Read();
-    // Temp_byte2 = DHT11_Read();
-    // SUM = DHT11_Read();
-
-    // TEMP = Temp_byte1;
-    // RH = Rh_byte1;
-
-    // Temperature = (float) TEMP;
-    // Humidity = (float) RH;
 
     snprintf(Humidity_str,    10, "%.3f", Humidity);
     snprintf(Temperature_str, 10, "%.3f", Temperature);
@@ -338,81 +307,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void Set_Pin_Input(GPIO_TypeDef * PORTx, uint16_t GPIOx) {
-  if (GPIOx < 8) {
-    PORTx->CRL &= ~(0xF << (GPIOx * 4));        // Clear CNF + MODE bits
-    PORTx->CRL |=  (0x4 << (GPIOx * 4));        // CNF=01 (floating input), MODE=00
-  } else {
-    uint16_t pin = GPIOx - 8;
-    PORTx->CRH &= ~(0xF << (pin * 4));
-    PORTx->CRH |=  (0x4 << (pin * 4));
-  }
-}
 
-void Set_Pin_Output(GPIO_TypeDef * PORTx, uint16_t GPIOx) {
-  if (GPIOx < 8) {
-    PORTx->CRL &= ~(0xF << (GPIOx * 4));        // Clear CNF + MODE bits
-    PORTx->CRL |=  (0x3 << (GPIOx * 4));        // CNF=00 (push-pull), MODE=11 (50MHz)
-  } else {
-    uint16_t pin = GPIOx - 8;
-    PORTx->CRH &= ~(0xF << (pin * 4));
-    PORTx->CRH |=  (0x3 << (pin * 4));
-  }
-}
-
-void delay_us(uint16_t us)
-{
-	__HAL_TIM_SET_COUNTER(&htim1,0);  // set the counter value a 0
-	while (__HAL_TIM_GET_COUNTER(&htim1) < us);  // wait for the counter to reach the us input in the parameter
-}
-
-void DHT11_Start(void)
-{
-	Set_Pin_Output(DHT11_PORT, DHT11_PIN);       // set the pin as output
-	HAL_GPIO_WritePin(DHT11_PORT, DHT11_PIN, 0); // pull the pin low     
-	delay_us(18000);                                // wait for 18ms        
-	Set_Pin_Input(DHT11_PORT, DHT11_PIN);        // set as input
-}
-
-uint8_t DHT11_Check_Response(void)
-{
-	uint8_t Response = 0;
-	delay_us(40);
-	if (!(HAL_GPIO_ReadPin(DHT11_PORT, DHT11_PIN))) {
-		delay_us(80);
-		if ((HAL_GPIO_ReadPin(DHT11_PORT, DHT11_PIN))) {
-      Response = 1;
-    } else {
-      Response = -1;
-    }
-	}
-	while((HAL_GPIO_ReadPin (DHT11_PORT, DHT11_PIN))) {
-    // wait for the pin to go low
-  } 
-
-	return Response;
-}
-
-uint8_t DHT11_Read(void)
-{
-	uint8_t i;
-  uint8_t j;
-	for (j=0;j<8;j++) {
-		while (!(HAL_GPIO_ReadPin (DHT11_PORT, DHT11_PIN))) {
-      // wait for the pin to go high
-    }
-		delay_us(40);   // wait for 40 us
-		if (!(HAL_GPIO_ReadPin (DHT11_PORT, DHT11_PIN))) {
-			i&= ~(1<<(7-j));   // if the pin is low write 0
-		} else {
-      i|= (1<<(7-j)); // if the pin is high, write 1
-    }
-		while ((HAL_GPIO_ReadPin (DHT11_PORT, DHT11_PIN))) {
-      // wait for the pin to go low
-    }
-	}
-	return i;
-}
 /* USER CODE END 4 */
 
 /**
