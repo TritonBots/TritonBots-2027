@@ -12,6 +12,9 @@
 
 #include "musical_notes.h"
 
+#define STOP_PLAYING 0 // 0% Duty Cycle
+#define START_PLAYING 50 // 50% Duty Cycle
+
 void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t *song);
 
 #endif /* MUSICAL_PLAYER_H */

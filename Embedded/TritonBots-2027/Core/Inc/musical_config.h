@@ -53,7 +53,7 @@
 #define TIM_FREQ 60000000 // change this to your current TIM frequency in Hz
 #define TIM_ARR 99 // change this to your TIM ARR (uint16_t)
 
-#define BPM 210.0f // change this to your music's tempo at the quarter note
+#define BPM 144.0f // change this to your music's tempo at the quarter note
 #define ARTICULATION_DELAY 5 // delay to emphasize the end of each note (in ms)
 
 #endif /* MUSICAL_CONFIG_H */

@@ -19,18 +19,18 @@
   @note to alter the player, set bpm and articulation delay in musical_config.h
 */
 void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t *song) {
-  TIMX->CCR1 = 50; // start playing at 50% duty cycle
-  for (uint16_t note = 0; note < song_size; note++) {
+  TIMX->CCR1 = START_PLAYING;
+  for (uint32_t note = 0; note < song_size; note++) {
     if (REST == song[note].psc) {
-      TIMX->CCR1 = 0; // stop playing
+      TIMX->CCR1 = STOP_PLAYING;
     } else {
-      TIMX->CCR1 = 50; // keep playing
+      TIMX->CCR1 = START_PLAYING; // keep playing
       TIMX->PSC = song[note].psc;
     }
     HAL_Delay(song[note].duration);
 
     // articulate the end of the note so repeated notes have separation
-    TIMX->CCR1 = 0;
+    TIMX->CCR1 = STOP_PLAYING;
     HAL_Delay(ARTICULATION_DELAY);
   }
   TIMX->CCR1 = 0; // stop playing
