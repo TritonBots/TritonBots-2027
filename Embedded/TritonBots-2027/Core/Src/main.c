@@ -111,11 +111,9 @@ int main(void)
   MX_I2C1_Init();
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-  ssd1306_Init();
-  ssd1306_UpdateScreen();
 
-  char Humidity_str[12];
-  char Temperature_str[12];
+  char Humidity_str[10];
+  char Temperature_str[10];
 
   uint8_t Presence = 0;
   uint8_t RH = 0;
@@ -125,11 +123,12 @@ int main(void)
   uint8_t Temp_byte1 = 0;
   uint8_t Temp_byte2 = 0;
   uint8_t SUM = 0;
-  uint8_t Temperature = 2;
-  uint8_t Humidity = 1;
+  float Temperature = 123.123;
+  float Humidity = 321.321;
 
-  HAL_TIM_Base_Start(&htim1);  // for us Delay
-  HAL_Delay(2000);
+  HAL_TIM_Base_Start(&htim1);
+  HAL_Delay(2000);          // ← Power-on delay BEFORE init
+  ssd1306_Init(); 
   // GPIO for DHT11 is pin A1
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, RESET);
   /* USER CODE END 2 */
@@ -156,10 +155,9 @@ int main(void)
     // Temperature = (float) TEMP;
     // Humidity = (float) RH;
 
-    snprintf(Humidity_str, 12, "%d", Humidity);
-    snprintf(Temperature_str, 12, "%d", Temperature);
+    snprintf(Humidity_str,    10, "%.3f", Humidity);
+    snprintf(Temperature_str, 10, "%.3f", Temperature);
 
-    HAL_Delay(100);
     ssd1306_Fill(Black);
     ssd1306_SetCursor(0, 0);
     ssd1306_WriteString(Temperature_str, Font_16x26, White);
