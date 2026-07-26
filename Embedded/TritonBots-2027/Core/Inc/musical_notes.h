@@ -45,6 +45,18 @@ typedef struct {
 
 } note_t;
 
+/**
+   @brief holds multiple pitches in a single struct
+   @param size the number of notes in the chord
+   @param psc the pitches of the chord in no particular order
+   @param duration the musical length of the chord in milliseconds
+*/
+typedef struct {
+   uint32_t size;
+   uint32_t duration;
+   uint32_t psc[];
+} chord_t;
+
 // These notes are the PSC values for generating PWM signals at each musical pitch
 
 #define REST 0 // not a real PSC value. Check for 0 in the play_song function to set Duty Cycle to 0%

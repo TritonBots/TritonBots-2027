@@ -35,3 +35,14 @@ void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t *song) {
   }
   TIMX->CCR1 = 0; // stop playing
 }
+
+/**
+  @brief play a chord of multiple notes at once
+
+  @param TIMX reference to a HAL Timer
+  @param chord the chord to be played for its duration
+
+*/
+void play_chord(TIM_TypeDef* TIMX, chord_t chord) {
+
+}
