@@ -102,6 +102,7 @@ int main(void)
   int count = 0;
   char str[12];
   HAL_GPIO_WritePin(GPIOC,GPIO_PIN_13,SET);
+  ssd1306_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
