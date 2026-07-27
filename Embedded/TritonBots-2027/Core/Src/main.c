@@ -96,7 +96,7 @@ void Set_Pin_Input(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin) {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   GPIO_InitStruct.Pin = GPIO_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Speed = GPIO_NOPULL;// TODO: this might be NOPULL
+  GPIO_InitStruct.Speed = GPIO_PULLUP;// TODO: this might be NOPULL
   HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
 }
 
