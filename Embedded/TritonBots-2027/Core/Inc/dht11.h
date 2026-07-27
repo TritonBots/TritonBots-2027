@@ -24,12 +24,13 @@ DHT11 Timing Information
  GND   └─50 us─┛             └─Start to transmit next bit data
 
 */
-#define START_SIGNAL_DELAY_MS 18
-#define START_ACK_DELAY_US 80
-#define START_DATA_DELAY_US 50
-#define MIN_DATA_ZERO_DELAY_US 26
-#define MAX_DATA_ZERO_DELAY_US 28
-#define DATA_ONE_DELAY_US 70
+#define START_SIGNAL_DELAY_MS 18U
+#define START_ACK_DELAY_US 80U
+#define START_DATA_DELAY_US 50U
+#define MIN_DATA_ZERO_DELAY_US 26U
+#define MAX_DATA_ZERO_DELAY_US 28U
+#define DATA_ONE_DELAY_US 70U
+
 
 
 #endif /* DHT11_H */
