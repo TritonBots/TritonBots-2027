@@ -6,6 +6,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "ssd1306.h"
+#include <stdint.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -14,6 +15,10 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define LED_LOW SET
+#define LED_HIGH RESET
+#define LED_PORT GPIOC
+#define LED_PIN GPIO_PIN_13
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -38,6 +43,23 @@ static void MX_TIM1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void LED_Off() {
+  HAL_GPIO_WritePin(LED_PORT, LED_PIN, LED_LOW);
+}
+void LED_On() {
+  HAL_GPIO_WritePin(LED_PORT, LED_PIN, LED_HIGH);
+}
+void LED_Toggle() {
+  HAL_GPIO_TogglePin(LED_PORT, LED_PIN);
+}
+void LED_Blink(const uint32_t delay) {
+  LED_Off();
+
+  LED_On();
+  HAL_Delay(delay);
+  LED_Off();
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -74,7 +96,8 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while(1) {
-
+    LED_Toggle();
+    HAL_Delay(1000);
   }
     /* USER CODE END WHILE */
 
