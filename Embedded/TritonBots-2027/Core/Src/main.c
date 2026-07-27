@@ -8,6 +8,7 @@
 #include "ssd1306.h"
 #include "stm32f1xx_hal_tim.h"
 #include <stdint.h>
+#include "delay.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,12 +62,7 @@ void LED_Blink(const uint32_t delay) {
   LED_Off();
 }
 
-void delay_us (uint16_t us)
-{
-  (&htim1)->Instance->CNT = 0;
 
-	while ((&htim1)->Instance->CNT < us);  // wait for the counter to reach the us input in the parameter
-}
 
 /* USER CODE END 0 */
 
