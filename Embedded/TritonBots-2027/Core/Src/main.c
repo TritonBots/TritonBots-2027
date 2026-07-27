@@ -6,6 +6,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "ssd1306.h"
+#include "stm32f1xx_hal_tim.h"
 #include <stdint.h>
 /* USER CODE END Includes */
 
@@ -60,6 +61,13 @@ void LED_Blink(const uint32_t delay) {
   LED_Off();
 }
 
+void delay_us (uint16_t us)
+{
+  (&htim1)->Instance->CNT = 0;
+
+	while ((&htim1)->Instance->CNT < us);  // wait for the counter to reach the us input in the parameter
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -91,13 +99,16 @@ int main(void)
   MX_I2C1_Init();
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
+  HAL_TIM_Base_Start(&htim1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while(1) {
     LED_Toggle();
-    HAL_Delay(1000);
+    for(int i=0;i<16;i++) {
+      delay_us(62500);
+    }
   }
     /* USER CODE END WHILE */
 
