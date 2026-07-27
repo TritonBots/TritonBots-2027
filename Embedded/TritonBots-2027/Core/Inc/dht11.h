@@ -7,6 +7,8 @@
 #ifndef DHT11_H
 #define DHT11_H
 
+#include "main.h"
+
 /*
 
 DHT11 Timing Information
@@ -30,6 +32,9 @@ DHT11 Timing Information
 #define MIN_DATA_ZERO_DELAY_US 26U
 #define MAX_DATA_ZERO_DELAY_US 28U
 #define DATA_ONE_DELAY_US 70U
+
+#define DHT11_DATA_PORT GPIOB
+#define DHT11_DATA_PIN GPIO_PIN_11
 
 
 

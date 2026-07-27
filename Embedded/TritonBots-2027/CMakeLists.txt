@@ -59,6 +59,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/ssd1306.c
     # Add user sources here
     Core/Src/delay.c
+    Core/Src/dht11.c
 )
 
 # Add include paths
