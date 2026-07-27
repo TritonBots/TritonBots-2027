@@ -59,8 +59,10 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define BUILTIN_LED_Pin GPIO_PIN_13
 #define BUILTIN_LED_GPIO_Port GPIOC
-#define DHT11_DATA_Pin GPIO_PIN_11
-#define DHT11_DATA_GPIO_Port GPIOB
+#define DHT11_DATA_IN_Pin GPIO_PIN_10
+#define DHT11_DATA_IN_GPIO_Port GPIOB
+#define DHT11_DATA_OUT_Pin GPIO_PIN_11
+#define DHT11_DATA_OUT_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

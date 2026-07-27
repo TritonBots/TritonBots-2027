@@ -246,7 +246,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(BUILTIN_LED_GPIO_Port, BUILTIN_LED_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(DHT11_DATA_GPIO_Port, DHT11_DATA_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(DHT11_DATA_OUT_GPIO_Port, DHT11_DATA_OUT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : BUILTIN_LED_Pin */
   GPIO_InitStruct.Pin = BUILTIN_LED_Pin;
@@ -255,12 +255,18 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(BUILTIN_LED_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : DHT11_DATA_Pin */
-  GPIO_InitStruct.Pin = DHT11_DATA_Pin;
+  /*Configure GPIO pin : DHT11_DATA_IN_Pin */
+  GPIO_InitStruct.Pin = DHT11_DATA_IN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(DHT11_DATA_IN_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : DHT11_DATA_OUT_Pin */
+  GPIO_InitStruct.Pin = DHT11_DATA_OUT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(DHT11_DATA_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(DHT11_DATA_OUT_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
   /* USER CODE END MX_GPIO_Init_2 */
