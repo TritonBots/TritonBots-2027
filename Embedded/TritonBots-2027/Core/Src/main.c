@@ -1,54 +1,22 @@
 /* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2026 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "ssd1306.h"
-#include "ssd1306_tests.h"
-#include "ssd1306_fonts.h"
-#include "stm32f1xx_hal_gpio.h"
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define DHT11_PORT GPIOA
-#define DHT11_PIN GPIO_PIN_1
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#ifndef false
-#define false 0
-#endif
-#ifndef true
-#define true 1
-#endif
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -57,7 +25,6 @@ I2C_HandleTypeDef hi2c1;
 TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -70,76 +37,6 @@ static void MX_TIM1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void delay_us(uint16_t time) {
-  __HAL_TIM_SET_COUNTER(&htim1, 0);
-  while ((__HAL_TIM_GET_COUNTER(&htim1)) < time);
-}
-
-uint8_t Rh_byte1, Rh_byte2, Temp_byte1, Temp_byte2;
-uint16_t SUM, RH, TEMP;
-char temp[10];
-char rh[10];
-
-float Temperature = 0;
-float Humidity = 0;
-uint8_t Presence = 0;
-
-void Set_Pin_Output(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin) {
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-  GPIO_InitStruct.Pin = GPIO_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
-}
-
-void Set_Pin_Input(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin) {
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-  GPIO_InitStruct.Pin = GPIO_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Speed = GPIO_PULLUP;// TODO: this might be NOPULL
-  HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
-}
-
-void DHT11_Start(void) {
-  Set_Pin_Output(DHT11_PORT, DHT11_PIN);
-  HAL_GPIO_WritePin(DHT11_PORT, DHT11_PIN, RESET);
-  delay_us(18000); // 18 ms
-  HAL_GPIO_WritePin(DHT11_PORT, DHT11_PIN, SET);
-  delay_us(20); 
-  Set_Pin_Input(DHT11_PORT, DHT11_PIN);
-}
-
-uint8_t DHT11_Check_Response(void) {
-  uint8_t Response = 0;
-  delay_us(40);
-  if ((HAL_GPIO_ReadPin(DHT11_PORT, DHT11_PIN))) {
-    delay_us(80);
-    if ((HAL_GPIO_ReadPin(DHT11_PORT, DHT11_PIN))) {
-      Response = 1;
-    } else {
-      Response = -1; // 255
-    }
-  }
-
-  while(!(HAL_GPIO_ReadPin(DHT11_PORT, DHT11_PIN)));
-
-  return Response;
-}
-
-uint8_t DHT11_Read(void) {
-  uint8_t i,j;
-  for (j=0;j<8;j++) {
-    while(!(HAL_GPIO_ReadPin(DHT11_PORT, DHT11_PIN)));
-    delay_us(40);
-    if (!(HAL_GPIO_ReadPin(DHT11_PORT, DHT11_PIN)))
-    {
-      i &= ~(1<<(7-j));
-    }
-    else i |= (1<<(7-j));
-    while (!(HAL_GPIO_ReadPin(DHT11_PORT, DHT11_PIN)));
-  }
-  return i;
-}
 /* USER CODE END 0 */
 
 /**
@@ -150,7 +47,6 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -159,14 +55,12 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -174,55 +68,13 @@ int main(void)
   MX_I2C1_Init();
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Base_Start(&htim1);
-  ssd1306_Init();
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, SET);
-
-  ssd1306_Fill(Black);
-  ssd1306_SetCursor(0, 0);
-  ssd1306_WriteString("START", Font_16x26, White);
-  ssd1306_UpdateScreen();
-
-  HAL_Delay(2000); // TODO: delete later
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    DHT11_Start();
-    Presence = DHT11_Check_Response();
-
-    Rh_byte1 = DHT11_Read();
-    Rh_byte2 = DHT11_Read();
-    Temp_byte1 = DHT11_Read();
-    Temp_byte2 = DHT11_Read();
-    SUM = DHT11_Read();
-
-    TEMP = Temp_byte1;
-    RH = Rh_byte1;
-
-    Temperature = (float) TEMP;
-    Humidity = (float) RH;
-
-    snprintf(temp, 10, "%.3f", Temperature);
-    snprintf(rh, 10, "%.3f", Humidity);
-
-    ssd1306_Fill(Black);
-    ssd1306_SetCursor(0, 0);
-    ssd1306_WriteString(temp, Font_16x26, White);
-    ssd1306_SetCursor(0, 32);
-    ssd1306_WriteString(rh, Font_16x26, White);
-    ssd1306_UpdateScreen();
-
-    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-    HAL_Delay(1000);
-    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-    
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
   /* USER CODE END 3 */
 }
 
@@ -255,8 +107,8 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV2;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
@@ -274,11 +126,9 @@ static void MX_I2C1_Init(void)
 {
 
   /* USER CODE BEGIN I2C1_Init 0 */
-
   /* USER CODE END I2C1_Init 0 */
 
   /* USER CODE BEGIN I2C1_Init 1 */
-
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
   hi2c1.Init.ClockSpeed = 100000;
@@ -294,7 +144,6 @@ static void MX_I2C1_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN I2C1_Init 2 */
-
   /* USER CODE END I2C1_Init 2 */
 
 }
@@ -308,17 +157,15 @@ static void MX_TIM1_Init(void)
 {
 
   /* USER CODE BEGIN TIM1_Init 0 */
-
   /* USER CODE END TIM1_Init 0 */
 
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
 
   /* USER CODE BEGIN TIM1_Init 1 */
-
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 36-1;
+  htim1.Init.Prescaler = 72-1;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim1.Init.Period = 65535;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -340,7 +187,6 @@ static void MX_TIM1_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN TIM1_Init 2 */
-
   /* USER CODE END TIM1_Init 2 */
 
 }
@@ -354,7 +200,6 @@ static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   /* USER CODE BEGIN MX_GPIO_Init_1 */
-
   /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
@@ -364,32 +209,20 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(BUILTIN_LED_GPIO_Port, BUILTIN_LED_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin : PC13 */
-  GPIO_InitStruct.Pin = GPIO_PIN_13;
+  /*Configure GPIO pin : BUILTIN_LED_Pin */
+  GPIO_InitStruct.Pin = BUILTIN_LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PA1 */
-  GPIO_InitStruct.Pin = GPIO_PIN_1;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(BUILTIN_LED_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
-
   /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
-
 /* USER CODE END 4 */
 
 /**
@@ -403,14 +236,12 @@ static void MX_GPIO_Init(void)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* USER CODE BEGIN Callback 0 */
-
   /* USER CODE END Callback 0 */
   if (htim->Instance == TIM3)
   {
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
-
   /* USER CODE END Callback 1 */
 }
 
@@ -421,11 +252,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
   /* USER CODE END Error_Handler_Debug */
 }
 #ifdef USE_FULL_ASSERT
@@ -439,8 +265,6 @@ void Error_Handler(void)
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
