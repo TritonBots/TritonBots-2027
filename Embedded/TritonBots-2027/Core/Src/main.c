@@ -105,16 +105,16 @@ int main(void)
   while(1) {
     // Go into high impedence state to let pull-up raise data line level and
     // start the reading process.
-    GPIO_SetInput(DHT11_DATA_PORT, DHT11_DATA_PIN);
-    HAL_Delay(1);
+    // GPIO_SetInput(DHT11_DATA_PORT, DHT11_DATA_PIN);
+    // HAL_Delay(1);
 
-    GPIO_SetOutput(DHT11_DATA_PORT, DHT11_DATA_PIN);
+    // GPIO_SetOutput(DHT11_DATA_PORT, DHT11_DATA_PIN);
     HAL_GPIO_WritePin(DHT11_DATA_PORT, DHT11_DATA_PIN, GPIO_PIN_RESET);
-    HAL_Delay(20); // data sheet says at least 18ms, 20ms just to be safe
+    HAL_Delay(18); // data sheet says at least 18ms, 20ms just to be safe
 
     GPIO_SetInput(DHT11_DATA_PORT, DHT11_DATA_PIN);
 
-    delay_us(200);
+    // delay_us(200);
 
     while(HAL_GPIO_ReadPin(DHT11_DATA_PORT, DHT11_DATA_PIN) == GPIO_PIN_RESET);
 
