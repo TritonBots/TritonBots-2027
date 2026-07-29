@@ -47,30 +47,15 @@ TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
 
-#define SONG_SIZE 4
-#define CHORD_DELAY 12
-
 // Tempo = 220 bpm
-note_t cmaj[SONG_SIZE] = {
-  {C5, CHORD_DELAY},
-  {E5, CHORD_DELAY},
-  {G5, CHORD_DELAY},
-  {E5, CHORD_DELAY},
+chord_t cmaj = {
+  .duration = WHOLE_NOTE,
+  .psc = {
+    C4,E4,G4
+  },
+  .size = 3
 };
 
-note_t fmaj[SONG_SIZE] = {
-  {F4, CHORD_DELAY},
-  {A4, CHORD_DELAY},
-  {C5, CHORD_DELAY},
-  {A4, CHORD_DELAY},
-};
-
-note_t gmaj[SONG_SIZE] = {
-  {G4, CHORD_DELAY},
-  {B4, CHORD_DELAY},
-  {D5, CHORD_DELAY},
-  {B5, CHORD_DELAY},
-};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -126,27 +111,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    uint32_t start = HAL_GetTick();
-    while(HAL_GetTick() - start < 2000) {
-      for (int i=0;i<4;i++) {
-        TIM1->PSC = fmaj[i].psc;
-        HAL_Delay(fmaj[i].duration);
-      }
-    }
-    start = HAL_GetTick();
-    while(HAL_GetTick() - start < 2000) {
-      for (int i=0;i<4;i++) {
-        TIM1->PSC = gmaj[i].psc;
-        HAL_Delay(gmaj[i].duration);
-      }
-    }
-    start = HAL_GetTick();
-    while(HAL_GetTick() - start < 2000) {
-      for (int i=0;i<4;i++) {
-        TIM1->PSC = cmaj[i].psc;
-        HAL_Delay(cmaj[i].duration);
-      }
-    }
+    play_chord(TIM1,cmaj);
     HAL_Delay(1000);
     /* USER CODE END WHILE */
 

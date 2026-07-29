@@ -55,5 +55,7 @@
 
 #define BPM 144.0f // change this to your music's tempo at the quarter note
 #define ARTICULATION_DELAY 5 // delay to emphasize the end of each note (in ms)
+#define CHORD_DELAY 15
+
 
 #endif /* MUSICAL_CONFIG_H */
