@@ -6,9 +6,11 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "ssd1306.h"
+#include "stm32f1xx_hal_gpio.h"
 #include "stm32f1xx_hal_tim.h"
 #include <stdint.h>
 #include "delay.h"
+#include "dht11.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -101,10 +103,27 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while(1) {
-    LED_Toggle();
-    for(int i=0;i<16;i++) {
-      delay_us(62500);
-    }
+    // Go into high impedence state to let pull-up raise data line level and
+    // start the reading process.
+    GPIO_SetInput(DHT11_DATA_PORT, DHT11_DATA_PIN);
+    HAL_Delay(1);
+
+    GPIO_SetOutput(DHT11_DATA_PORT, DHT11_DATA_PIN);
+    HAL_GPIO_WritePin(DHT11_DATA_PORT, DHT11_DATA_PIN, GPIO_PIN_RESET);
+    HAL_Delay(20); // data sheet says at least 18ms, 20ms just to be safe
+
+    GPIO_SetInput(DHT11_DATA_PORT, DHT11_DATA_PIN);
+
+    delay_us(200);
+
+    while(HAL_GPIO_ReadPin(DHT11_DATA_PORT, DHT11_DATA_PIN) == GPIO_PIN_RESET);
+
+    while(HAL_GPIO_ReadPin(DHT11_DATA_PORT, DHT11_DATA_PIN) == GPIO_PIN_SET);
+
+
+    HAL_Delay(2000);
+
+
   }
     /* USER CODE END WHILE */
 
@@ -258,7 +277,7 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin : PA0 */
   GPIO_InitStruct.Pin = GPIO_PIN_0;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : DHT11_DATA_Pin */

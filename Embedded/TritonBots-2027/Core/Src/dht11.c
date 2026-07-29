@@ -11,7 +11,7 @@ void GPIO_SetInput(GPIO_TypeDef* PORTx, uint16_t pin) {
 
    GPIO_InitStruct.Pin = pin;
    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-   GPIO_InitStruct.Pull = GPIO_PULLUP;
+   GPIO_InitStruct.Pull = GPIO_NOPULL;
    HAL_GPIO_Init(PORTx, &GPIO_InitStruct);
 }
 
