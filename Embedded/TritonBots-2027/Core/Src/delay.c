@@ -4,7 +4,7 @@
 
 #include "delay.h"
 
-#define htimx htim1
+#define htimx htim1 // TODO: config this
 
 void delay_us(uint16_t us) {
   (&htimx)->Instance->CNT = 0;
