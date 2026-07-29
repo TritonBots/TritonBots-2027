@@ -47,7 +47,22 @@ TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
 
-// Tempo = 220 bpm
+chord_t dmin = {
+  .duration = WHOLE_NOTE,
+  .size = 3,
+  .psc = {
+    D4,F4,A4
+  }
+};
+
+chord_t gmaj = {
+  .duration = WHOLE_NOTE,
+  .psc = {
+    G4,B4,D4
+  },
+  .size = 3
+};
+
 chord_t cmaj = {
   .duration = WHOLE_NOTE,
   .psc = {
@@ -111,7 +126,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    play_chord(TIM1,cmaj);
+    play_chord(TIM1, &dmin);
+    play_chord(TIM1, &gmaj);
+    play_chord(TIM1, &cmaj);
     HAL_Delay(1000);
     /* USER CODE END WHILE */
 
