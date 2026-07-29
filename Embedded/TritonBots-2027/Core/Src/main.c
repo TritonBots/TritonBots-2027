@@ -265,7 +265,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(BUILTIN_LED_GPIO_Port, BUILTIN_LED_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(DHT11_DATA_GPIO_Port, DHT11_DATA_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(DHT11_DATA_GPIO_Port, DHT11_DATA_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : BUILTIN_LED_Pin */
   GPIO_InitStruct.Pin = BUILTIN_LED_Pin;
