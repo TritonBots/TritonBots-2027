@@ -50,6 +50,7 @@
     #error "Unsupported STM32 series — add a -DSTM32Xx define to your build flags"
 #endif
 
+#define TIMX TIM1 // change this to your current TIM
 #define TIM_FREQ 60000000 // change this to your current TIM frequency in Hz
 #define TIM_ARR 99 // change this to your TIM ARR (uint16_t)
 

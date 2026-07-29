@@ -56,7 +56,7 @@ chord_t dmin = {
 };
 
 chord_t gmaj = {
-  .duration = WHOLE_NOTE,
+  .duration = THIRTY_SECOND_NOTE,
   .psc = {
     G4,B4,D4
   },
@@ -64,7 +64,7 @@ chord_t gmaj = {
 };
 
 chord_t cmaj = {
-  .duration = WHOLE_NOTE,
+  .duration = THIRTY_SECOND_NOTE,
   .psc = {
     C4,E4,G4
   },
@@ -118,18 +118,17 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 
-
-  TIM1->CCR1 = 50;
+  uint8_t duty = 1;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    play_chord(TIM1, &dmin);
-    play_chord(TIM1, &gmaj);
-    play_chord(TIM1, &cmaj);
-    HAL_Delay(1000);
+    if (duty >= 100) {duty = 0;}
+    play_chord(&gmaj);
+    play_chord(&cmaj);
+    duty++;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

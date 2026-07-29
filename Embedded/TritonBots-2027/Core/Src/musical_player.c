@@ -12,13 +12,12 @@
 /**
   @brief play a series of notes
 
-  @param TIMX reference to a HAL timer
   @param song_size number of notes in the song
   @param song the set of notes to play
 
   @note to alter the player, set bpm and articulation delay in musical_config.h
 */
-void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t *song) {
+void play_song(uint32_t song_size, note_t *song) {
   TIMX->CCR1 = START_PLAYING;
   for (uint32_t note = 0; note < song_size; note++) {
     if (REST == song[note].psc) {
@@ -41,11 +40,10 @@ void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t *song) {
 /**
   @brief play a chord of multiple notes at once
 
-  @param TIMX reference to a HAL Timer
   @param chord the chord to be played for its duration
 
 */
-void play_chord(TIM_TypeDef* TIMX, chord_t *chord) {
+void play_chord(chord_t *chord) {
   TIMX->CCR1 = 50;
   const uint32_t start = HAL_GetTick();
   while(HAL_GetTick() - start < chord->duration) {

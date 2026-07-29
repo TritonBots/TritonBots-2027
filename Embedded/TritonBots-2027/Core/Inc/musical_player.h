@@ -15,7 +15,7 @@
 #define STOP_PLAYING 0 // 0% Duty Cycle
 #define START_PLAYING 50 // 50% Duty Cycle
 
-void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t *song);
-void play_chord(TIM_TypeDef* TIMX, chord_t* chord);
+void play_song(uint32_t song_size, note_t *song);
+void play_chord(chord_t* chord);
 
 #endif /* MUSICAL_PLAYER_H */
