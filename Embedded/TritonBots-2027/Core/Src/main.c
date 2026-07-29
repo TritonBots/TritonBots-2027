@@ -99,10 +99,10 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-  #define str_len 12
+  #define str_len 41
   #define MAX_LEN_FONT_16x26 8
   uint8_t pos = 0;
-  char str[str_len] = "HELLO WORLD!";
+  char str[str_len] = "TO BE OR NOT TO BE. THAT IS THE QUESTION.";
   HAL_GPIO_WritePin(GPIOC,GPIO_PIN_13,SET);
   ssd1306_Init();
   /* USER CODE END 2 */
@@ -113,10 +113,23 @@ int main(void)
   {
     ssd1306_Fill(Black);
     ssd1306_SetCursor(0,0);
-    if (pos > str_len - MAX_LEN_FONT_16x26) {pos = 0;}
-    for (uint8_t idx = pos; idx < MAX_LEN_FONT_16x26 + pos; idx++) {
-      ssd1306_WriteChar(str[idx], Font_16x26, White);
+    if (pos >= str_len) {pos = 0;}
+
+    if (pos <= str_len - MAX_LEN_FONT_16x26) {
+      /* Normal case: window fits entirely within remaining string */
+      for (uint8_t idx = pos; idx < pos + MAX_LEN_FONT_16x26; idx++) {
+        ssd1306_WriteChar(str[idx], Font_16x26, White);
+      }
+    } else {
+      for (uint8_t idx = pos; idx < str_len; idx++) {
+        ssd1306_WriteChar(str[idx], Font_16x26, White);
+      }
+      uint8_t from_start = MAX_LEN_FONT_16x26 - (str_len - pos);
+      for (uint8_t idx = 0; idx < from_start; idx++) {
+        ssd1306_WriteChar(str[idx], Font_16x26, White);
+      }
     }
+
     pos++;
     ssd1306_UpdateScreen();
     /* USER CODE END WHILE */
