@@ -99,8 +99,9 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-  int count = 0;
-  char str[12];
+  #define str_len 12
+  char str[str_len] = "HELLO, WORLD";
+  uint8_t pos = 0;
   HAL_GPIO_WritePin(GPIOC,GPIO_PIN_13,SET);
   ssd1306_Init();
   /* USER CODE END 2 */
@@ -109,16 +110,15 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    snprintf(str, sizeof(str), "%d", count++);
     ssd1306_Fill(Black);
-    ssd1306_SetCursor(0, 0);
-    ssd1306_WriteString(str, Font_16x26, White);
+    if (pos >= str_len) {pos = 0;}
+    ssd1306_SetCursor(0,0);
+    for (uint8_t c = pos; c < str_len; c++) {
+      ssd1306_WriteChar(str[c], Font_16x26, White);
+    }
+    pos++;
     ssd1306_UpdateScreen();
-
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-    HAL_Delay(100);
-    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-    HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
