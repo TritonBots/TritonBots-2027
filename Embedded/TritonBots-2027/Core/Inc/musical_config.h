@@ -57,6 +57,6 @@
 #define ARTICULATION_DELAY 5 // delay to emphasize the end of each note (in ms)
 #define CHORD_DELAY 15 // delay between each note in a chord. 10-20 is pretty good. (in ms)
 
-// Setting duty cycle to 99 makes the buzzer sound muffled in a good way
+// Setting duty cycle to 1 or 99 makes the buzzer sound muffled in a good way
 
 #endif /* MUSICAL_CONFIG_H */
