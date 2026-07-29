@@ -29,9 +29,11 @@ void play_song(TIM_TypeDef* TIMX, uint32_t song_size, note_t *song) {
     }
     HAL_Delay(song[note].duration);
 
+    #if ARTICULATION_DELAY != 0
     // articulate the end of the note so repeated notes have separation
     TIMX->CCR1 = STOP_PLAYING;
     HAL_Delay(ARTICULATION_DELAY);
+    #endif
   }
   TIMX->CCR1 = 0; // stop playing
 }

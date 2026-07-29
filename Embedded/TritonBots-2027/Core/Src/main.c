@@ -23,6 +23,8 @@
 /* USER CODE BEGIN Includes */
 #include "musical_duration.h"
 #include "musical_player.h"
+#include "stm32f103xb.h"
+#include "stm32f1xx_hal.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,174 +47,29 @@ TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
 
-#define SONG_SIZE 147
+#define SONG_SIZE 4
+#define CHORD_DELAY 12
 
 // Tempo = 220 bpm
-note_t molly_on_the_shore[SONG_SIZE] = {
-  {B3, EIGHTH_NOTE}, // measure 1
-  {REST, EIGHTH_NOTE},
-  {D4, EIGHTH_NOTE},
-  {REST, EIGHTH_NOTE},
-  {A4, EIGHTH_NOTE},
-  {REST, EIGHTH_NOTE},
-  {D4, EIGHTH_NOTE},
-  {REST, EIGHTH_NOTE},
+note_t cmaj[SONG_SIZE] = {
+  {C5, CHORD_DELAY},
+  {E5, CHORD_DELAY},
+  {G5, CHORD_DELAY},
+  {E5, CHORD_DELAY},
+};
 
-  {B3, EIGHTH_NOTE}, // measure 2
-  {REST, EIGHTH_NOTE},
-  {D4, EIGHTH_NOTE},
-  {REST, EIGHTH_NOTE},
-  {A4, EIGHTH_NOTE},
-  {REST, EIGHTH_NOTE},
-  {D4, EIGHTH_NOTE},
-  {B3, SIXTEENTH_NOTE},
-  {A3, SIXTEENTH_NOTE},
+note_t fmaj[SONG_SIZE] = {
+  {F4, CHORD_DELAY},
+  {A4, CHORD_DELAY},
+  {C5, CHORD_DELAY},
+  {A4, CHORD_DELAY},
+};
 
-  {G3, EIGHTH_NOTE}, // measure 3
-  {E3, EIGHTH_NOTE},
-  {D3, EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-  {C4, EIGHTH_NOTE},
-  {A3, EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-  {A3, EIGHTH_NOTE},
-
-  {G3, TRIPLET_EIGHTH_NOTE}, // measure 4
-  {A3, TRIPLET_EIGHTH_NOTE},
-  {G3, TRIPLET_EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-  {G3, EIGHTH_NOTE},
-  {A3, EIGHTH_NOTE},
-  {G3, EIGHTH_NOTE},
-  {E3, EIGHTH_NOTE},
-  {F3_SHARP, EIGHTH_NOTE},
-
-  {G3, EIGHTH_NOTE}, // measure 5
-  {E3, EIGHTH_NOTE},
-  {D3, EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-  {C4, EIGHTH_NOTE},
-  {A3, EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-  {A3, EIGHTH_NOTE},
-
-  {G3, TRIPLET_EIGHTH_NOTE}, // measure 6
-  {A3, TRIPLET_EIGHTH_NOTE},
-  {G3, TRIPLET_EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-  {G3, EIGHTH_NOTE},
-  {A3, QUARTER_NOTE},
-  {G3, EIGHTH_NOTE},
-  {B3, SIXTEENTH_NOTE},
-  {A3, SIXTEENTH_NOTE},
-
-  {G3, EIGHTH_NOTE}, // measure 7
-  {E3, EIGHTH_NOTE},
-  {D3, EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-  {C4, EIGHTH_NOTE},
-  {A3, EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-  {A3, EIGHTH_NOTE},
-
-  {G3, TRIPLET_EIGHTH_NOTE}, // measure 8
-  {A3, TRIPLET_EIGHTH_NOTE},
-  {G3, TRIPLET_EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-  {G3, EIGHTH_NOTE},
-  {A3, EIGHTH_NOTE},
-  {G3, EIGHTH_NOTE},
-  {E3, EIGHTH_NOTE},
-  {F3_SHARP, EIGHTH_NOTE},
-
-  {G3, EIGHTH_NOTE}, // measure 9
-  {E3, EIGHTH_NOTE},
-  {D3, EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-  {C4, EIGHTH_NOTE},
-  {A3, EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-  {A3, EIGHTH_NOTE},
-
-  {G3, TRIPLET_EIGHTH_NOTE}, // measure 10
-  {A3, TRIPLET_EIGHTH_NOTE},
-  {G3, TRIPLET_EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-  {G3, EIGHTH_NOTE},
-  {A3, QUARTER_NOTE},
-  {G3, EIGHTH_NOTE},
-  {D4, EIGHTH_NOTE},
-
-  {G4, EIGHTH_NOTE}, // measure 11
-  {F4_SHARP, EIGHTH_NOTE},
-  {G4, EIGHTH_NOTE},
-  {D4, EIGHTH_NOTE},
-  {E4, EIGHTH_NOTE},
-  {C4, EIGHTH_NOTE},
-  {D4, EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-
-  {G3, TRIPLET_EIGHTH_NOTE}, // measure 12
-  {A3, TRIPLET_EIGHTH_NOTE},
-  {G3, TRIPLET_EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-  {G3, EIGHTH_NOTE},
-  {A3, EIGHTH_NOTE},
-  {G3, EIGHTH_NOTE},
-  {E3, EIGHTH_NOTE},
-  {F4_SHARP, EIGHTH_NOTE},
-
-  {G4, EIGHTH_NOTE}, // measure 13
-  {F4_SHARP, EIGHTH_NOTE},
-  {G4, EIGHTH_NOTE},
-  {D4, EIGHTH_NOTE},
-  {E4, EIGHTH_NOTE},
-  {C4, EIGHTH_NOTE},
-  {D4, EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-
-  {G3, TRIPLET_EIGHTH_NOTE}, // measure 14
-  {A3, TRIPLET_EIGHTH_NOTE},
-  {G3, TRIPLET_EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-  {G3, EIGHTH_NOTE},
-  {A3, QUARTER_NOTE},
-  {G3, EIGHTH_NOTE},
-  {F4_SHARP, EIGHTH_NOTE},
-
-  {G4, EIGHTH_NOTE}, // measure 15
-  {F4_SHARP, EIGHTH_NOTE},
-  {G4, EIGHTH_NOTE},
-  {D4, EIGHTH_NOTE},
-  {E4, EIGHTH_NOTE},
-  {C4, EIGHTH_NOTE},
-  {D4, EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-
-  {G3, EIGHTH_NOTE}, // measure 16
-  {E3, EIGHTH_NOTE},
-  {D3, EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-  {C4, EIGHTH_NOTE},
-  {A3, EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-  {A3, EIGHTH_NOTE},
-
-  {G3, EIGHTH_NOTE}, // measure 17
-  {B3, EIGHTH_NOTE},
-  {A3, EIGHTH_NOTE},
-  {C4, EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-  {D4, EIGHTH_NOTE},
-  {G4, EIGHTH_NOTE},
-  {E4, EIGHTH_NOTE},
-
-  {D4, EIGHTH_NOTE}, // measure 18
-  {B3, EIGHTH_NOTE},
-  {G3, EIGHTH_NOTE},
-  {B3, EIGHTH_NOTE},
-  {A3, QUARTER_NOTE},
-  {G3, EIGHTH_NOTE}
+note_t gmaj[SONG_SIZE] = {
+  {G4, CHORD_DELAY},
+  {B4, CHORD_DELAY},
+  {D5, CHORD_DELAY},
+  {B5, CHORD_DELAY},
 };
 /* USER CODE END PV */
 
@@ -260,18 +117,37 @@ int main(void)
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+
+
+  TIM1->CCR1 = 50;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    play_song(TIM1, SONG_SIZE, molly_on_the_shore);
+    uint32_t start = HAL_GetTick();
+    while(HAL_GetTick() - start < 2000) {
+      for (int i=0;i<4;i++) {
+        TIM1->PSC = fmaj[i].psc;
+        HAL_Delay(fmaj[i].duration);
+      }
+    }
+    start = HAL_GetTick();
+    while(HAL_GetTick() - start < 2000) {
+      for (int i=0;i<4;i++) {
+        TIM1->PSC = gmaj[i].psc;
+        HAL_Delay(gmaj[i].duration);
+      }
+    }
+    start = HAL_GetTick();
+    while(HAL_GetTick() - start < 2000) {
+      for (int i=0;i<4;i++) {
+        TIM1->PSC = cmaj[i].psc;
+        HAL_Delay(cmaj[i].duration);
+      }
+    }
     HAL_Delay(1000);
-    /* TIM1->PSC = C4;
-    HAL_Delay(1000);
-    TIM1->PSC = G4;
-    HAL_Delay(1000); */
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
