@@ -32,7 +32,15 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#ifndef true
+  #define true 1
+#endif
+#ifndef false
+  #define false 0
+#endif
 
+#define LED_ON GPIO_PIN_RESET
+#define LED_OFF GPIO_PIN_SET
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -50,8 +58,12 @@ const osThreadAttr_t myTask01_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* USER CODE BEGIN PV */
-
+/* USER CODE BEGIN PV */ 
+#define RX_DATA_SIZE 1
+uint8_t rx_index;
+uint8_t rx_data[RX_DATA_SIZE];
+uint8_t rx_buffer[10];
+uint8_t isLightOn = LED_OFF;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -237,7 +249,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(BUILTIN_LED_GPIO_Port, BUILTIN_LED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(BUILTIN_LED_GPIO_Port, BUILTIN_LED_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : BUILTIN_LED_Pin */
   GPIO_InitStruct.Pin = BUILTIN_LED_Pin;
@@ -258,7 +270,18 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  if (huart->Instance == USART1)
+  {
+      if (rx_data[0] == '1')
+          HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, LED_ON);
+      else if (rx_data[0] == '0')
+          HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, LED_OFF);
 
+      HAL_UART_Receive_IT(&huart1, rx_data, RX_DATA_SIZE);
+  }
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartMyTask01 */
@@ -271,9 +294,45 @@ static void MX_GPIO_Init(void)
 void StartMyTask01(void *argument)
 {
   /* USER CODE BEGIN 5 */
+  /*
+    Wire PA10 to D19 on the ESP32 and make sure they share the same Ground
+  */
+  /* Arduino Code:
+    // Define TX and RX pins for UART
+    #define TXD1 19
+    #define RXD1 21
+
+    // Use Serial1 for UART communication
+    HardwareSerial mySerial(1);
+
+    char lightState = '0';
+    void setup() {
+      Serial.begin(115200);
+      mySerial.begin(115200, SERIAL_8N1, RXD1, TXD1);  // UART setup
+    }
+
+    void loop() {
+      
+      mySerial.println(lightState);
+      if (lightState == '0') {
+        lightState = '1';
+      } else {
+        lightState = '0';
+      }
+
+      Serial.println(lightState);
+      delay(1000); 
+    }
+  */
+  HAL_UART_Receive_IT(&huart1, rx_data, RX_DATA_SIZE);
   /* Infinite loop */
   for(;;)
   {
+    if (true == rx_data[0] - '0') {
+      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, LED_ON);
+    } else if (false == rx_data[0] - '0') {
+      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, LED_OFF);
+    }
     osDelay(1);
   }
   /* USER CODE END 5 */
