@@ -298,31 +298,102 @@ void StartMyTask01(void *argument)
     Wire PA10 to D19 on the ESP32 and make sure they share the same Ground
   */
   /* Arduino Code:
-    // Define TX and RX pins for UART
+    #include <WiFi.h>
+    #include <WiFiUdp.h>
+
+    // WiFi credentials
+    const char* ssid = "TODO: YOUR WIFI SSID. DO NOT PUSH";
+    const char* password = "TODO: YOUR WIFI PASSWORD. DO NOT PUSH";
+
+    // UDP
+    WiFiUDP udp;
+    const uint16_t localPort = 4210;
+    char packetBuffer[10];
+
+    // UART
     #define TXD1 19
     #define RXD1 21
-
-    // Use Serial1 for UART communication
     HardwareSerial mySerial(1);
 
     char lightState = '0';
+
     void setup() {
       Serial.begin(115200);
-      mySerial.begin(115200, SERIAL_8N1, RXD1, TXD1);  // UART setup
+
+      mySerial.begin(115200, SERIAL_8N1, RXD1, TXD1);
+
+      Serial.println();
+      Serial.print("Connecting to WiFi");
+
+      WiFi.begin(ssid, password);
+
+      while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+      }
+
+      Serial.println();
+      Serial.println("Connected!");
+
+      Serial.print("IP Address: ");
+      Serial.println(WiFi.localIP());
+
+      udp.begin(localPort);
+
+      Serial.print("Listening on UDP port ");
+      Serial.println(localPort);
     }
 
     void loop() {
-      
-      mySerial.println(lightState);
-      if (lightState == '0') {
-        lightState = '1';
-      } else {
-        lightState = '0';
+
+      int packetSize = udp.parsePacket();
+
+      if (packetSize) {
+        int len = udp.read(packetBuffer, sizeof(packetBuffer) - 1);
+
+        if (len > 0)
+          packetBuffer[len] = '\0';
+
+        Serial.print("Received: ");
+        Serial.println(packetBuffer);
+
+        if (packetBuffer[0] == '0' || packetBuffer[0] == '1') {
+          lightState = packetBuffer[0];
+        }
       }
 
+      mySerial.println(lightState);
+
+      Serial.print("UART Sent: ");
       Serial.println(lightState);
-      delay(1000); 
+
+      delay(1000);
     }
+  */
+  /* Python Script:
+    import socket
+
+    ESP32_IP = "192.168.68.64"   # Change this
+    ESP32_PORT = 4210
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    print("Type 0 or 1. Type q to quit.")
+
+    while True:
+        cmd = input("> ").strip()
+
+        if cmd.lower() == "q":
+            break
+
+        if cmd not in ("0", "1"):
+            print("Enter only 0 or 1.")
+            continue
+
+        sock.sendto(cmd.encode(), (ESP32_IP, ESP32_PORT))
+        print("Sent:", cmd)
+
+    sock.close()
   */
   HAL_UART_Receive_IT(&huart1, rx_data, RX_DATA_SIZE);
   /* Infinite loop */
