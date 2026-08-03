@@ -65,10 +65,15 @@ Discuss team planning for the upcoming Fall 2026 quarter, recruiting, and updati
     - CAN-FD with separate controller + transceiver or integrated controller on MCU
 - Sukhjeet Sekhon
   - Give directions for how to get GitHub setup for all team members
+    - I have posted Youtube links in Embedded channel, but the most of the team members are currently inactive or busy.
   - Create the block diagram for the Microcontroller and networking stack
+    - I created one, and it's complete, but I will update it as we make design decisions.
   - Document the Arduino Uno R4 Wifi implementation
+    - I have documented it in great detail.
   - Create specification control document for the STM32 and radio
+    - I have not started on this, but I have done research on the radio and STM32 design in preparation.
   - Resarch networking and radio communication
+    - I have pushed a research/network branch onto the repo with my current progress
 - Pedro Pinela
   - Survey for interest by Monday
   - Meet with Diego and Rafa for Lead
