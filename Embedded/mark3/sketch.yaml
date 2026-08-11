@@ -1,0 +1,16 @@
+profiles:
+  mark3:
+    fqbn: arduino:renesas_uno:unor4wifi
+    platforms:
+      - platform: arduino:renesas_uno (1.6.0)
+    programmer: ""
+    port: ""
+    port_config:
+      baudrate: "115200"
+      bits: "8"
+      parity: none
+      stop_bits: one
+    libraries:
+      - WiFi (1.2.7)
+      - Moteus (1.1.2)
+default_profile: mark3
