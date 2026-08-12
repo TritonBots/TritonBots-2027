@@ -13,4 +13,5 @@ profiles:
     libraries:
       - WiFi (1.2.7)
       - Moteus (1.1.2)
+      - ACAN2517FD (2.1.16)
 default_profile: mark3
