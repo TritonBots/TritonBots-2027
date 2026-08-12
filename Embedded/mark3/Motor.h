@@ -1,0 +1,18 @@
+#ifndef MOTOR_H
+#define MOTOR_H
+
+#include "config.h"
+
+class Motor {
+
+   private:
+
+   Moteus motor;
+   PositionCommand motorCommand;
+
+   public:
+
+   Motor(Moteus motor, PositionCommand motorCommand);
+};
+
+#endif /* MOTOR_H */

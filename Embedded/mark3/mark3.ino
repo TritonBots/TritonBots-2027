@@ -1,4 +1,4 @@
-#include "config.h"
+#include "MotorController.h"
 
 static uint32_t gNextSendMillis = 0;
 uint16_t gLoopCount = 0;
@@ -17,7 +17,6 @@ Moteus moteus2(can, []() {
    return options;
 }());
 
-PositionCommand position_cmd;
 
 void setup() {
    pinMode(LED_BUILTIN, OUTPUT);
