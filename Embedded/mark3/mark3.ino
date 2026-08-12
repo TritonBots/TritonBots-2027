@@ -24,7 +24,7 @@ typedef ACAN2517FDSettings CANSettings;
 #define CAN_TX_FIFO_SIZE NUM_MOTORS
 #define CAN_RX_FIFO_SIZE NUM_MOTORS
 
-#define CAN_ERROR_CODE 0
+#define CAN_OK_CODE 0
 
 #define VELOCITY_MODE NaN
 
@@ -70,7 +70,7 @@ void setup() {
 
    const uint32_t errorCode = can.begin(settings, [] { can.isr(); });
 
-   while (errorCode != CAN_ERROR_CODE) {
+   while (errorCode != CAN_OK_CODE) {
       Serial.print(F("CAN error 0x"));
       Serial.println(errorCode, HEX);
       delay(1000);
