@@ -6,6 +6,7 @@
 
 typedef Moteus::Options Options;
 typedef Moteus::PositionMode::Command PositionCommand;
+typedef ACAN2517FD CANDriver;
 typedef ACAN2517FDSettings CANSettings;
 
 #define BAUD_RATE 115200
