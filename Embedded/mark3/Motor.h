@@ -7,12 +7,13 @@ class Motor {
 
    private:
 
-   Moteus motor;
-   PositionCommand motorCommand;
+   Moteus *motor;
+   PositionCommand *motorCommand;
 
    public:
 
-   Motor(Moteus motor, PositionCommand motorCommand);
+   Motor(Moteus *motor, PositionCommand *motorCommand);
 };
+
 
 #endif /* MOTOR_H */

@@ -7,16 +7,16 @@ class MotorController {
 
    private:
 
-   ACAN2517FD canDriver;
+   ACAN2517FD *canDriver;
 
-   Motor motors[NUM_MOTORS];
+   Motor *motors;
 
-   CANSettings settings;
+   CANSettings *settings;
 
 
    public:
 
-   MotorController(ACAN2517FD canDriver, Motor motors[NUM_MOTORS], CANSettings settings);
+  
 
 
 
