@@ -13,6 +13,8 @@ class Motor {
    public:
 
    Motor(Moteus *motor, PositionCommand *motorCommand);
+
+   void setStop();
 };
 
 

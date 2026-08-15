@@ -11,12 +11,9 @@ Moteus moteus1(can, []() {
    options.id = MOTOR_ID_1;
    return options;
 }());
-Moteus moteus2(can, []() {
-   Options options;
-   options.id = MOTOR_ID_2;
-   return options;
-}());
+PositionCommand motorCmd1;
 
+Motor motor1(&moteus1, &motorCmd1);
 
 void setup() {
    pinMode(LED_BUILTIN, OUTPUT);
@@ -48,10 +45,7 @@ void setup() {
       delay(1000);
    }
 
-   // To clear any faults the controllers may have, we start by sending
-   // a stop command to each.
    moteus1.SetStop();
-   moteus2.SetStop();
 }
 
 void loop() {
@@ -60,6 +54,5 @@ void loop() {
    cmd.velocity = 0.2;
 
    moteus1.SetPosition(cmd);
-   moteus2.SetBrake();
    delay(20);
 }

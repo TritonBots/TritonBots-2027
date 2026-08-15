@@ -9,3 +9,7 @@ Motor::Motor(Moteus *motor, PositionCommand *motorCommand) {
    this->motor = motor;
    this->motorCommand = motorCommand;
 }
+
+void Motor::setStop() {
+   motor->SetStop();
+}
