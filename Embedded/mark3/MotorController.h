@@ -15,6 +15,8 @@ class MotorController {
 
   void configSettings();
   
+  float degToRad(const float angle);
+  float degPerSecondToRPS(const float degPerSecond);
 
   public:
 
@@ -29,6 +31,10 @@ class MotorController {
   void setVelocity(unsigned int motorID, float vel);
 
   void setVelocity(float vel);
+
+  void turn(float speed);
+
+  void dash(float power, float direction);
 
   void sendCommand();
 

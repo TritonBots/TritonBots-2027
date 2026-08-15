@@ -54,3 +54,39 @@ void MotorController::sendCommand() {
       motors[motorIndex].sendCommand();
    }
 }
+
+void MotorController::turn(float speed) {
+   static const float arbitraryMultiplier = 0.2;
+   speed *= -1; // TODO: check that positive speed turns robot clockwise
+   setVelocity(-degPerSecondToRPS(speed) * arbitraryMultiplier);
+}
+
+void MotorController::dash(float power, float direction) {
+   direction = degToRad(direction);
+   power = ((power - MIN_DASH_POWER) 
+   * (MAX_VELOCITY - STOP_MOTOR)) 
+   / (MAX_DASH_POWER - MIN_DASH_POWER) 
+   + STOP_MOTOR;
+
+   static const float motorAngles[NUM_WHEELS] = {
+      FL_WHEEL_ANGLE,
+      FR_WHEEL_ANGLE,
+      BR_WHEEL_ANGLE,
+      BL_WHEEL_ANGLE
+   };
+
+   for(int motorID=1;motorID<=NUM_WHEELS;motorID++) {
+      setVelocity(motorID, power * cos(motorAngles[motorID-1] - direction));
+   }
+
+}
+
+// Convert degrees to radians.
+float MotorController::degToRad(const float angle) {
+  return angle * PI / 180;
+}
+
+// Convert angular speed from degrees per second into wheel revolutions per second.
+float MotorController::degPerSecondToRPS(const float degPerSecond) {
+  return (degPerSecond * ROBOT_TO_WHEEL_CIRCUMFERENCE_RATIO) / 360;
+}
