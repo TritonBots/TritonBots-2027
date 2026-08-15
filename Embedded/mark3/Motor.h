@@ -15,6 +15,10 @@ class Motor {
    Motor(Moteus *motor, PositionCommand *motorCommand);
 
    void setStop();
+   
+   void setVelocity(float vel);
+
+   void sendCommand();
 };
 
 

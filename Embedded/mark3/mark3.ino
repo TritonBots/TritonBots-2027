@@ -15,6 +15,10 @@ PositionCommand motorCmd1;
 
 Motor motor1(&moteus1, &motorCmd1);
 
+Motor* motors[NUM_MOTORS] = {
+   &motor1
+};
+
 void setup() {
    pinMode(LED_BUILTIN, OUTPUT);
 
@@ -45,14 +49,13 @@ void setup() {
       delay(1000);
    }
 
-   moteus1.SetStop();
+   for (int motorIndex=0;motorIndex<NUM_MOTORS;motorIndex++) {
+      motors[motorIndex]->setStop();
+   }
 }
 
 void loop() {
-   PositionCommand cmd;
-   cmd.position = VELOCITY_MODE;
-   cmd.velocity = 0.2;
-
-   moteus1.SetPosition(cmd);
+   motor1.setVelocity(0.2f);
+   motor1.sendCommand();
    delay(20);
 }
