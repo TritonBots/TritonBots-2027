@@ -85,6 +85,20 @@ void MotorController::dribblerCatch() {
    setVelocity(DR_MOTOR_ID, DRIBBLER_SPEED);
 }
 
+void MotorController::dribblerDrop() {
+   setVelocity(DR_MOTOR_ID, DRIBBLER_DROP);
+}
+
+void MotorController::stopLocomotion() {
+   for (unsigned int motorID = 1; motorID <= NUM_WHEELS; motorID++) {
+     setVelocity(motorID, STOP_MOTOR);
+   }
+}
+
+void MotorController::stop() {
+   setVelocity(STOP_MOTOR);
+}
+
 // Convert degrees to radians.
 float MotorController::degToRad(const float angle) {
   return angle * PI / 180;

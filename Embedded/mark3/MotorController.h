@@ -38,6 +38,12 @@ class MotorController {
 
   void dribblerCatch();
 
+  void dribblerDrop();
+
+  void stopLocomotion();
+
+  void stop();
+
   void sendCommand();
 
 };

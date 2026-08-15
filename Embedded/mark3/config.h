@@ -53,6 +53,7 @@ typedef ACAN2517FDSettings CANSettings;
 #define MAX_DASH_POWER 100
 
 #define DRIBBLER_SPEED 10
+#define DRIBBLER_DROP STOP_MOTOR
 
 
 
