@@ -50,8 +50,8 @@ void MotorController::setVelocity(float vel) {
 }
 
 void MotorController::sendCommand() {
-   for (int motorIndex=0;motorIndex<NUM_MOTORS;motorIndex++) {
-      motors[motorIndex].sendCommand();
+   for (int motorID=1;motorID<=NUM_MOTORS;motorID++) {
+      sendCommand();
    }
 }
 
@@ -75,10 +75,14 @@ void MotorController::dash(float power, float direction) {
       BL_WHEEL_ANGLE
    };
 
-   for(int motorID=1;motorID<=NUM_WHEELS;motorID++) {
+   for(unsigned int motorID=1;motorID<=NUM_WHEELS;motorID++) {
       setVelocity(motorID, power * cos(motorAngles[motorID-1] - direction));
    }
 
+}
+
+void MotorController::dribblerCatch() {
+   setVelocity(DR_MOTOR_ID, DRIBBLER_SPEED);
 }
 
 // Convert degrees to radians.

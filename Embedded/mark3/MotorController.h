@@ -36,6 +36,8 @@ class MotorController {
 
   void dash(float power, float direction);
 
+  void dribblerCatch();
+
   void sendCommand();
 
 };
