@@ -13,8 +13,8 @@ class MotorController {
 
   CANSettings *settings;
 
-   
   void configSettings();
+  
 
   public:
 

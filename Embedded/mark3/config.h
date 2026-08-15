@@ -12,10 +12,13 @@ typedef ACAN2517FDSettings CANSettings;
 
 #define BAUD_RATE 115200
 
-#define NUM_MOTORS 2
+#define NUM_MOTORS 5
 
-#define MOTOR_ID_1 1
-#define MOTOR_ID_2 2
+#define FL_MOTOR_ID 1
+#define FR_MOTOR_ID 2
+#define BR_MOTOR_ID 3
+#define BL_MOTOR_ID 4
+#define DR_MOTOR_ID 5
 
 #define MCP2517_SCK 9  // SCK input of MCP2517 
 #define MCP2517_SDI 10 // SDI input of MCP2517 

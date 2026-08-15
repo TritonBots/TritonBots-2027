@@ -1,5 +1,7 @@
 #include "MotorController.h"
 
+// TODO: reorder the functions so it matches the class declaration order
+
 MotorController::MotorController(CANDriver *driver, Motor *motors, CANSettings *settings) {
    this->driver = driver;
    this->motors = motors;
