@@ -60,6 +60,8 @@ static CANSettings settings(
 
 static MotorController controller(&can, *motors, &settings);
 
+// TODO: create a kicker controller
+
 void setup() {
    pinMode(LED_BUILTIN, OUTPUT);
 
