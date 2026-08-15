@@ -1,4 +1,5 @@
 #include "MotorController.h"
+#include "WiFiController.h"
 
 // ACAN2517FD Driver
 static ACAN2517FD can(MCP2517_CS, SPI, MCP2517_INT);
@@ -58,7 +59,9 @@ static CANSettings settings(
    DataBitRateFactor::x1
 );
 
-static MotorController controller(&can, *motors, &settings);
+static MotorController motorController(&can, *motors, &settings);
+
+static WiFiController wifiController(WIFI_SSID, WIFI_PASSWORD, LOCAL_PORT);
 
 // TODO: create a kicker controller
 
@@ -69,13 +72,13 @@ void setup() {
 
    SPI.begin();
 
-   controller.begin([] { can.isr(); });
+   motorController.begin([] { can.isr(); });
 
-   controller.setStop();
+   motorController.setStop();
 }
 
 void loop() {
-   controller.setVelocity(0.2f);
-   controller.sendCommand();
+   motorController.setVelocity(0.2f);
+   motorController.sendCommand();
    delay(20);
 }
