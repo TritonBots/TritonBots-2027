@@ -5,20 +5,32 @@
 
 class MotorController {
 
-   private:
+  private:
 
-   CANDriver *driver;
+  CANDriver *driver;
 
-   Motor *motors;
+  Motor *motors;
 
-   CANSettings *settings;
+  CANSettings *settings;
 
+   
+  void configSettings();
 
-   public:
+  public:
 
   MotorController(CANDriver *driver, Motor *motors, CANSettings *settings);
 
+  void begin(void (*isrCallback)());
 
+  void setStop();
+
+  void setStop(unsigned int motorID);
+
+  void setVelocity(unsigned int motorID, float vel);
+
+  void setVelocity(float vel);
+
+  void sendCommand();
 
 };
 

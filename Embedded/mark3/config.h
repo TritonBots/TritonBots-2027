@@ -3,6 +3,7 @@
 
 #include "ACAN2517FD.h"
 #include <MoteusAcan2517fd.h>
+#include "Moteus.h"
 
 typedef Moteus::Options Options;
 typedef Moteus::PositionMode::Command PositionCommand;
@@ -11,7 +12,7 @@ typedef ACAN2517FDSettings CANSettings;
 
 #define BAUD_RATE 115200
 
-#define NUM_MOTORS 1
+#define NUM_MOTORS 2
 
 #define MOTOR_ID_1 1
 #define MOTOR_ID_2 2
