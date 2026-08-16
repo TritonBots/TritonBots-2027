@@ -3,6 +3,7 @@
 
 #include "MotorController.h"
 #include "WiFiController.h"
+#include "KickerController.h"
 
 #define ROBOT_ID_INDEX 0
 #define CMD_CHAR_INDEX 2
@@ -29,13 +30,21 @@ class RobotController {
 
    WiFiController* wifiController;
 
+   KickerController* kickerController;
+
    bool isValidCommandChar(const char command);
 
    public:
 
-   RobotController(MotorController* motorController, WiFiController* wifiController);
+   RobotController(
+      MotorController* motorController, 
+      WiFiController* wifiController,
+      KickerController* kickerController
+   );
 
-   void parsePacketAndSendCommand();
+   void parsePacket();
+
+   void sendCommand();
 };
 
 

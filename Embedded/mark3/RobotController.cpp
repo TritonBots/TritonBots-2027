@@ -2,14 +2,16 @@
 
 RobotController::RobotController(
    MotorController* motorController, 
-   WiFiController* wifiController
+   WiFiController* wifiController,
+   KickerController* kickerController
 )
  : motorController(motorController), 
- wifiController(wifiController) {
+ wifiController(wifiController),
+ kickerController(kickerController) {
 
 }
 
-void RobotController::parsePacketAndSendCommand() {
+void RobotController::parsePacket() {
    if (!wifiController->isPacketAvailable()) {
       Serial.println(F("No Packets Available to parse!"));
       return;
@@ -64,7 +66,7 @@ void RobotController::parsePacketAndSendCommand() {
          motorController->turn(arg1);
          break;
       case 'k':
-         // TODO: implement kick command
+         kickerController->kick();
          break;
       case 'c':
          motorController->dribblerCatch();
@@ -76,8 +78,10 @@ void RobotController::parsePacketAndSendCommand() {
          Serial.println(F("Invalid Command reached!"));
          return;
    }
+}
+
+void RobotController::sendCommand() {
    motorController->sendCommand();
-   // TODO: send kick command
 }
 
 bool RobotController::isValidCommandChar(const char command) {
