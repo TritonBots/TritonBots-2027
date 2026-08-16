@@ -15,6 +15,38 @@ typedef ACAN2517FDSettings CANSettings;
 #define NUM_MOTORS 5
 #define NUM_WHEELS (NUM_MOTORS) - 1
 
+#define KICKER_PIN 4
+#define KICK_DELAY 1000
+
+#define WIFI_SSID "wifi_ssid"
+#define WIFI_PASSWORD "password"
+#define LOCAL_PORT 1234
+
+#define NO_SOCKET_AVAILABLE 0
+
+#define PACKET_BUFFER_SIZE 255
+#define HOST_IP "255.255.0.0"
+#define HOST_PORT 1000
+
+#define EMPTY_PACKET_BUFFER 0
+
+#define ROBOT_ID_INDEX 0
+#define CMD_CHAR_INDEX 2
+
+#define MIN_ROBOT_ID 1
+#define MAX_ROBOT_ID 6
+
+#define NUM_CMDS 6
+#define DASH_CMD_CHAR 'd'
+#define TURN_CMD_CHAR 't'
+#define KICK_CMD_CHAR 'k'
+#define DROP_CMD_CHAR 'o'
+#define CATCH_CMD_CHAR 'c'
+#define STOP_CMD_CHAR 'q'
+
+#define MIN_NUM_ARGS 2
+#define MAX_NUM_ARGS 4
+
 #define FL_MOTOR_ID 1
 #define FR_MOTOR_ID 2
 #define BR_MOTOR_ID 3

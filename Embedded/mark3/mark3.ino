@@ -1,9 +1,7 @@
 #include "RobotController.h"
 
-#define KICKER_PIN 4
-
 // ACAN2517FD Driver
-static ACAN2517FD can(MCP2517_CS, SPI, MCP2517_INT);
+static CANDriver can(MCP2517_CS, SPI, MCP2517_INT);
 
 static Moteus moteus1(can, []() {
    Options options;
@@ -62,7 +60,11 @@ static CANSettings settings(
 
 static MotorController motorController(&can, *motors, &settings);
 
-static WiFiController wifiController(WIFI_SSID, WIFI_PASSWORD, LOCAL_PORT);
+static WiFiController wifiController(
+   WIFI_SSID, 
+   WIFI_PASSWORD, 
+   LOCAL_PORT
+);
 
 static KickerController kickerController(KICKER_PIN);
 

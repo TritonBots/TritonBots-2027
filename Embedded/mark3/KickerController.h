@@ -2,8 +2,7 @@
 #define KICKER_CONTROLLER_H
 
 #include "Arduino.h"
-
-#define KICK_DELAY 1000
+#include "config.h"
 
 class KickerController {
 
