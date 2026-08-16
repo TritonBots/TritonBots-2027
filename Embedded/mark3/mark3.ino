@@ -60,11 +60,11 @@ static CANSettings settings(
    DataBitRateFactor::x1
 );
 
-static KickerController kickerController(KICKER_PIN);
-
 static MotorController motorController(&can, *motors, &settings);
 
 static WiFiController wifiController(WIFI_SSID, WIFI_PASSWORD, LOCAL_PORT);
+
+static KickerController kickerController(KICKER_PIN);
 
 static RobotController robotController(
    &motorController,
@@ -79,13 +79,12 @@ void setup() {
 
    SPI.begin();
 
-   motorController.begin([] { can.isr(); });
-
-   motorController.setStop();
+   robotController.beginMotorControl([] {can.isr();});
+   robotController.stopMotors();
 }
 
 void loop() {
-   motorController.setVelocity(0.2f);
-   motorController.sendCommand();
+   robotController.parsePacket();
+   robotController.sendCommand();
    delay(20);
 }

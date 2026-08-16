@@ -101,3 +101,11 @@ bool RobotController::isValidCommandChar(const char command) {
    }
    return false;
 }
+
+void RobotController::stopMotors() {
+   motorController->stop();
+}
+
+void RobotController::beginMotorControl(void (*isrCallback)()) {
+   motorController->begin(isrCallback);
+}

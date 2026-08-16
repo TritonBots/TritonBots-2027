@@ -45,6 +45,10 @@ class RobotController {
    void parsePacket();
 
    void sendCommand();
+
+   void stopMotors();
+
+   void beginMotorControl(void (*isrCallback)());
 };
 
 
