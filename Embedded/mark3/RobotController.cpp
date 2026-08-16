@@ -109,3 +109,7 @@ void RobotController::stopMotors() {
 void RobotController::beginMotorControl(void (*isrCallback)()) {
    motorController->begin(isrCallback);
 }
+
+void RobotController::pollKicker() {
+   kickerController->handleKickerStatus();
+}

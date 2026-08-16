@@ -49,6 +49,8 @@ class RobotController {
    void stopMotors();
 
    void beginMotorControl(void (*isrCallback)());
+
+   void pollKicker();
 };
 
 

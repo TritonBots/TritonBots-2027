@@ -86,5 +86,6 @@ void setup() {
 void loop() {
    robotController.parsePacket();
    robotController.sendCommand();
+   robotController.pollKicker();
    delay(20);
 }
