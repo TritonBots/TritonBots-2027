@@ -18,6 +18,9 @@
 #define CATCH_CMD_CHAR 'c'
 #define STOP_CMD_CHAR 'q'
 
+#define MIN_NUM_ARGS 2
+#define MAX_NUM_ARGS 4
+
 class RobotController {
 
    private:
