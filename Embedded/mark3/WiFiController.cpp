@@ -18,10 +18,15 @@ bool WiFiController::sendPacket(char* buffer, unsigned int bufferSize) {
    return udp.endPacket(); // return 1 if success
 }
 
-void WiFiController::parsePacket() {
+char* WiFiController::parsePacket() {
    unsigned int numBytes = udp.parsePacket();
    IPAddress incomingPacketHostAddress = udp.remoteIP();
    udp.read(packetBuffer, PACKET_BUFFER_SIZE);
+   return packetBuffer;
+}
+
+bool WiFiController::isPacketAvailable() {
+   return 0 < numBytesAvailable();
 }
 
 WiFiController::~WiFiController() {

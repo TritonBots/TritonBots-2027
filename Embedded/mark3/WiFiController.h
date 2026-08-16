@@ -13,6 +13,8 @@
 #define HOST_IP "255.255.0.0"
 #define HOST_PORT 1000
 
+#define EMPTY_PACKET_BUFFER 0
+
 class WiFiController {
    private:
 
@@ -35,7 +37,9 @@ class WiFiController {
 
    bool sendPacket(char* buffer, unsigned int bufferSize);
 
-   void parsePacket();
+   char* parsePacket();
+
+   bool isPacketAvailable();
 
 };
 

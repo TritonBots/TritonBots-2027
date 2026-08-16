@@ -63,6 +63,7 @@ static MotorController motorController(&can, *motors, &settings);
 
 static WiFiController wifiController(WIFI_SSID, WIFI_PASSWORD, LOCAL_PORT);
 
+
 // TODO: create a kicker controller
 
 void setup() {
