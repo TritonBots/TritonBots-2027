@@ -50,9 +50,9 @@ typedef ACAN2517FDSettings CANSettings;
 
 #define ROBOT_DIAMETER 0.2 // Robot chassis diameter in meters.
 #define WHEEL_DIAMETER 0.06 // Wheel diameter in meters.
-#define ROBOT_CIRCUMFERENCE ROBOT_DIAMETER * PI // Robot circumference in meters.
-#define WHEEL_CIRCUMFERENCE WHEEL_DIAMETER * PI // Wheel circumference in meters.
-#define ROBOT_TO_WHEEL_CIRCUMFERENCE_RATIO ROBOT_CIRCUMFERENCE / WHEEL_CIRCUMFERENCE // Converts robot rotation to wheel travel.
+#define ROBOT_CIRCUMFERENCE (ROBOT_DIAMETER) * PI // Robot circumference in meters.
+#define WHEEL_CIRCUMFERENCE (WHEEL_DIAMETER) * PI // Wheel circumference in meters.
+#define ROBOT_TO_WHEEL_CIRCUMFERENCE_RATIO (ROBOT_CIRCUMFERENCE) / (WHEEL_CIRCUMFERENCE) // Converts robot rotation to wheel travel.
 
 #define ROBOT_ID_INDEX 0
 #define CMD_CHAR_INDEX 2
