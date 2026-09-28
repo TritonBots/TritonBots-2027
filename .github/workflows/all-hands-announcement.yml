@@ -1,6 +1,7 @@
 name: All Hands Meeting Notice
 
 on:
+  push: # this is to test it on commit. Delete later if it works.
   schedule:
     # 12:00 PM PST on Saturday is 8:00 PM (20:00) UTC on Saturday
     - cron: '0 20 * * 6'
