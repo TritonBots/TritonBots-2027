@@ -1,0 +1,27 @@
+name: All Hands Meeting Notice
+
+on:
+  schedule:
+    # 12:00 PM PST on Saturday is 8:00 PM (20:00) UTC on Saturday
+    - cron: '0 20 * * 6'
+
+jobs:
+  create_announcement:
+    runs-on: ubuntu-latest
+    permissions:
+      discussions: write
+    steps:
+      - name: Create All Hands Discussion
+        uses: abirismyname/create-discussion@main
+        with:
+          title: "📢 All Hands Meeting Notice"
+          # Make sure "Announcements" matches the exact name of a category in your repository's Discussions tab
+          category-name: "Announcements" 
+          body: |
+            ## 🚨 Heads-up: The All Hands Meeting starts in 1 hour!
+            
+            * **Time:** 1:00 PM Today
+            * **Location:** IEEE Project Space (Jacobs Hall, 4th Floor)
+            
+            Please prepare your weekly updates, review the agenda, and arrive on time. See you all there!
+          github-token: ${{ secrets.GITHUB_TOKEN }}
