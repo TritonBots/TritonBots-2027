@@ -23,7 +23,7 @@ Created by: Sukhjeet Sekhon
     1. Change `1` to the correct motor ID, which will be between 1 and 5
         1. default ID is `1` . Look at the motor assignment diagram below
             
-            ![Diagram of Motor ID Configuration](..\Motor_ID_Configuration.png) <!--TODO: Fix the Image embed later-->
+            ![Diagram of Motor ID Configuration](Motor_ID_Configuration.png)
             
     2. Make sure to let the motor spin freely
     3. If nothing happens, then the ID is wrong or the USB-C cable is not transferring data, or the motor is not powered correctly, or the CAN wires are not wired correctly
