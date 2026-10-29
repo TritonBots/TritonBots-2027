@@ -63,7 +63,7 @@
 |       26mmgear.SLDPRT
 |       38mmgear.SLDPRT
 |       5010_motor.step
-|       baterry.step
+|       battery.step
 |       BSC_2810_FPV_Dribbler_Motor.SLDPRT
 |       field.SLDPRT
 |       flange.SLDPRT
