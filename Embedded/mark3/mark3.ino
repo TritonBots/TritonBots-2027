@@ -58,7 +58,7 @@ static CANSettings settings(
    DataBitRateFactor::x1
 );
 
-static MotorController motorController(&can, *motors, &settings);
+static MotorController motorController(&can, motors, &settings);
 
 static WiFiController wifiController(
    WIFI_SSID, 
@@ -78,11 +78,11 @@ void setup() {
    pinMode(LED_BUILTIN, OUTPUT);
 
    Serial.begin(BAUD_RATE);
+   while (!Serial && millis() < 2000);
 
    SPI.begin();
 
-   robotController.beginMotorControl([] {can.isr();});
-   robotController.stopMotors();
+   robotController.begin([] { can.isr(); });
 }
 
 void loop() {

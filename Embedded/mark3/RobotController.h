@@ -26,6 +26,8 @@ class RobotController {
       KickerController* kickerController
    );
 
+   void begin(void (*isrCallback)());
+
    void parsePacket();
 
    void sendCommand();
@@ -36,6 +38,5 @@ class RobotController {
 
    void pollKicker();
 };
-
 
 #endif /* ROBOT_CONTROLLER_H */

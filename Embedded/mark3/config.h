@@ -1,6 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <Arduino.h>
+#include <cmath>
 #include "ACAN2517FD.h"
 #include <MoteusAcan2517fd.h>
 #include "Moteus.h"
@@ -9,7 +11,6 @@ typedef Moteus::Options Options;
 typedef Moteus::PositionMode::Command PositionCommand;
 typedef ACAN2517FD CANDriver;
 typedef ACAN2517FDSettings CANSettings;
-
 
 // Put consts that need regular configuration below
 #define WIFI_SSID "wifi_ssid"
@@ -23,7 +24,7 @@ typedef ACAN2517FDSettings CANSettings;
 #define DRIBBLER_SPEED 10
 #define DRIBBLER_DROP STOP_MOTOR
 
-#define VELOCITY_MODE NaN
+#define VELOCITY_MODE NAN
 #define MIN_VELOCITY 0
 #define MAX_VELOCITY 100
 #define STOP_MOTOR 0
@@ -37,22 +38,23 @@ typedef ACAN2517FDSettings CANSettings;
 #define MCP2517_INT 7  // INT output of MCP2517
 
 #define KICKER_PIN 4
-#define KICK_DELAY 1000
+#define KICK_PULSE_DURATION_MS 15 // Safe solenoid pulse duration in ms
+#define KICK_COOLDOWN_MS 1000      // Minimum time between kicks for capacitor recharge in ms
 
 #define PACKET_BUFFER_SIZE 255
 #define NO_SOCKET_AVAILABLE 0
 #define EMPTY_PACKET_BUFFER 0
 
-#define FL_WHEEL_ANGLE 0.349066 // in radians
-#define FR_WHEEL_ANGLE -0.349066 // in radians
-#define BR_WHEEL_ANGLE 1.0472 // in radians
-#define BL_WHEEL_ANGLE -1.0472 // in radians
+#define FL_WHEEL_ANGLE 0.349066f // in radians (~20 deg)
+#define FR_WHEEL_ANGLE -0.349066f // in radians (~-20 deg)
+#define BR_WHEEL_ANGLE 1.0472f // in radians (~60 deg)
+#define BL_WHEEL_ANGLE -1.0472f // in radians (~-60 deg)
 
-#define ROBOT_DIAMETER 0.2 // Robot chassis diameter in meters.
-#define WHEEL_DIAMETER 0.06 // Wheel diameter in meters.
-#define ROBOT_CIRCUMFERENCE (ROBOT_DIAMETER) * PI // Robot circumference in meters.
-#define WHEEL_CIRCUMFERENCE (WHEEL_DIAMETER) * PI // Wheel circumference in meters.
-#define ROBOT_TO_WHEEL_CIRCUMFERENCE_RATIO (ROBOT_CIRCUMFERENCE) / (WHEEL_CIRCUMFERENCE) // Converts robot rotation to wheel travel.
+#define ROBOT_DIAMETER 0.2f // Robot chassis diameter in meters.
+#define WHEEL_DIAMETER 0.06f // Wheel diameter in meters.
+#define ROBOT_CIRCUMFERENCE ((ROBOT_DIAMETER) * PI) // Robot circumference in meters.
+#define WHEEL_CIRCUMFERENCE ((WHEEL_DIAMETER) * PI) // Wheel circumference in meters.
+#define ROBOT_TO_WHEEL_CIRCUMFERENCE_RATIO ((ROBOT_CIRCUMFERENCE) / (WHEEL_CIRCUMFERENCE)) // Converts robot rotation to wheel travel.
 
 #define ROBOT_ID_INDEX 0
 #define CMD_CHAR_INDEX 2
@@ -78,12 +80,12 @@ typedef ACAN2517FDSettings CANSettings;
 #define MAX_ROBOT_ID 6
 
 #define NUM_MOTORS 5
-#define NUM_WHEELS (NUM_MOTORS) - 1
+#define NUM_WHEELS ((NUM_MOTORS) - 1)
 
 #define MIN_NUM_ARGS 2
 #define MAX_NUM_ARGS 4
 
-#define CAN_BITRATE 1000ll * 1000ll
+#define CAN_BITRATE (1000ll * 1000ll)
 #define CAN_SJW 2
 #define CAN_TX_FIFO_SIZE (NUM_MOTORS)
 #define CAN_RX_FIFO_SIZE (NUM_MOTORS)

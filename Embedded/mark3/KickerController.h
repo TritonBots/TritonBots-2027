@@ -10,17 +10,20 @@ class KickerController {
 
    unsigned int kickerPin;
 
-   unsigned long timeSinceLastKick; // in milliseconds
+   unsigned long kickStartTime;
+   unsigned long lastKickTime;
+   bool isKicking;
 
    public:
 
    KickerController(unsigned int kickerPin);
+
+   void begin();
 
    void kick();
 
    void handleKickerStatus();
 
 };
-
 
 #endif /* KICKER_CONTROLLER_H */

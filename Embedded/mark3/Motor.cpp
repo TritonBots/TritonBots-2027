@@ -10,6 +10,7 @@ Motor::Motor(Moteus *motor, PositionCommand *motorCommand) {
    this->motorCommand = motorCommand;
    
    this->motorCommand->position = VELOCITY_MODE;
+   this->motorCommand->velocity = 0.0f;
 }
 
 void Motor::setStop() {

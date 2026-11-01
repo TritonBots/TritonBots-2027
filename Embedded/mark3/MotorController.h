@@ -9,7 +9,7 @@ class MotorController {
 
   CANDriver *driver;
 
-  Motor *motors;
+  Motor **motors;
 
   CANSettings *settings;
 
@@ -20,7 +20,7 @@ class MotorController {
 
   public:
 
-  MotorController(CANDriver *driver, Motor *motors, CANSettings *settings);
+  MotorController(CANDriver *driver, Motor **motors, CANSettings *settings);
 
   void begin(void (*isrCallback)());
 
@@ -47,7 +47,5 @@ class MotorController {
   void sendCommand();
 
 };
-
-
 
 #endif /* MOTOR_CONTROLLER_H */

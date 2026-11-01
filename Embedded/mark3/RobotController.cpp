@@ -6,27 +6,27 @@ RobotController::RobotController(
    KickerController* kickerController
 )
  : motorController(motorController), 
- wifiController(wifiController),
- kickerController(kickerController) {
+   wifiController(wifiController),
+   kickerController(kickerController) {
+}
 
+void RobotController::begin(void (*isrCallback)()) {
+   kickerController->begin();
+   wifiController->begin();
+   motorController->begin(isrCallback);
+   motorController->stop();
 }
 
 void RobotController::parsePacket() {
-   if (!wifiController->isPacketAvailable()) {
-      Serial.println(F("No Packets Available to parse!"));
+   char* udpPacket = wifiController->parsePacket();
+   if (udpPacket == nullptr) {
       return;
    }
-   char* udpPacket = wifiController->parsePacket();
 
    /*
-   
    Command format:
    "<robot ID> <command char> <float arg1> <float arg2>"
-   
-   
    */
-
-   const char command = udpPacket[CMD_CHAR_INDEX];
 
    // 1. Create variables to hold the parsed values
    int parsedRobotID = 0;
@@ -38,14 +38,14 @@ void RobotController::parsePacket() {
    // %d = integer, %c = character, %f = float
    int parsedItems = sscanf(udpPacket, "%d %c %f %f", &parsedRobotID, &parsedCommand, &arg1, &arg2);
 
-   // 3. Verify that all 4 expected items were successfully successfully read
-   if (parsedItems < MIN_NUM_ARGS && parsedItems > MAX_NUM_ARGS ) {
+   // 3. Verify that at least robot ID and command char were read
+   if (parsedItems < MIN_NUM_ARGS || parsedItems > MAX_NUM_ARGS) {
       Serial.println(F("Invalid number of arguments in command!"));
       return;
    }
 
    // 4. Run validation checks on the safely parsed values
-   if (MIN_ROBOT_ID > parsedRobotID || MAX_ROBOT_ID < parsedRobotID) {
+   if (parsedRobotID < MIN_ROBOT_ID || parsedRobotID > MAX_ROBOT_ID) {
       Serial.println(F("Invalid Robot ID parsed!"));
       return;
    }
@@ -56,22 +56,30 @@ void RobotController::parsePacket() {
    }
 
    switch(parsedCommand) {
-      case 'q':
+      case STOP_CMD_CHAR:
          motorController->stop();
          break;
-      case 'd':
+      case DASH_CMD_CHAR:
+         if (parsedItems < 4) {
+            Serial.println(F("Dash command requires power and direction arguments!"));
+            return;
+         }
          motorController->dash(arg1, arg2);
          break;
-      case 't':
+      case TURN_CMD_CHAR:
+         if (parsedItems < 3) {
+            Serial.println(F("Turn command requires speed argument!"));
+            return;
+         }
          motorController->turn(arg1);
          break;
-      case 'k':
+      case KICK_CMD_CHAR:
          kickerController->kick();
          break;
-      case 'c':
+      case CATCH_CMD_CHAR:
          motorController->dribblerCatch();
          break;
-      case 'o':
+      case DROP_CMD_CHAR:
          motorController->dribblerDrop();
          break;
       default:
@@ -94,7 +102,7 @@ bool RobotController::isValidCommandChar(const char command) {
       STOP_CMD_CHAR
    };
 
-   for (int i=0;i<NUM_CMDS;i++) {
+   for (int i = 0; i < NUM_CMDS; i++) {
       if (validCommandChars[i] == command) {
          return true;
       }

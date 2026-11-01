@@ -1,22 +1,9 @@
 #include "MotorController.h"
 
-// TODO: reorder the functions so it matches the class declaration order
-
-MotorController::MotorController(CANDriver *driver, Motor *motors, CANSettings *settings) {
+MotorController::MotorController(CANDriver *driver, Motor **motors, CANSettings *settings) {
    this->driver = driver;
    this->motors = motors;
    this->settings = settings;
-   configSettings(); // TODO: might cause a runtime error because it's not called inside of setup()
-}
-
-void MotorController::setStop() {
-   for (int motorIndex=0;motorIndex<NUM_MOTORS;motorIndex++) {
-      motors[motorIndex].setStop();
-   }
-}
-
-void MotorController::setStop(unsigned int motorID) {
-   motors[motorID].setStop();
 }
 
 void MotorController::configSettings() {
@@ -29,7 +16,18 @@ void MotorController::configSettings() {
    settings->mDriverReceiveFIFOSize = CAN_RX_FIFO_SIZE;
 }
 
+// Convert degrees to radians.
+float MotorController::degToRad(const float angle) {
+  return angle * PI / 180.0f;
+}
+
+// Convert angular speed from degrees per second into wheel revolutions per second.
+float MotorController::degPerSecondToRPS(const float degPerSecond) {
+  return (degPerSecond * ROBOT_TO_WHEEL_CIRCUMFERENCE_RATIO) / 360.0f;
+}
+
 void MotorController::begin(void (*isrCallback)()) {
+   configSettings();
    const uint32_t errorCode = driver->begin(*settings, isrCallback);
 
    while (errorCode != CAN_OK_CODE) {
@@ -39,26 +37,37 @@ void MotorController::begin(void (*isrCallback)()) {
    }
 }
 
-void MotorController::setVelocity(unsigned int motorID, float vel) {
-   motors[motorID-1].setVelocity(vel);
-}
-
-void MotorController::setVelocity(float vel) {
-   for (int motorIndex=0;motorIndex<NUM_MOTORS;motorIndex++) {
-      motors[motorIndex].setVelocity(vel);
+void MotorController::setStop() {
+   for (int motorIndex = 0; motorIndex < NUM_MOTORS; motorIndex++) {
+      motors[motorIndex]->setStop();
    }
 }
 
-void MotorController::sendCommand() {
-   for (int motorID=1;motorID<=NUM_MOTORS;motorID++) {
-      sendCommand();
+void MotorController::setStop(unsigned int motorID) {
+   if (motorID >= 1 && motorID <= NUM_MOTORS) {
+      motors[motorID - 1]->setStop();
+   }
+}
+
+void MotorController::setVelocity(unsigned int motorID, float vel) {
+   if (motorID >= 1 && motorID <= NUM_MOTORS) {
+      motors[motorID - 1]->setVelocity(vel);
+   }
+}
+
+void MotorController::setVelocity(float vel) {
+   for (int motorIndex = 0; motorIndex < NUM_MOTORS; motorIndex++) {
+      motors[motorIndex]->setVelocity(vel);
    }
 }
 
 void MotorController::turn(float speed) {
-   static const float arbitraryMultiplier = 0.2;
-   speed *= -1; // TODO: check that positive speed turns robot clockwise
-   setVelocity(-degPerSecondToRPS(speed) * arbitraryMultiplier);
+   static const float arbitraryMultiplier = 0.2f;
+   float rps = degPerSecondToRPS(speed) * arbitraryMultiplier;
+   // Only drive locomotion wheels (1 to NUM_WHEELS), not the dribbler
+   for (unsigned int motorID = 1; motorID <= NUM_WHEELS; motorID++) {
+      setVelocity(motorID, -rps);
+   }
 }
 
 void MotorController::dash(float power, float direction) {
@@ -75,10 +84,9 @@ void MotorController::dash(float power, float direction) {
       BL_WHEEL_ANGLE
    };
 
-   for(unsigned int motorID=1;motorID<=NUM_WHEELS;motorID++) {
-      setVelocity(motorID, power * cos(motorAngles[motorID-1] - direction));
+   for (unsigned int motorID = 1; motorID <= NUM_WHEELS; motorID++) {
+      setVelocity(motorID, power * cos(motorAngles[motorID - 1] - direction));
    }
-
 }
 
 void MotorController::dribblerCatch() {
@@ -99,12 +107,8 @@ void MotorController::stop() {
    setVelocity(STOP_MOTOR);
 }
 
-// Convert degrees to radians.
-float MotorController::degToRad(const float angle) {
-  return angle * PI / 180;
-}
-
-// Convert angular speed from degrees per second into wheel revolutions per second.
-float MotorController::degPerSecondToRPS(const float degPerSecond) {
-  return (degPerSecond * ROBOT_TO_WHEEL_CIRCUMFERENCE_RATIO) / 360;
+void MotorController::sendCommand() {
+   for (int motorIndex = 0; motorIndex < NUM_MOTORS; motorIndex++) {
+      motors[motorIndex]->sendCommand();
+   }
 }

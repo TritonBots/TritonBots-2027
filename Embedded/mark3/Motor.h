@@ -21,5 +21,4 @@ class Motor {
    void sendCommand();
 };
 
-
 #endif /* MOTOR_H */

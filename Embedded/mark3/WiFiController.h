@@ -7,8 +7,8 @@
 class WiFiController {
    private:
 
-   char* ssid;
-   char* password;
+   const char* ssid;
+   const char* password;
 
    unsigned int localPort;
 
@@ -18,20 +18,20 @@ class WiFiController {
 
    public:
 
-   WiFiController(char* ssid, char* password, unsigned int localPort);
+   WiFiController(const char* ssid, const char* password, unsigned int localPort);
 
    ~WiFiController();
+
+   void begin();
    
    unsigned int numBytesAvailable();
 
-   bool sendPacket(char* buffer, unsigned int bufferSize);
+   bool sendPacket(const char* buffer, unsigned int bufferSize);
 
    char* parsePacket();
 
    bool isPacketAvailable();
 
 };
-
-
 
 #endif /* WIFI_CONTROLLER_H */
