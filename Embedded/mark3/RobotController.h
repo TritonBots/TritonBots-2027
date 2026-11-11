@@ -16,6 +16,9 @@ class RobotController {
 
    KickerController* kickerController;
 
+   void processCommandLine(char* line);
+
+   bool isValidCommand(const char* command);
    bool isValidCommandChar(const char command);
 
    public:

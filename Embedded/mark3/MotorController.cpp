@@ -64,29 +64,34 @@ void MotorController::setVelocity(float vel) {
 void MotorController::turn(float speed) {
    static const float arbitraryMultiplier = 0.2f;
    float rps = degPerSecondToRPS(speed) * arbitraryMultiplier;
-   // Only drive locomotion wheels (1 to NUM_WHEELS), not the dribbler
+   // Positive speed turns counter-clockwise (CCW); negative turns clockwise (CW).
+   // Only drive locomotion wheels (1 to NUM_WHEELS), not the dribbler.
    for (unsigned int motorID = 1; motorID <= NUM_WHEELS; motorID++) {
-      setVelocity(motorID, -rps);
+      setVelocity(motorID, rps);
    }
 }
 
 void MotorController::dash(float power, float direction) {
-   direction = degToRad(direction);
+   float dirRad = degToRad(direction);
    power = ((power - MIN_DASH_POWER) 
    * (MAX_VELOCITY - STOP_MOTOR)) 
    / (MAX_DASH_POWER - MIN_DASH_POWER) 
    + STOP_MOTOR;
 
-   static const float motorAngles[NUM_WHEELS] = {
-      FL_WHEEL_ANGLE,
-      FR_WHEEL_ANGLE,
-      BR_WHEEL_ANGLE,
-      BL_WHEEL_ANGLE
-   };
+   float vx = power * cosf(dirRad);
+   float vy = power * sinf(dirRad);
 
-   for (unsigned int motorID = 1; motorID <= NUM_WHEELS; motorID++) {
-      setVelocity(motorID, power * cos(motorAngles[motorID - 1] - direction));
-   }
+   float cosF = cosf(FL_WHEEL_ANGLE);
+   float sinF = sinf(FL_WHEEL_ANGLE);
+   float cosB = cosf(BR_WHEEL_ANGLE);
+   float sinB = sinf(BR_WHEEL_ANGLE);
+
+   // Front-Left (1) and Back-Left (4) must have opposite motor polarity from
+   // Front-Right (2) and Back-Right (3) to produce forward translation instead of rotation.
+   setVelocity(FL_MOTOR_ID, -vx * cosF + vy * sinF);
+   setVelocity(FR_MOTOR_ID,  vx * cosF + vy * sinF);
+   setVelocity(BR_MOTOR_ID,  vx * cosB - vy * sinB);
+   setVelocity(BL_MOTOR_ID, -vx * cosB - vy * sinB);
 }
 
 void MotorController::dribblerCatch() {

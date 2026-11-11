@@ -12,6 +12,7 @@ class KickerController {
 
    unsigned long kickStartTime;
    unsigned long lastKickTime;
+   unsigned long currentPulseDuration;
    bool isKicking;
 
    public:
@@ -20,7 +21,7 @@ class KickerController {
 
    void begin();
 
-   void kick();
+   void kick(float power = 100.0f);
 
    void handleKickerStatus();
 

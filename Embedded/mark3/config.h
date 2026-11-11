@@ -38,7 +38,7 @@ typedef ACAN2517FDSettings CANSettings;
 #define MCP2517_INT 7  // INT output of MCP2517
 
 #define KICKER_PIN 4
-#define KICK_PULSE_DURATION_MS 15 // Safe solenoid pulse duration in ms
+#define KICK_PULSE_DURATION_MS 15 // Safe solenoid pulse duration in ms at 100% power
 #define KICK_COOLDOWN_MS 1000      // Minimum time between kicks for capacitor recharge in ms
 
 #define PACKET_BUFFER_SIZE 255
@@ -59,6 +59,22 @@ typedef ACAN2517FDSettings CANSettings;
 #define ROBOT_ID_INDEX 0
 #define CMD_CHAR_INDEX 2
 
+// Robot identity
+#define THIS_ROBOT_ID 1 // ID of this specific robot (1-6). Set to 0 to accept commands for any ID.
+#define MIN_ROBOT_ID 1
+#define MAX_ROBOT_ID 6
+
+// Command strings matching ai-team basic_commands.py, naive.py, and networking
+#define DASH_CMD_STR   "dash"
+#define TURN_CMD_STR   "turn"
+#define KICK_CMD_STR   "kick"
+#define DONE_CMD_STR   "done"
+#define FAILED_CMD_STR "failed"
+#define STOP_CMD_STR   "stop"
+#define CATCH_CMD_STR  "catch"
+#define DROP_CMD_STR   "drop"
+#define NONE_CMD_STR   "none"
+
 #define NUM_CMDS 6
 #define DASH_CMD_CHAR 'd'
 #define TURN_CMD_CHAR 't'
@@ -75,9 +91,6 @@ typedef ACAN2517FDSettings CANSettings;
 #define BR_MOTOR_ID 3
 #define BL_MOTOR_ID 4
 #define DR_MOTOR_ID 5
-
-#define MIN_ROBOT_ID 1
-#define MAX_ROBOT_ID 6
 
 #define NUM_MOTORS 5
 #define NUM_WHEELS ((NUM_MOTORS) - 1)
